@@ -1,5 +1,4 @@
 import argparse
-from textwrap import dedent
 
 import jieba.analyse
 
@@ -39,23 +38,17 @@ def extract_keyword(query: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="关键词提取工具", usage='python extract_keyword.py "查询文本"'
-    )
+    usage = 'python extract_keyword.py "查询文本"'
+    parser = argparse.ArgumentParser(description="关键词提取", usage=usage)
+
     parser.add_argument("query", type=str, help="查询文本")
 
     try:
         args = parser.parse_args()
-        keyword = extract_keyword(args.query)
-        print(keyword)
+        keywords = extract_keyword(args.query)
+        print(keywords)
     except SystemExit:
-        desc = """
-        使用说明：
-            python extract_keyword.py "查询文本"
-        示例：
-            python extract_keyword.py "请根据质量风险区域将冷链运输质量进行大致分析。"
-        """
-        print(dedent(desc))
+        print(usage)
         raise
 
 
