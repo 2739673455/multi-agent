@@ -1,0 +1,729 @@
+db_code: pg_archeology_scan # 数据库编号
+
+table: # 表信息
+  pg_archeology_scan_projects: # 表编号
+    tb_name: projects # 表名
+    tb_meaning: 考古项目 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - arcregistry
+      - authpin
+    col_info: # 字段额外信息
+      arcregistry:
+        col_meaning: 考古项目注册唯一标识符 # 字段含义
+        field_meaning: # JSONB字段中每个字段的含义
+        col_alias: ["项目编号", "项目ID"] # 字段别名
+        rel_col: # 关联字段
+      vesseltag:
+        col_meaning: 项目名称或指定标签
+        field_meaning:
+        col_alias: ["项目标签", "项目名称"]
+        rel_col:
+      fundflux:
+        col_meaning: 项目资金来源或财务支持
+        field_meaning:
+        col_alias: ["资金来源", "资助方"]
+        rel_col:
+      authpin:
+        col_meaning: 挖掘官方许可或授权编号
+        field_meaning:
+        col_alias: ["许可编号", "授权号"]
+        rel_col:
+      authhalt:
+        col_meaning: 许可到期日期或授权终止日期
+        field_meaning:
+        col_alias: ["许可到期", "授权终止"]
+        rel_col:
+
+  pg_archeology_scan_personnel: # 表编号
+    tb_name: personnel # 表名
+    tb_meaning: 人员信息 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - crewregistry
+      - leadregistry
+    col_info: # 字段额外信息
+      crewregistry:
+        col_meaning: 操作人员注册唯一标识符
+        field_meaning:
+        col_alias: ["操作员编号", "人员ID"]
+        rel_col:
+      crewlabel:
+        col_meaning: 操作人员的名称或指定
+        field_meaning:
+        col_alias: ["操作员姓名", "人员名称"]
+        rel_col:
+      leadregistry:
+        col_meaning: 主管人员注册唯一标识符
+        field_meaning:
+        col_alias: ["主管编号", "监督员ID"]
+        rel_col:
+      leadlabel:
+        col_meaning: 主管人员的名称或指定
+        field_meaning:
+        col_alias: ["主管姓名", "监督员名称"]
+        rel_col:
+
+  pg_archeology_scan_sites: # 表编号
+    tb_name: sites # 表名
+    tb_meaning: 考古遗址 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - zoneregistry
+    col_info: # 字段额外信息
+      zoneregistry:
+        col_meaning: 考古区域唯一站点代码标识符
+        field_meaning:
+        col_alias: ["站点代码", "遗址编号"]
+        rel_col:
+      zonelabel:
+        col_meaning: 考古遗址的描述性名称
+        field_meaning:
+        col_alias: ["遗址名称", "站点名称"]
+        rel_col:
+      digunit:
+        col_meaning: 站点内挖掘单元指定
+        field_meaning:
+        col_alias: ["挖掘单元", "发掘单元"]
+        rel_col:
+      gridtrace:
+        col_meaning: 站点位置的网格参考系统坐标
+        field_meaning:
+        col_alias: ["网格坐标", "坐标参考"]
+        rel_col:
+      phasefactor:
+        col_meaning: 文化时期或年代阶段分类
+        field_meaning:
+        col_alias: ["文化时期", "年代阶段"]
+        rel_col:
+      guessdate:
+        col_meaning: 考古材料的估计日期或年龄
+        field_meaning:
+        col_alias: ["估计日期", "推测年代"]
+        rel_col:
+      typesite:
+        col_meaning: 考古遗址类型分类
+        field_meaning:
+        col_alias: ["遗址类型", "站点分类"]
+        rel_col:
+      guardhint:
+        col_meaning: 站点天气防护措施
+        field_meaning:
+        col_alias: ["防护措施", "天气保护"]
+        rel_col:
+      geo_position:
+        col_meaning: 地理定位数据，包括坐标、高程和挖掘深度测量
+        field_meaning:
+          Geo_X: "纬度坐标（十进制度）"
+          Geo_Y: "经度坐标（十进制度）"
+          Height_M: "海平面以上高度（米）"
+          Depth_C: "地表以下挖掘深度（厘米）"
+        col_alias: ["地理位置", "坐标信息"]
+        rel_col:
+      site_status:
+        col_meaning: 站点条件和安全评估，包括保护、访问、安全和风险评估状态
+        field_meaning:
+          Pres_Stat: "考古遗迹当前保存状态"
+          Entry_Stat: "人员和设备站点可访问状态"
+          Safe_Rank: "站点保护安全级别分类"
+          Insur_Stat: "站点运营保险覆盖状态"
+          Risk_Eval: "站点安全评估风险状态"
+          Health_Eval: "站点条件健康和安全评估状态"
+          Env_Haz: "站点存在的环境风险因素"
+        col_alias: ["站点状态", "安全评估"]
+        rel_col:
+
+  pg_archeology_scan_equipment: # 表编号
+    tb_name: equipment # 表名
+    tb_meaning: 扫描设备 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - equipregistry
+      - equiptune
+      - powerlevel
+      - transport_speed
+      - coverage_rate
+      - point_generation_rate
+      - cost_per_area
+      - accuracy_per_time
+      - power_consumption
+      - battery_drain
+      - storage_usage_rate
+    col_info: # 字段额外信息
+      equipregistry:
+        col_meaning: 扫描设备唯一序列号标识符
+        field_meaning:
+        col_alias: ["设备序列号", "设备ID"]
+        rel_col:
+      equipform:
+        col_meaning: 扫描设备类型分类
+        field_meaning:
+        col_alias: ["设备类型", "扫描仪类型"]
+        rel_col:
+      equipdesign:
+        col_meaning: 扫描设备型号指定
+        field_meaning:
+        col_alias: ["设备型号", "型号"]
+        rel_col:
+      equiptune:
+        col_meaning: 设备上次校准或维护日期
+        field_meaning:
+        col_alias: ["校准日期", "维护日期"]
+        rel_col:
+      equipstatus:
+        col_meaning: 设备当前运行状况
+        field_meaning:
+        col_alias: ["设备状态", "运行状况"]
+        rel_col:
+      powerlevel:
+        col_meaning: 电池电量百分比
+        field_meaning:
+        col_alias: ["电池电量", "电量水平"]
+        rel_col:
+      transport_speed:
+        col_meaning: 设备运输速度
+        field_meaning:
+        col_alias: ["运输速度", "移动速度"]
+        rel_col:
+      coverage_rate:
+        col_meaning: 扫描期间区域覆盖率
+        field_meaning:
+        col_alias: ["覆盖率", "扫描效率"]
+        rel_col:
+      point_generation_rate:
+        col_meaning: 点云生成效率
+        field_meaning:
+        col_alias: ["点生成率", "点云生成"]
+        rel_col:
+      cost_per_area:
+        col_meaning: 单位面积成本效益
+        field_meaning:
+        col_alias: ["单位成本", "面积成本"]
+        rel_col:
+      accuracy_per_time:
+        col_meaning: 扫描时间内准确度提升
+        field_meaning:
+        col_alias: ["准确度提升", "精度改善"]
+        rel_col:
+      power_consumption:
+        col_meaning: 设备功耗率
+        field_meaning:
+        col_alias: ["功耗", "能源消耗"]
+        rel_col:
+      battery_drain:
+        col_meaning: 运行期间电池消耗率
+        field_meaning:
+        col_alias: ["电池消耗", "电量消耗"]
+        rel_col:
+      storage_usage_rate:
+        col_meaning: 扫描期间存储空间消耗
+        field_meaning:
+        col_alias: ["存储使用", "空间占用"]
+        rel_col:
+
+  pg_archeology_scan_scans: # 表编号
+    tb_name: scans # 表名
+    tb_meaning: 扫描记录 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - questregistry
+      - chronotag
+      - scancount
+      - size
+      - scan_cost
+      - scanning_rate
+    col_info: # 字段额外信息
+      questregistry:
+        col_meaning: 扫描会话记录唯一标识符
+        field_meaning:
+        col_alias: ["扫描ID", "会话编号"]
+        rel_col:
+      chronotag:
+        col_meaning: 执行扫描的精确时间戳
+        field_meaning:
+        col_alias: ["扫描时间", "时间戳"]
+        rel_col:
+      arcref:
+        col_meaning: 关联的考古项目参考
+        field_meaning:
+        col_alias: ["项目参考", "关联项目"]
+        rel_col: "projects.arcregistry"
+      crewref:
+        col_meaning: 执行扫描的操作员参考
+        field_meaning:
+        col_alias: ["操作员参考", "扫描员"]
+        rel_col: "personnel.crewregistry"
+      zoneref:
+        col_meaning: 进行扫描的站点参考
+        field_meaning:
+        col_alias: ["站点参考", "扫描站点"]
+        rel_col: "sites.zoneregistry"
+      scancount:
+        col_meaning: 会话中单个扫描总数
+        field_meaning:
+        col_alias: ["扫描次数", "扫描数量"]
+        rel_col:
+      climtune:
+        col_meaning: 扫描会话期间天气条件
+        field_meaning:
+        col_alias: ["天气条件", "气候状况"]
+        rel_col:
+      huecatch:
+        col_meaning: 扫描期间使用的颜色捕获模式或设置
+        field_meaning:
+        col_alias: ["颜色模式", "色彩设置"]
+        rel_col:
+      fmtfile:
+        col_meaning: 用于存储扫描数据的文件格式
+        field_meaning:
+        col_alias: ["文件格式", "数据格式"]
+        rel_col:
+      size:
+        col_meaning: 扫描数据总文件大小（GB）
+        field_meaning:
+        col_alias: ["文件大小", "数据大小"]
+        rel_col:
+      scan_cost:
+        col_meaning: 每GB设备成本
+        field_meaning:
+        col_alias: ["扫描成本", "单位成本"]
+        rel_col:
+      scanning_rate:
+        col_meaning: 扫描期间数据采集率
+        field_meaning:
+        col_alias: ["扫描速率", "采集速度"]
+        rel_col:
+
+  pg_archeology_scan_environment: # 表编号
+    tb_name: environment # 表名
+    tb_meaning: 环境数据 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - airregistry
+      - imgcount
+    col_info: # 字段额外信息
+      airregistry:
+        col_meaning: 环境记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["环境ID", "记录编号"]
+        rel_col:
+      zoneref:
+        col_meaning: 记录环境数据的站点参考
+        field_meaning:
+        col_alias: ["站点参考", "测量站点"]
+        rel_col: "sites.zoneregistry"
+      equipref:
+        col_meaning: 用于环境监测的设备参考
+        field_meaning:
+        col_alias: ["设备参考", "监测设备"]
+        rel_col: "equipment.equipregistry"
+      photomap:
+        col_meaning: 摄影测量重叠百分比设置
+        field_meaning:
+        col_alias: ["重叠设置", "摄影重叠"]
+        rel_col:
+      imgcount:
+        col_meaning: 会话期间每分钟捕获的图像数量
+        field_meaning:
+        col_alias: ["图像数量", "拍摄速率"]
+        rel_col:
+      ambient_cond:
+        col_meaning: 扫描期间环境条件，包括温度、湿度、照明和连接状态
+        field_meaning:
+          Ambic_Temp: "扫描期间环境空气温度（摄氏度）"
+          Hume_Pct: "扫描期间相对湿度百分比"
+          Illume_Lux: "勒克斯单位的光强度条件"
+          Geo_Signal: "GPS信号质量和接收状态"
+          Track_Status: "RTK定位系统状态和准确度"
+          Link_Status: "扫描期间网络连接状态"
+        col_alias: ["环境条件", "环境参数"]
+        rel_col:
+
+  pg_archeology_scan_pointcloud: # 表编号
+    tb_name: pointcloud # 表名
+    tb_meaning: 点云数据 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - cloudregistry
+    col_info: # 字段额外信息
+      cloudregistry:
+        col_meaning: 点云记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["点云ID", "云数据编号"]
+        rel_col:
+      crewref:
+        col_meaning: 生成点云的操作员参考
+        field_meaning:
+        col_alias: ["操作员参考", "生成人员"]
+        rel_col: "personnel.crewregistry"
+      arcref:
+        col_meaning: 关联的考古项目参考
+        field_meaning:
+        col_alias: ["项目参考", "关联项目"]
+        rel_col: "projects.arcregistry"
+      cloud_metrics:
+        col_meaning: 点云质量和密度测量，包括分辨率、覆盖率、重叠和噪声分析
+        field_meaning:
+          Scan_Resol_Mm: "扫描分辨率（毫米）"
+          Point_Dense: "每平方米点密度"
+          Cover_Pct: "扫描覆盖的表面积百分比"
+          Total_Pts: "点云中总点数"
+          Cloud_Dense: "点云密度测量"
+          Lap_Pct: "扫描段之间的重叠百分比"
+          Noise_Db: "噪声水平测量（分贝）"
+          Ref_Pct: "表面反射率百分比测量"
+        col_alias: ["点云指标", "质量指标"]
+        rel_col:
+
+  pg_archeology_scan_mesh: # 表编号
+    tb_name: mesh # 表名
+    tb_meaning: 3D网格数据 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - facetregistry
+    col_info: # 字段额外信息
+      facetregistry:
+        col_meaning: 网格记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["网格ID", "网格编号"]
+        rel_col:
+      zoneref:
+        col_meaning: 生成网格的站点参考
+        field_meaning:
+        col_alias: ["站点参考", "生成站点"]
+        rel_col: "sites.zoneregistry"
+      equipref:
+        col_meaning: 用于网格生成的设备参考
+        field_meaning:
+        col_alias: ["设备参考", "生成设备"]
+        rel_col: "equipment.equipregistry"
+      mesh_specs:
+        col_meaning: 3D网格规格，包括几何、纹理属性和准确度测量
+        field_meaning:
+          Facet_Verts: "3D网格中的顶点数"
+          Facet_Faces: "3D网格中的面数"
+          Facet_Res_Mm: "网格分辨率（毫米）"
+          Tex_Dist: "纹理分辨率分类或设置"
+          Tex_Pix: "纹理大小（像素）"
+          UV_Map_Qual: "UV映射质量评估"
+          Geom_Delta_Mm: "几何准确度测量（毫米）"
+        col_alias: ["网格规格", "网格参数"]
+        rel_col:
+
+  pg_archeology_scan_spatial: # 表编号
+    tb_name: spatial # 表名
+    tb_meaning: 空间测量 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - domainregistry
+    col_info: # 字段额外信息
+      domainregistry:
+        col_meaning: 空间测量记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["空间ID", "测量编号"]
+        rel_col:
+      arcref:
+        col_meaning: 关联的考古项目参考
+        field_meaning:
+        col_alias: ["项目参考", "关联项目"]
+        rel_col: "projects.arcregistry"
+      crewref:
+        col_meaning: 执行空间测量的操作员参考
+        field_meaning:
+        col_alias: ["操作员参考", "测量人员"]
+        rel_col: "personnel.crewregistry"
+      spatial_dims:
+        col_meaning: 空间尺寸和测量，包括面积、体积、边界框坐标和方向角
+        field_meaning:
+          Area_M2: "表面积测量（平方米）"
+          Vol_M3: "体积测量（立方米）"
+          Bounding_Box:
+            Box_X: "边界框X维度（米）"
+            Box_Y: "边界框Y维度（米）"
+            Box_Z: "边界框Z维度（米）"
+          Angles:
+            Angle_Az: "方位角（度）"
+            Angle_Tilt: "倾斜角测量（度）"
+          Ground_Span: "地面采样距离（毫米）"
+        col_alias: ["空间尺寸", "测量数据"]
+        rel_col:
+
+  pg_archeology_scan_features: # 表编号
+    tb_name: features # 表名
+    tb_meaning: 特征分析 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - traitregistry
+    col_info: # 字段额外信息
+      traitregistry:
+        col_meaning: 特征分析记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["特征ID", "分析编号"]
+        rel_col:
+      zoneref:
+        col_meaning: 分析特征的站点参考
+        field_meaning:
+        col_alias: ["站点参考", "分析站点"]
+        rel_col: "sites.zoneregistry"
+      equipref:
+        col_meaning: 用于特征提取的设备参考
+        field_meaning:
+        col_alias: ["设备参考", "提取设备"]
+        rel_col: "equipment.equipregistry"
+      traitextract:
+        col_meaning: 特征提取分析方法
+        field_meaning:
+        col_alias: ["提取方法", "分析方法"]
+        rel_col:
+      feature_analysis:
+        col_meaning: 考古特征分析结果，包括计数、材料分类和分析完成状态
+        field_meaning:
+          Trait_Count: "分析中识别的特征数量"
+          Arti_Count: "检测或计数的文物数量"
+          Struct_Kind: "分析中识别的结构类型"
+          Mat_Kind: "分析特征的材料类型分类"
+          Analysis_Status:
+            Hue_Study: "颜色分析结果和分类"
+            Texture_Study: "纹理分析结果和模式"
+            Pattern_Note: "模式识别分析和观察"
+        col_alias: ["特征分析", "分析结果"]
+        rel_col:
+
+  pg_archeology_scan_conservation: # 表编号
+    tb_name: conservation # 表名
+    tb_meaning: 保护记录 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - cureregistry
+    col_info: # 字段额外信息
+      cureregistry:
+        col_meaning: 保护记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["保护ID", "保护编号"]
+        rel_col:
+      arcref:
+        col_meaning: 关联的考古项目参考
+        field_meaning:
+        col_alias: ["项目参考", "关联项目"]
+        rel_col: "projects.arcregistry"
+      zoneref:
+        col_meaning: 需要保护关注的站点参考
+        field_meaning:
+        col_alias: ["站点参考", "保护站点"]
+        rel_col: "sites.zoneregistry"
+      harmassess:
+        col_meaning: 损害评估评价结果
+        field_meaning:
+        col_alias: ["损害评估", "损伤评估"]
+        rel_col:
+      curerank:
+        col_meaning: 保护优先级排序分类
+        field_meaning:
+        col_alias: ["保护优先级", "保护等级"]
+        rel_col:
+      structstate:
+        col_meaning: 结构稳定性评估状态
+        field_meaning:
+        col_alias: ["结构状态", "稳定性评估"]
+        rel_col:
+      intervhistory:
+        col_meaning: 以前保护干预的历史
+        field_meaning:
+        col_alias: ["干预历史", "保护历史"]
+        rel_col:
+      priordocs:
+        col_meaning: 以前的文档和记录可用性
+        field_meaning:
+        col_alias: ["历史文档", "先前记录"]
+        rel_col:
+
+  pg_archeology_scan_registration: # 表编号
+    tb_name: registration # 表名
+    tb_meaning: 注册记录 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - logregistry
+    col_info: # 字段额外信息
+      logregistry:
+        col_meaning: 注册记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["注册ID", "注册编号"]
+        rel_col:
+      crewref:
+        col_meaning: 执行注册的操作员参考
+        field_meaning:
+        col_alias: ["操作员参考", "注册人员"]
+        rel_col: "personnel.crewregistry"
+      arcref:
+        col_meaning: 关联的考古项目参考
+        field_meaning:
+        col_alias: ["项目参考", "关联项目"]
+        rel_col: "projects.arcregistry"
+      reg_accuracy:
+        col_meaning: 注册准确度指标，包括参考点、误差测量和变换参数
+        field_meaning:
+          Log_Accu_Mm: "注册准确度测量（毫米）"
+          Ref_Mark: "注册过程使用的参考标记"
+          Ctrl_Pts: "用于几何注册的控制点"
+          Log_Method: "使用的注册方法或算法"
+          Transform: "注册期间应用的变换矩阵"
+          Err_Scale: "误差指标和测量标准"
+          Err_Val_Mm: "误差值测量（毫米）"
+        col_alias: ["注册准确度", "配准精度"]
+        rel_col:
+
+  pg_archeology_scan_processing: # 表编号
+    tb_name: processing # 表名
+    tb_meaning: 数据处理 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - flowregistry
+      - processing_rate
+    col_info: # 字段额外信息
+      flowregistry:
+        col_meaning: 处理记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["处理ID", "处理编号"]
+        rel_col:
+      equipref:
+        col_meaning: 用于数据处理的设备参考
+        field_meaning:
+        col_alias: ["设备参考", "处理设备"]
+        rel_col: "equipment.equipregistry"
+      zoneref:
+        col_meaning: 处理数据的站点参考
+        field_meaning:
+        col_alias: ["站点参考", "处理站点"]
+        rel_col: "sites.zoneregistry"
+      flowsoft:
+        col_meaning: 用于数据处理的软件应用程序
+        field_meaning:
+        col_alias: ["处理软件", "应用程序"]
+        rel_col:
+      stashloc:
+        col_meaning: 处理数据文件的存储位置
+        field_meaning:
+        col_alias: ["存储位置", "数据位置"]
+        rel_col:
+      safebak:
+        col_meaning: 备份状态和冗余措施
+        field_meaning:
+        col_alias: ["备份状态", "数据备份"]
+        rel_col:
+      datalevel:
+        col_meaning: 数据访问级别和安全分类
+        field_meaning:
+        col_alias: ["数据级别", "安全分类"]
+        rel_col:
+      metabench:
+        col_meaning: 元数据标准合规性和格式
+        field_meaning:
+        col_alias: ["元数据标准", "基准标准"]
+        rel_col:
+      coordframe:
+        col_meaning: 用于空间参考的坐标系
+        field_meaning:
+        col_alias: ["坐标系", "参考框架"]
+        rel_col:
+      elevref:
+        col_meaning: 用于测量的高程参考基准
+        field_meaning:
+        col_alias: ["高程参考", "高程基准"]
+        rel_col:
+      flowstage:
+        col_meaning: 当前处理阶段或工作流步骤
+        field_meaning:
+        col_alias: ["处理阶段", "工作流状态"]
+        rel_col:
+      processing_rate:
+        col_meaning: 数据处理吞吐率
+        field_meaning:
+        col_alias: ["处理速率", "处理速度"]
+        rel_col:
+      system_usage:
+        col_meaning: 数据处理期间计算系统资源利用，包括CPU、内存、GPU使用和处理时间
+        field_meaning:
+          Flow_Hrs: "处理时间持续时间（小时）"
+          Proc_CPU: "处理期间CPU使用百分比"
+          Mem_Usage_Gb: "处理期间内存使用（GB）"
+          Proc_GPU: "处理期间GPU使用百分比"
+          Remain_Gb: "剩余存储空间（GB）"
+        col_alias: ["系统使用", "资源利用"]
+        rel_col:
+      calib_status:
+        col_meaning: 各种处理组件的校准和校正状态，包括相机、镜头和颜色调整
+        field_meaning:
+          Station_Link: "全站仪集成状态和连接性"
+          Cam_Cal: "相机校准状态和准确度"
+          Lens_Dist: "镜头畸变校正状态"
+          Color_Tune: "颜色平衡和校准状态"
+        col_alias: ["校准状态", "校正状态"]
+        rel_col:
+
+  pg_archeology_scan_qualitycontrol: # 表编号
+    tb_name: qualitycontrol # 表名
+    tb_meaning: 质量控制 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - qualregistry
+    col_info: # 字段额外信息
+      qualregistry:
+        col_meaning: 质量控制记录自动生成唯一标识符
+        field_meaning:
+        col_alias: ["质控ID", "质控编号"]
+        rel_col:
+      arcref:
+        col_meaning: 关联的考古项目参考
+        field_meaning:
+        col_alias: ["项目参考", "关联项目"]
+        rel_col: "projects.arcregistry"
+      crewref:
+        col_meaning: 执行质量控制的操作员参考
+        field_meaning:
+        col_alias: ["操作员参考", "质检人员"]
+        rel_col: "personnel.crewregistry"
+      accucheck:
+        col_meaning: 准确度评估评价结果
+        field_meaning:
+        col_alias: ["准确度检查", "精度评估"]
+        rel_col:
+      ctrlstate:
+        col_meaning: 质量控制状态和验证状态
+        field_meaning:
+        col_alias: ["控制状态", "质控状态"]
+        rel_col:
+      valimeth:
+        col_meaning: 用于质量评估的验证方法
+        field_meaning:
+        col_alias: ["验证方法", "评估方法"]
+        rel_col:
+      valistate:
+        col_meaning: 验证状态和完成状态
+        field_meaning:
+        col_alias: ["验证状态", "完成状态"]
+        rel_col:
+      archstat:
+        col_meaning: 长期数据保存的存档状态
+        field_meaning:
+        col_alias: ["存档状态", "档案状态"]
+        rel_col:
+      pubstat:
+        col_meaning: 发布状态和传播准备度
+        field_meaning:
+        col_alias: ["发布状态", "发表状态"]
+        rel_col:
+      copystat:
+        col_meaning: 版权状态和知识产权权利
+        field_meaning:
+        col_alias: ["版权状态", "知识产权"]
+        rel_col:
+      refmention:
+        col_meaning: 数据引用格式和归属要求
+        field_meaning:
+        col_alias: ["引用格式", "数据引用"]
+        rel_col:
+      remark:
+        col_meaning: 质量控制的额外说明和观察
+        field_meaning:
+        col_alias: ["备注", "额外说明"]
+        rel_col:

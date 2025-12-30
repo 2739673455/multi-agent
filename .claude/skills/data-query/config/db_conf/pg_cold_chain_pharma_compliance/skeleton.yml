@@ -1,0 +1,390 @@
+db_code: pg_cold_chain_pharma_compliance # 数据库编号
+
+skeleton:
+  - query: "Can you check our cold chain data and tell me how long temperature problems typically last on our riskiest shipping routes? I'm looking for the average time in minutes that temperatures went outside acceptable ranges, but only for the shipments marked as high risk. Just round to two decimal places for me."
+    normal_query: "I want to find the average Temperature Excursion Duration  for shipments on High Risk routes only. Please show me the route type label and the average excursion duration in minutes, rounded to two decimal places."
+    rel_kn: [0, 3]
+    sql: |-
+      WITH excursion_data AS (
+          SELECT
+              s.reckey,
+              LOWER(TRIM(s.shipment_overview->'route'->>'risk_note')) AS risk_note,
+              (e.env_metrics->'temperature'->>'excursion_duration_min')::numeric AS excursion_min
+          FROM shipments s
+          JOIN environmentalmonitoring e ON s.reckey = e.reckeylink
+          WHERE e.env_metrics->'temperature'->>'excursion_duration_min' IS NOT NULL
+              AND LOWER(TRIM(s.shipment_overview->'route'->>'risk_note')) = 'high'
+      )
+      SELECT
+          'High Risk Routes' AS route_type,
+          ROUND(AVG(excursion_min), 2) AS avg_excursion_duration_min
+      FROM excursion_data;
+  - query: "Would check what percentage of our shipments actually stayed in the right temperature range the whole time? I need a simple number showing how many shipments had zero temperature problems compared to our total shipments. Just round it to two decimal places so it's easy to report."
+    normal_query: "What is our overall Cold Chain Compliance Rate for all shipments? Please calculate the percentage of compliant shipments out of the total shipments monitored, and round the result to two decimal places."
+    rel_kn: [5]
+    sql: |-
+      SELECT
+          ROUND(
+              (
+                  COUNT(*) FILTER (WHERE (TRIM(env_metrics->'temperature'->>'excursion_count'))::int = 0) * 100.0
+              ) / COUNT(*),
+              2
+          ) AS cccr_percentage
+      FROM environmentalmonitoring;
+  - query: "Will you help me figure out how our shipments are performing in terms of timing? I want to see how many shipments are arriving early, on-time, or running late. Can you count up our shipments by these delivery timing categories? Just give me each category and its count, with the biggest numbers at the top."
+    normal_query: "I plan to analyze our cold chain delivery performance using Delivery Performance Classification. Show me the performance category and the number of shipments in each category, sorted by shipment count in descending order."
+    rel_kn: [13]
+    sql: |-
+      WITH performance_data AS (
+          SELECT
+              (shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric -
+              (shipment_overview->'timing_performance'->>'planned_eta_hrs')::numeric AS delay_hours
+          FROM shipments
+          WHERE shipment_overview->'timing_performance'->>'actual_duration_hrs' IS NOT NULL
+              AND shipment_overview->'timing_performance'->>'planned_eta_hrs' IS NOT NULL
+      )
+      SELECT
+          CASE
+              WHEN delay_hours < -2 THEN 'Early'
+              WHEN delay_hours >= -2 AND delay_hours <= 2 THEN 'On-Time'
+              WHEN delay_hours > 2 AND delay_hours <= 24 THEN 'Delayed'
+              ELSE 'Severely Delayed'
+          END AS performance_category,
+          COUNT(*) AS number_of_shipments
+      FROM performance_data
+      GROUP BY performance_category
+      ORDER BY number_of_shipments DESC;
+  - query: "I want to figure out if our shipping performance is better when our GPS tracking is working actively versus when it's in the intermittent location tracking state. Can you compare the average on-time performance between these two categories? Just give me the two tracking categories and their average performance scores rounded to two decimal places."
+    normal_query: "I am working on comparing the On-Time Delivery Performance between shipments with different Location Tracking States. Specifically, analyze the average OTDP for shipments that have either 'Active' or 'Intermittent' tracking states. Show me each tracking state and its corresponding average OTDP value rounded to two decimal places."
+    rel_kn: [12, 18]
+    sql: |-
+      WITH otdp_data AS (
+          SELECT
+              s.shipment_overview->'timing_performance'->>'planned_eta_hrs' AS planned_hrs,
+              s.shipment_overview->'timing_performance'->>'actual_duration_hrs' AS actual_hrs,
+              LOWER(TRIM(e.env_metrics->'tracking'->>'location_tracking_state')) AS tracking_state
+          FROM shipments s
+          JOIN environmentalmonitoring e ON s.reckey = e.reckeylink
+          WHERE LOWER(TRIM(e.env_metrics->'tracking'->>'location_tracking_state')) IN ('active', 'intermittent')
+              AND s.shipment_overview->'timing_performance'->>'actual_duration_hrs' IS NOT NULL
+              AND (s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric > 0
+      )
+      SELECT
+          tracking_state,
+          ROUND(AVG((actual_hrs::numeric / planned_hrs::numeric) * 100), 2) AS average_otdp
+      FROM otdp_data
+      GROUP BY tracking_state;
+  - query: "I am trying to figure out if our quality agreements are working properly. Can you check how many shipments failed compliance checks for each type of agreement we have? Just show me each agreement status and how many shipments were flagged as non-compliant under that status."
+    normal_query: "I hope to analyze how different Quality Agreement Status types relate to non-compliance issues. Could you count the number of shipments that were classified as 'Non-compliant' for each quality agreement status category? Please show each agreement status with its corresponding count of non-compliant shipments."
+    rel_kn: [14, 21]
+    sql: |-
+      SELECT 
+          LOWER(TRIM(qc_checklist->'gdp_quality'->>'quality_agreement_status')) AS agreement_status,
+          COUNT(*) FILTER (
+              WHERE LOWER(TRIM(qc_checklist->'customs_and_regulatory'->>'regulatory_compliance_status')) = 'non-compliant'
+          ) AS non_compliant_shipment_count
+      FROM qualitycompliance
+      WHERE qc_checklist->'gdp_quality'->>'quality_agreement_status' IS NOT NULL
+      GROUP BY LOWER(TRIM(qc_checklist->'gdp_quality'->>'quality_agreement_status'));
+  - query: "Our quality team needs to flag any high-risk shipments for immediate review. Could you pull a list of all shipments falling into red quality risk zone? Just show me the shipment ID, what percentage of time it stayed in the acceptable range, and how many total minutes it was out of range. Round the portion value into 2 decimal points."
+    normal_query: "I am going to identify shipments in the Red Zone of our Quality Risk Zones for further investigation. For each shipment in the Red Zone, show me the shipment ID, calculated TIRP percentage (rounded to 2 decimal places), and the total excursion duration in minutes."
+    rel_kn: [0, 25]
+    sql: |-
+      WITH shipment_metrics AS (
+          SELECT
+              s.reckey,
+              (s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60 AS total_duration_min,
+              (e.env_metrics->'temperature'->>'excursion_duration_min')::numeric AS ted_min
+          FROM shipments s
+          JOIN environmentalmonitoring e ON s.reckey = e.reckeylink
+          WHERE (s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric > 0
+              AND (e.env_metrics->'temperature'->>'excursion_duration_min')::numeric IS NOT NULL
+      )
+      SELECT
+          reckey AS shipment_id,
+          ROUND((1 - (ted_min / total_duration_min)) * 100, 2) AS tirp_percentage,
+          ted_min AS total_excursion_duration_min
+      FROM shipment_metrics
+      WHERE ((1 - (ted_min / total_duration_min)) * 100) < 95;
+  - query: "Can you figure out what the average temperature impact was for all our shipments where the temperature went outside the acceptable range? We need that special calculation that accounts for how temperature fluctuations affect products over time. Just give me one number that summarizes this across all problematic shipments."
+    normal_query: "I would like to calculate the Mean Kinetic Temperature for all shipments that have experienced temperature excursions. Please provide me with the average MKT value across these shipments."
+    rel_kn: [26]
+    sql: |-
+      SELECT
+          ROUND(
+              AVG(
+                  (-83144 / 8.3144) / LN(
+                      (
+                          EXP(-83144 / (8.3144 * ((em.env_metrics->'temperature'->>'max_c')::numeric + 273.15))) +
+                          EXP(-83144 / (8.3144 * ((em.env_metrics->'temperature'->>'min_c')::numeric + 273.15))) +
+                                  EXP(-83144 / (8.3144 * ((em.env_metrics->'temperature'->>'avg_c')::numeric + 273.15)))
+                      ) / 3
+                  )
+              ), 
+              2
+          ) AS average_mkt
+      FROM environmentalmonitoring em
+      WHERE (em.env_metrics->'temperature'->>'excursion_count')::integer > 0;
+  - query: "Please help me find shipment routes where our risk labels don't match what's actually happening. I want to see where we've mislabeled routes compared to what the temperature excursion data shows. Make sure you check all our routes, even if some might be missing monitoring data. Just show me the top 3 most problematic routes according to average excursion count."
+    normal_query: "We need to identify where our shipping route risk classifications don't match reality. Using the Route Risk Classification and High-Risk Shipping Origin-Destination Pairs knowledge, compare our documented risk notes against calculated risk levels, even those without environmental monitoring data. Show me only routes where the documented risk level differs from the calculated risk level, ordered by average excursion count from highest to lowest. Limit results to the top 3 discrepancies."
+    rel_kn: [3, 17]
+    sql: |-
+      WITH route_analysis AS (
+          SELECT
+              s.shipment_overview->'route'->>'route_string' AS route,
+              LOWER(TRIM(s.shipment_overview->'route'->>'risk_note')) AS documented_risk,
+              (em.env_metrics->'temperature'->>'excursion_count')::integer AS excursion_count,
+              CASE
+                  WHEN (em.env_metrics->'temperature'->>'excursion_count')::integer <= 1 THEN 'low'
+                  WHEN (em.env_metrics->'temperature'->>'excursion_count')::integer BETWEEN 2 AND 4 THEN 'medium'
+                  WHEN (em.env_metrics->'temperature'->>'excursion_count')::integer >= 5 THEN 'high'
+              END AS calculated_risk
+          FROM shipments s
+          LEFT JOIN environmentalmonitoring em ON s.reckey = em.reckeylink
+          WHERE s.shipment_overview->'route'->>'risk_note' IS NOT NULL
+              AND (em.env_metrics->'temperature'->>'excursion_count') IS NOT NULL
+      )
+      SELECT
+          route,
+          documented_risk,
+          calculated_risk,
+          AVG(excursion_count) AS avg_excursions
+      FROM route_analysis
+      WHERE documented_risk IN ('low', 'medium', 'high')
+      GROUP BY route, documented_risk, calculated_risk
+      HAVING documented_risk != calculated_risk
+      ORDER BY avg_excursions DESC
+      LIMIT 3;
+  - query: "Just give me a rough idea of how our shipments did in terms of temperature control. You can group them into risk categories like green/yellow/red using time-in-range and total out-of-range time. It's fine to use a simplified method—doesn't have to be perfect—as long as we get a general sense."
+    normal_query: "Please provide an approximate analysis of cold chain shipment quality by grouping them into Quality Risk Zones. Use Time In Range Percentage (TIRP) and total temperature excursion duration as approximate indicators for classification. A proxy-based zoning approach is acceptable where exact excursion details are unavailable. Return the number and percentage of shipments in each zone (Green, Yellow, Red), sorted from lowest to highest risk."
+    rel_kn: [0, 25, 27]
+    sql: |-
+      WITH risk_zones AS (
+          SELECT 
+              s.reckey,
+              (
+                  (s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60 - 
+                  (em.env_metrics->'temperature'->>'excursion_duration_min')::numeric
+              ) / NULLIF((s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60, 0) * 100 AS tirp,
+              (em.env_metrics->'temperature'->>'excursion_duration_min')::numeric AS excursion_duration,
+              CASE 
+                  WHEN (
+                      (s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60 - 
+                      (em.env_metrics->'temperature'->>'excursion_duration_min')::numeric
+                  ) / NULLIF((s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60, 0) * 100 > 98 
+                  AND (em.env_metrics->'temperature'->>'excursion_duration_min')::numeric <= 30 THEN 'Green Zone'
+                  WHEN (
+                      ((s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60 - 
+                       (em.env_metrics->'temperature'->>'excursion_duration_min')::numeric) / 
+                      NULLIF((s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60, 0) * 100 BETWEEN 95 AND 98
+                  ) OR ((em.env_metrics->'temperature'->>'excursion_duration_min')::numeric BETWEEN 30 AND 60) THEN 'Yellow Zone'
+                  WHEN (
+                      (s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60 - 
+                      (em.env_metrics->'temperature'->>'excursion_duration_min')::numeric
+                  ) / NULLIF((s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::numeric * 60, 0) * 100 < 95 
+                  OR ((em.env_metrics->'temperature'->>'excursion_duration_min')::numeric > 60) THEN 'Red Zone'
+                  ELSE 'Unknown'
+              END AS quality_risk_zone
+          FROM shipments s
+          LEFT JOIN environmentalmonitoring em ON s.reckey = em.reckeylink
+          WHERE (em.env_metrics->'temperature'->>'excursion_duration_min') IS NOT NULL
+              AND (s.shipment_overview->'timing_performance'->>'actual_duration_hrs') IS NOT NULL
+      )
+      SELECT 
+          quality_risk_zone,
+          COUNT(*) AS shipment_count,
+          ROUND(COUNT(*)::numeric * 100.0 / (SELECT COUNT(*) FROM risk_zones), 2) AS percentage
+      FROM risk_zones
+      GROUP BY quality_risk_zone
+      ORDER BY CASE quality_risk_zone 
+          WHEN 'Green Zone' THEN 1 
+          WHEN 'Yellow Zone' THEN 2 
+          WHEN 'Red Zone' THEN 3 
+          ELSE 4 
+      END;
+  - query: "Can you help me figure out how strong our supply chain is overall? Let's turn the inputs into scores like this: route risk gets 8 if it's low, 5 for medium, 2 for high; carrier certification gets 10 for both types, 8 if it's just 'gdp' or 'ceiv pharma', 4 otherwise; vehicles score 9 if validated, 7 if qualified, and 5 otherwise; and compliance gets 9 for full, 6 for partial, 3 otherwise. Use the 0.4/0.3/0.2/0.1 weighting and round the final number to two decimal places."
+    normal_query: "I want to calculate the overall Supply Chain Resilience Score using a weighted average of several proxy indicators. For this, please map: 'low' route risk to 8, 'medium' to 5, and 'high' to 2; for carrier certification, use 10 for 'both', 8 for 'gdp' or 'ceiv pharma', and 4 otherwise; for vehicle qualification, use 9 for 'validated', 7 for 'qualified', and 5 otherwise; and for GDP compliance, use 9 for 'full', 6 for 'partial', and 3 otherwise. Then apply weights: 0.4 for route risk, 0.3 for carrier certification, 0.2 for vehicle, and 0.1 for compliance. Round to two decimals."
+    rel_kn: [2, 4, 24, 39]
+    sql: |-
+      WITH proxy_scores AS (
+          SELECT
+              AVG(CASE
+                  WHEN LOWER(TRIM(s.shipment_overview->'route'->>'risk_note')) = 'low' THEN 8
+                  WHEN LOWER(TRIM(s.shipment_overview->'route'->>'risk_note')) = 'medium' THEN 5
+                  WHEN LOWER(TRIM(s.shipment_overview->'route'->>'risk_note')) = 'high' THEN 2
+                  ELSE 4
+              END) AS ART,
+              AVG(CASE
+                  WHEN LOWER(TRIM(c.carriercert)) = 'both' THEN 10
+                  WHEN LOWER(TRIM(c.carriercert)) IN ('gdp', 'ceiv pharma') THEN 8
+                  ELSE 4
+              END) AS RRD,
+              AVG(CASE
+                  WHEN LOWER(TRIM(v.veh_qual)) = 'validated' THEN 9
+                  WHEN LOWER(TRIM(v.veh_qual)) = 'qualified' THEN 7
+                  ELSE 5
+              END) AS SBP,
+              AVG(CASE
+                  WHEN LOWER(TRIM(qc.qc_checklist->'gdp_quality'->>'gdp_compliance')) = 'full' THEN 9
+                  WHEN LOWER(TRIM(qc.qc_checklist->'gdp_quality'->>'gdp_compliance')) = 'partial' THEN 6
+                  ELSE 3
+              END) AS GDP
+          FROM shipments s
+          LEFT JOIN carriers c ON s.shipment_overview->'carrier'->>'carrier_tag' = c.carriertag
+          LEFT JOIN vehicles v ON c.carriertag = v.carrierbond
+          LEFT JOIN qualitycompliance qc ON s.reckey = qc.reckeyqc
+      )
+      SELECT ROUND((0.4 * ART + 0.3 * RRD + 0.2 * SBP + 0.1 * GDP), 2) AS supply_chain_resilience_score
+      FROM proxy_scores;
+  - query: "I wonder that, for each type of GDP certification, how many different shipping companies have that certification, and out of those, how many actually have at least one fully validated vehicle. Please show the certification type, the total number of unique certified companies, and how many of those companies have validated vehicles. Put the ones with the most companies using validated vehicles at the top."
+    normal_query: "For each GDP Certification Status, I want to know how many distinct carriers hold that certification, and among them, how many distinct carriers also have at least one vehicle with Validated Cold Chain Vehicle Qualification Status. Please display the GDP certification level, the total number of distinct GDP-certified carriers, and the number of those distinct carriers with validated vehicles. Sort the results by the number of carriers with validated vehicles in descending order."
+    rel_kn: [4, 24]
+    sql: |-
+      SELECT
+          LOWER(TRIM(c.carriercert)) AS gdp_certification_level,
+          COUNT(DISTINCT c.carriertag) AS total_gdp_carriers,
+          COUNT(DISTINCT CASE WHEN LOWER(TRIM(v.veh_qual)) = 'validated' THEN c.carriertag END) AS carriers_with_validated_vehicles
+      FROM carriers c
+      LEFT JOIN vehicles v ON c.carriertag = v.carrierbond
+      GROUP BY LOWER(TRIM(c.carriercert))
+      ORDER BY carriers_with_validated_vehicles DESC;
+  - query: "I need to know, on average, how much of their allowed stability budget temperature-sensitive shipments are using up. Only count shipments where there actually was a temperature excursion. Give me the average percentage used, rounded to two decimal places."
+    normal_query: "Calculate the average Stability Budget Consumption Rate for all shipments of temperature-sensitive products. Return the average SBCR as a percentage, rounded to two decimal places and only count shipments where there actually was a temperature excursion."
+    rel_kn: [0, 6, 31, 32]
+    sql: |-
+      WITH sbcr_data AS (
+          SELECT
+              em.reckeylink,
+              pb.TempSense,
+              (em.env_metrics->'temperature'->>'excursion_duration_min')::numeric AS ted_minutes
+          FROM environmentalmonitoring em
+          JOIN shipsensorlink ssl ON em.devlink = ssl.devnode
+              AND em.reckeylink = ssl.shpnode
+          JOIN productbatches pb ON ssl.devnode = pb.prodlink
+          WHERE (em.env_metrics->'temperature'->>'excursion_count')::integer > 0
+              AND (em.env_metrics->'temperature'->>'excursion_duration_min') IS NOT NULL
+              AND pb.TempSense IN ('Low', 'Medium', 'High')
+      )
+      SELECT
+          ROUND(
+              AVG(
+                  ted_minutes / CASE
+                      WHEN TempSense = 'High' THEN 120.0
+                      WHEN TempSense = 'Medium' THEN 480.0
+                      WHEN TempSense = 'Low' THEN 1440.0
+                      ELSE NULL
+                  END * 100
+              ),
+              2
+          ) AS average_sbcr_percentage
+      FROM sbcr_data
+      WHERE ted_minutes > 0;
+  - query: "Out of all the biologics product batches, what percent need to be kept at ultra-low temperatures? Round it to two decimal places."
+    normal_query: "Please calculate the percentage of biologics products that require ultra-low temperature storage. The result should be rounded to two decimal places."
+    rel_kn: [9]
+    sql: |-
+      SELECT 
+          ROUND(COUNT(*) FILTER (WHERE LOWER(TRIM(pb.store_cond)) = '-70°c') * 100.0 / COUNT(*), 2) AS biologics_ultra_low_temp_percentage
+      FROM products p
+      JOIN productbatches pb ON p.prodcode = pb.prodlink
+      WHERE LOWER(TRIM(p.prodcat)) = 'biologics';
+  - query: "I want to know, on average, how much carbon was produced by shipments that were way behind schedule—specifically, those whose delivery performance category counted as severely delayed. Return this value into two decimal places."
+    normal_query: "Calculate the average carbon footprint for all shipments that are classified as 'Severely Delayed' based on the Delivery Performance Classification standard. Please return a value rounded to two decimal places."
+    rel_kn: [13, 29]
+    sql: |-
+      WITH delivery_performance AS (
+          SELECT
+              r.carbonkg,
+              CASE
+                  WHEN (
+                      (s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::NUMERIC -
+                      (s.shipment_overview->'timing_performance'->>'planned_eta_hrs')::NUMERIC
+                  ) > 24
+                  THEN 'Severely Delayed'
+                  ELSE 'Not Severely Delayed'
+              END AS performance_category
+          FROM shipments s
+          JOIN reviewsandimprovements r ON s.reckey = r.reckeyrev
+          WHERE s.shipment_overview->'timing_performance'->>'actual_duration_hrs' IS NOT NULL
+              AND r.carbonkg IS NOT NULL
+      )
+      SELECT
+          ROUND(AVG(carbonkg)::NUMERIC, 2) AS avg_carbon_kg_for_severe_delays
+      FROM delivery_performance
+      WHERE performance_category = 'Severely Delayed';
+  - query: "Could you figure out the overall reliability score for all our temperature data loggers? Treat any logger with a missing recording interval as having a reading failure, and count a calibration failure if the calibration date is before June 26, 2024."
+    normal_query: "Estimate the overall Data Logger Reliability Score for all monitoring devices in the fleet. Assume a reading failure if the recording interval is missing, and a calibration failure if the calibration date is before 2024-06-26."
+    rel_kn: [48]
+    sql: |-
+      WITH device_failures AS (
+          SELECT
+              COUNT(*) AS total_devices,
+              COUNT(*) FILTER (WHERE recintmin IS NULL) AS reading_failures,
+              COUNT(*) FILTER (WHERE calibts < '2024-06-26') AS calibration_failures
+          FROM monitoringdevices
+      )
+      SELECT
+          ROUND(
+              100 - (
+                  10 * (reading_failures * 100.0 / total_devices) +
+                  3 * (calibration_failures * 100.0 / total_devices)
+              ),
+              2
+          ) AS estimated_dlrs
+      FROM device_failures;
+  - query: "Which three people have had the most shipments rejected when making product release decisions? I just want a list of their names and how many times each had a rejection, sorted so the person with the most rejections is at the top."
+    normal_query: "Using the Product Release Decision Framework, identify the top 3 responsible persons with the highest number of 'Rejected' product releases based on the Product Release Decision Framework. Please list each responsible person and their count of rejected shipments, ordered from highest to lowest count."
+    rel_kn: [34]
+    sql: |-
+      SELECT
+          LOWER(TRIM(qc_checklist->'gdp_quality'->>'responsible_person')) AS responsible_person,
+          COUNT(*) AS rejected_shipment_count
+      FROM qualitycompliance
+      WHERE qc_checklist->'release'->>'product_release_status' = 'Rejected'
+          AND qc_checklist->'gdp_quality'->>'responsible_person' IS NOT NULL
+      GROUP BY LOWER(TRIM(qc_checklist->'gdp_quality'->>'responsible_person'))
+      ORDER BY rejected_shipment_count DESC
+      LIMIT 3;
+  - query: "Can you show me, for each type of regulatory compliance status, what the average number of temperature and humidity excursions is? And sort the results so the highest average temperature excursions come first."
+    normal_query: "For each regulatory compliance status, calculate the average number of temperature excursions and average number of humidity excursions. Display a table with compliance status, average temperature excursions, and average humidity excursions, sorted by temperature excursions in descending order."
+    rel_kn: [0, 21]
+    sql: |-
+      SELECT
+          LOWER(TRIM(q.qc_checklist->'customs_and_regulatory'->>'regulatory_compliance_status')) AS compliance_status,
+          ROUND(AVG((e.env_metrics->'temperature'->>'excursion_count')::NUMERIC), 2) AS avg_temp_excursions,
+          ROUND(AVG((e.env_metrics->'humidity'->>'excursion_count')::NUMERIC), 2) AS avg_humidity_excursions
+      FROM qualitycompliance q
+      JOIN environmentalmonitoring e ON q.reckeyqc = e.reckeylink
+      WHERE q.qc_checklist->'customs_and_regulatory'->>'regulatory_compliance_status' IS NOT NULL
+      GROUP BY LOWER(TRIM(q.qc_checklist->'customs_and_regulatory'->>'regulatory_compliance_status'))
+      ORDER BY avg_temp_excursions DESC;
+  - query: "Can you show me the three riskiest shipping routes based on temperature excursions and shipping delays? Just give me the route, how many shipments went that way, and the risk score. Only count routes with more than one shipment."
+    normal_query: "I want to identify the top 3 riskiest shipping lanes by calculating the Lane Risk Potential for each route. Only include temperature excursions and shipping delays in the risk score. Please provide a report listing the route string, total number of shipments, and the calculated lane risk potential, sorted by lane risk potential in descending order. Only include lanes with more than one shipment."
+    rel_kn: [0, 36, 13]
+    sql: |-
+      WITH lane_data AS (
+          SELECT
+              LOWER(TRIM(s.shipment_overview->'route'->>'route_string')) AS route_string,
+              COALESCE((e.env_metrics->'temperature'->>'excursion_count')::INT, 0) AS temp_excursions,
+              CASE WHEN (s.shipment_overview->'timing_performance'->>'actual_duration_hrs')::NUMERIC > (s.shipment_overview->'timing_performance'->>'planned_eta_hrs')::NUMERIC THEN 1 ELSE 0 END AS is_shipping_delayed
+          FROM shipments s
+          JOIN environmentalmonitoring e ON s.reckey = e.reckeylink
+          WHERE s.shipment_overview->'route'->>'route_string' IS NOT NULL
+      ),
+      lane_risk AS (
+          SELECT
+              route_string,
+              SUM(temp_excursions) AS total_excursions,
+              SUM(is_shipping_delayed) AS total_shipping_delays,
+              COUNT(*) AS total_shipments
+          FROM lane_data
+          GROUP BY route_string
+      )
+      SELECT
+          route_string,
+          total_shipments,
+          ROUND((total_excursions + total_shipping_delays)::NUMERIC / total_shipments, 2) AS lane_risk_potential
+      FROM lane_risk
+      WHERE total_shipments > 1
+      ORDER BY lane_risk_potential DESC
+      LIMIT 3;

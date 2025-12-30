@@ -1,0 +1,291 @@
+db_code: pg_archeology_scan # 数据库编号
+
+skeleton:
+  - query: "I'd like to see which of our dig sites have the best scan quality ratings. Could you show me each site's ID and name along with their average quality score, sorted best to worst?"
+    normal_query: "I'd like to see a quality assessment of scans across our archaeological sites. Show site code, site name, average Scan Quality Score for each site and rank them from highest to lowest quality."
+    rel_kn: [14, 26, 52]
+    sql: |2-
+      SELECT s.zoneref AS site_code, st.zonelabel AS site_name, 
+        ROUND(AVG(
+          POWER(10.0 / NULLIF((log10(NULLIF((pc.cloud_metrics->>'Scan_Resol_Mm')::real, 0) * 1000.0) / NULLIF(log10(NULLIF((pc.cloud_metrics->>'Point_Dense')::bigint, 0)), 0) * 5.0), 0), 1.5) * 
+          ((pc.cloud_metrics->>'Cover_Pct')::real / 100.0 * (1 + ((pc.cloud_metrics->>'Lap_Pct')::real / 100.0) * (1 - (pc.cloud_metrics->>'Cover_Pct')::real / 100.0))) * 
+          POWER(GREATEST(1.0 - (pc.cloud_metrics->>'Noise_Db')::real / 30.0, 0), 2)
+        )::numeric, 2) AS avg_sqs 
+      FROM scans s 
+      JOIN pointcloud pc ON s.arcref = pc.arcref AND s.crewref = pc.crewref 
+      JOIN sites st ON s.zoneref = st.zoneregistry 
+      GROUP BY s.zoneref, st.zonelabel 
+      ORDER BY avg_sqs DESC;
+  - query: "Which sites need urgent conservation work? Please show me each location's ID, name, structural condition, preservation status, and whether they're in a high-risk category."
+    normal_query: "Could you help me find archaeological sites that might need urgent conservation attention? I'm particularly interested in identifying sites that fall into Degradation Risk Zones. For each site, I'd like to see their code, name, structural state, and preservation status, along with their Risk Zone Category. This information would help our conservation team prioritize their efforts."
+    rel_kn: []
+    sql: |-
+      SELECT st.zoneregistry AS site_code, st.zonelabel AS site_name, c.structstate AS structural_state, (st.site_status->>'Pres_Stat') AS preservation_status, 
+        CASE WHEN (st.site_status->>'Pres_Stat') IN ('Poor', 'Critical') AND c.structstate <> 'Stable' THEN 'Degradation Risk Zone' ELSE 'Not in Risk Zone' END AS risk_zone
+      FROM sites st LEFT JOIN conservation c ON st.zoneregistry = c.zoneref;
+  - query: "Where are the best places to do scanning based on weather conditions? Show me each site's ID and name with their average environmental condition score indicating suitability for scanning operations."
+    normal_query: "I'm planning our upcoming archaeological scanning sessions and want to understand which sites have the most favorable scanning environments. Could you show me a report with each site's code, name, and its average Environmental Suitability Index? This would help us prioritize locations where we'll get the best scan quality."
+    rel_kn: [7]
+    sql: |-
+      SELECT e.zoneref AS site_code, st.zonelabel AS site_name, 
+        ROUND(AVG(100.0 - 2.5 * ABS(COALESCE((e.ambient_cond->>'Ambic_Temp')::real, 20.0) - 20.0) - POWER(ABS((COALESCE((e.ambient_cond->>'Hume_Pct')::real, 50.0) - 50.0)/2.0), 1.5) - 600.0 / (COALESCE((e.ambient_cond->>'Illume_Lux')::bigint, 1000) + 100.0))::numeric, 2) AS avg_esi 
+      FROM environment e 
+      JOIN sites st ON e.zoneref = st.zoneregistry 
+      WHERE e.ambient_cond IS NOT NULL AND e.ambient_cond->>'Ambic_Temp' IS NOT NULL AND e.ambient_cond->>'Hume_Pct' IS NOT NULL AND e.ambient_cond->>'Illume_Lux' IS NOT NULL 
+      GROUP BY e.zoneref, st.zonelabel 
+      ORDER BY avg_esi DESC;
+  - query: "How reliable are our scan alignments? For each alignment record, could you show me the registration accuracy relative to scan resolution and the registration confidence category. I need to see its registration ID, project ID, accuracy measurements, error values, calculated ratio, and the confidence category."
+    normal_query: "I'm evaluating the quality of our scan registrations and would like to understand which ones are most reliable for spatial analysis. Could you show me the Registration Accuracy Ratio and Registration Confidence Level for each registration? I'd need to see the registration ID, project ID, accuracy measurements, error values, calculated RAR (rounded to 2 decimal places), and what confidence level that translates to."
+    rel_kn: [33, 44]
+    sql: |-
+      SELECT r.logregistry AS registration_id, r.arcref AS project_id, COALESCE((r.reg_accuracy->>'Log_Accu_Mm')::real, 1.0) AS registration_accuracy_mm, COALESCE((r.reg_accuracy->>'Err_Val_Mm')::real, 1.0) AS error_value_mm, 
+        ROUND((COALESCE((pc.cloud_metrics->>'Scan_Resol_Mm')::real, 1.0) / (COALESCE((r.reg_accuracy->>'Log_Accu_Mm')::real, 1.0) * SQRT(1.0 + COALESCE((r.reg_accuracy->>'Err_Val_Mm')::real, 1.0) / COALESCE((r.reg_accuracy->>'Log_Accu_Mm')::real, 1.0))))::numeric, 2) AS rar, 
+        CASE WHEN (COALESCE((pc.cloud_metrics->>'Scan_Resol_Mm')::real, 1.0) / (COALESCE((r.reg_accuracy->>'Log_Accu_Mm')::real, 1.0) * SQRT(1.0 + COALESCE((r.reg_accuracy->>'Err_Val_Mm')::real, 1.0) / COALESCE((r.reg_accuracy->>'Log_Accu_Mm')::real, 1.0)))) > 1.5 AND COALESCE(r.reg_accuracy->>'Log_Method', '') ILIKE '%Target%' THEN 'High Confidence' WHEN (COALESCE((pc.cloud_metrics->>'Scan_Resol_Mm')::real, 1.0) / (COALESCE((r.reg_accuracy->>'Log_Accu_Mm')::real, 1.0) * SQRT(1.0 + COALESCE((r.reg_accuracy->>'Err_Val_Mm')::real, 1.0) / COALESCE((r.reg_accuracy->>'Log_Accu_Mm')::real, 1.0)))) BETWEEN 1.0 AND 1.5 THEN 'Medium Confidence' ELSE 'Low Confidence' END AS confidence_level 
+      FROM registration r 
+      JOIN pointcloud pc ON r.arcref = pc.arcref AND r.crewref = pc.crewref 
+      WHERE r.reg_accuracy IS NOT NULL AND pc.cloud_metrics IS NOT NULL 
+      ORDER BY rar DESC;
+  - query: "Which archaeologicalsites have the best digital preservation? Rank our locations showing their ID, designation, and a comprehensive metric for evaluating digital preservation quality, with the best first."
+    normal_query: "For our archaeological site evaluation, I need to quantify the Digital Preservation Quality metrics across our collection. Please compute a comprehensive DPQ index for each archaeological location. Present the results in descending order of DPQ values, displaying only the site identification code, site designation, and calculated DPQ value (rounded to two decimal places) to facilitate prioritization of our digital preservation resources."
+    rel_kn: [1, 6, 9, 33, 38]
+    sql: |-
+      WITH adc_data AS (
+        SELECT s.zoneref, AVG(
+          POWER(10.0 / (ln(COALESCE((pc.cloud_metrics->>'Scan_Resol_Mm')::real, 1.0) * 1000.0) / ln(COALESCE((pc.cloud_metrics->>'Point_Dense')::bigint, 1000)::real) * 5.0), 1.5) *
+          (COALESCE((pc.cloud_metrics->>'Cover_Pct')::real, 0.0) * (1 + COALESCE((pc.cloud_metrics->>'Lap_Pct')::real, 0.0) / 100.0 * (1 - COALESCE((pc.cloud_metrics->>'Cover_Pct')::real, 0.0) / 100.0)) / 100.0) *
+          POWER(GREATEST(0.0, 1.0 - COALESCE((pc.cloud_metrics->>'Noise_Db')::real, 0.0) / 30.0), 2) * 0.4
+        ) AS adc
+        FROM scans s JOIN pointcloud pc ON s.arcref = pc.arcref LEFT JOIN mesh m ON s.zoneref = m.zoneref WHERE pc.cloud_metrics IS NOT NULL GROUP BY s.zoneref
+      )
+      SELECT st.zoneregistry AS site_code, st.zonelabel AS site_name, 
+        ROUND(CAST((0.3 * COALESCE(adc.adc, 0.0)) AS NUMERIC), 2) AS dpq
+      FROM sites st LEFT JOIN adc_data adc ON st.zoneregistry = adc.zoneref ORDER BY dpq DESC;
+  - query: "How good are our 3D models based on the criteria for high-fidelity standard? Please generate a comprehensive report that shows each site's ID, name, total mesh count, high-fidelity mesh count and proportion (as a percentage), average ratio of mesh complexity, average resolution parameters (in mm), average geometric accuracy measurements and Mesh Quality category. Present the data with the highest-fidelity results first."
+    normal_query: "Would you generate a comprehensive report categorizing sites based on High Fidelity Mesh standard? For each archaeological location, please include the site code, side name, total mesh count, high-fidelity mesh count and proportion (as a percentage), the average Mesh Complexity Ratio, average resolution parameters (in mm), average geometric accuracy measurements and Mesh Quality Classification. The data should be presented in descending order of high-fidelity percentage."
+    rel_kn: [4, 13, 53]
+    sql: |-
+      WITH mesh_analysis AS (
+        SELECT m.zoneref AS site_code, m.facetregistry AS mesh_id, 
+          COALESCE((m.mesh_specs->>'Facet_Faces')::bigint, 0)::real / GREATEST(1.0, COALESCE((m.mesh_specs->>'Facet_Verts')::bigint, 1)::real * POWER(COALESCE((m.mesh_specs->>'Facet_Res_Mm')::real, 1.0), 2)) * 1000.0 AS mcr,
+          COALESCE((m.mesh_specs->>'Facet_Res_Mm')::real, 0.0) AS facet_res_mm, COALESCE((m.mesh_specs->>'Geom_Delta_Mm')::real, 0.0) AS geom_delta_mm,
+          CASE WHEN (COALESCE((m.mesh_specs->>'Facet_Faces')::bigint, 0)::real / GREATEST(1.0, COALESCE((m.mesh_specs->>'Facet_Verts')::bigint, 1)::real * POWER(COALESCE((m.mesh_specs->>'Facet_Res_Mm')::real, 1.0), 2)) * 1000.0) > 5.0 AND COALESCE((m.mesh_specs->>'Facet_Res_Mm')::real, 999.0) < 1.0 AND COALESCE((m.mesh_specs->>'Geom_Delta_Mm')::real, 999.0) < 0.5 THEN TRUE ELSE FALSE END AS is_high_fidelity
+        FROM mesh m WHERE m.mesh_specs IS NOT NULL AND COALESCE((m.mesh_specs->>'Facet_Verts')::bigint, 0) > 0 AND COALESCE((m.mesh_specs->>'Facet_Faces')::bigint, 0) > 0 AND COALESCE((m.mesh_specs->>'Facet_Res_Mm')::real, 0.0) > 0.0
+      )
+      SELECT s.zoneregistry AS site_code, s.zonelabel AS site_name, COALESCE(COUNT(ma.mesh_id), 0) AS total_meshes, COALESCE(SUM(CASE WHEN ma.is_high_fidelity THEN 1 ELSE 0 END), 0) AS high_fidelity_count,
+        CASE WHEN COUNT(ma.mesh_id) = 0 THEN 0.00 ELSE ROUND((SUM(CASE WHEN ma.is_high_fidelity THEN 1 ELSE 0 END)::numeric / COUNT(ma.mesh_id)::numeric * 100.0), 2) END AS high_fidelity_percentage,
+        CASE WHEN COUNT(ma.mesh_id) = 0 THEN NULL ELSE ROUND(AVG(ma.mcr)::numeric, 2) END AS avg_mcr,
+        CASE WHEN COUNT(ma.mesh_id) = 0 THEN NULL ELSE ROUND(AVG(ma.facet_res_mm)::numeric, 2) END AS avg_mesh_resolution_mm,
+        CASE WHEN COUNT(ma.mesh_id) = 0 THEN NULL ELSE ROUND(AVG(ma.geom_delta_mm)::numeric, 2) END AS avg_geometric_accuracy_mm,
+        CASE WHEN COUNT(ma.mesh_id) = 0 THEN 'No Mesh Data' WHEN SUM(CASE WHEN ma.is_high_fidelity THEN 1 ELSE 0 END) > 0 THEN 'Has High-Fidelity Meshes' ELSE 'Standard Mesh Quality' END AS mesh_quality_classification
+      FROM sites s LEFT JOIN mesh_analysis ma ON s.zoneregistry = ma.site_code
+      GROUP BY s.zoneregistry, s.zonelabel
+      ORDER BY high_fidelity_percentage DESC, high_fidelity_count DESC, total_meshes DESC;
+  - query: "What are the scanning conditions like at each site? Show me each location's code and name, along with weather averages (temperature, humidity, and illumination levels), environment suitability score, and corresponding quartile ranking and environmental condition category based on the score."
+    normal_query: "Show me each site's code and name, along with the average temperature, humidity, and illumination levels. I'd also like to see the average Environmental Suitability Index for each site, classified into quartiles, to understand the range of conditions. Finally, classify each site into Environmental Condition Classification System according to average ESI value."
+    rel_kn: [7, 15, 50]
+    sql: |-
+      WITH environment_analysis AS (
+        SELECT 
+          e.zoneref AS site_code,
+          COALESCE((e.ambient_cond->>'Ambic_Temp')::real, 20.0) AS ambic_temp,
+          COALESCE((e.ambient_cond->>'Hume_Pct')::real, 50.0) AS hume_pct,
+          COALESCE((e.ambient_cond->>'Illume_Lux')::bigint, 10000) AS illume_lux,
+          100 - 2.5 * ABS(COALESCE((e.ambient_cond->>'Ambic_Temp')::real, 20.0) - 20) - 
+          POWER(ABS((COALESCE((e.ambient_cond->>'Hume_Pct')::real, 50.0) - 50) / 2), 1.5) - 
+          600.0 / (COALESCE((e.ambient_cond->>'Illume_Lux')::bigint, 10000) + 100) AS esi
+        FROM environment e
+        WHERE e.ambient_cond IS NOT NULL
+      )
+      SELECT 
+        s.zoneregistry AS site_code,
+        s.zonelabel AS site_name,
+        CASE 
+          WHEN COUNT(ea.ambic_temp) = 0 THEN NULL
+          ELSE ROUND(AVG(ea.ambic_temp)::numeric, 1)
+        END AS avg_temperature_c,
+        CASE 
+          WHEN COUNT(ea.hume_pct) = 0 THEN NULL
+          ELSE ROUND(AVG(ea.hume_pct)::numeric, 1)
+        END AS avg_humidity_pct,
+        CASE 
+          WHEN COUNT(ea.illume_lux) = 0 THEN NULL
+          ELSE ROUND(AVG(ea.illume_lux)::numeric, 1)
+        END AS avg_illumination_lux,
+        CASE 
+          WHEN COUNT(ea.esi) = 0 THEN NULL
+          ELSE ROUND(AVG(ea.esi)::numeric, 1)
+        END AS avg_esi,
+        CASE 
+          WHEN COUNT(ea.esi) = 0 THEN NULL
+          ELSE NTILE(4) OVER (ORDER BY AVG(ea.esi))
+        END AS esi_quartile,
+        CASE 
+          WHEN COUNT(ea.esi) = 0 THEN 'No Environmental Data'
+          WHEN AVG(ea.esi) > 85 THEN 'Optimal Scanning Conditions'
+          WHEN AVG(ea.esi) > 70 THEN 'Good Scanning Conditions'
+          WHEN AVG(ea.esi) > 50 THEN 'Acceptable Scanning Conditions'
+          ELSE 'Challenging Scanning Conditions'
+        END AS scanning_condition_class
+      FROM sites s
+      LEFT JOIN environment_analysis ea ON s.zoneregistry = ea.site_code
+      GROUP BY s.zoneregistry, s.zonelabel
+      ORDER BY avg_esi DESC NULLS LAST;
+  - query: "I'd like to analyze how efficiently each scan processing workflow performs and spot any bottlenecks. For every software and stage combination, show me the software, processing stage, average hours needed for processing, average CPU and GPU usage percentages, average data size in GB, the ratio of the processing efficiency, and whether it's running efficiently or hitting bottlenecks ('Bottleneck Detected' if it is qualified as processing bottleneck, 'Efficient' if it is not). Also include how many workflows we're looking at for each combination. Sort the results by bottleneck status first, followed by the ratio value from lowest to highest."
+    normal_query: "I want to evaluate each scan processing workflow's Processing Efficiency Ratio and identify whether it qualifies as a Processing Bottleneck. For each combination of processing software and stage, please include the software, stage, average processing hours, average CPU and GPU usage percentages, average data size in GB, the average PER value, and the efficiency status ('Bottleneck Detected' if it is qualified as processing bottleneck, 'Efficient' if it is not). Additionally, provide the total count of workflows for each combination. Sort the results by bottleneck status first, followed by the PER value in ascending order."
+    rel_kn: [8, 17]
+    sql: |-
+      WITH workflow_analysis AS (
+        SELECT 
+          p.flowregistry,
+          p.flowsoft AS processing_software,
+          p.flowstage AS processing_stage,
+          COALESCE((p.system_usage->>'Flow_Hrs')::real, 1.0) AS flow_hrs,
+          COALESCE((p.system_usage->>'Proc_CPU')::bigint, 50) AS proc_cpu,
+          COALESCE((p.system_usage->>'Proc_GPU')::bigint, 50) AS proc_gpu,
+          COALESCE(REGEXP_REPLACE(s.size, '[^0-9.]', '', 'g')::real, 1.0) AS data_size_gb,
+          COALESCE((pc.cloud_metrics->>'Total_Pts')::bigint, 1000000) AS total_pts,
+          COALESCE(REGEXP_REPLACE(s.size, '[^0-9.]', '', 'g')::real, 1.0) * LOG(10, GREATEST(1.0, COALESCE((pc.cloud_metrics->>'Total_Pts')::bigint, 1000000))) /
+          GREATEST(0.1, 
+            COALESCE((p.system_usage->>'Flow_Hrs')::real, 1.0) * 
+            GREATEST(1.0, (COALESCE((p.system_usage->>'Proc_CPU')::bigint, 50) + COALESCE((p.system_usage->>'Proc_GPU')::bigint, 50)) / 200.0)
+          ) AS per_value
+        FROM processing p
+        LEFT JOIN scans s ON p.zoneref = s.zoneref
+        LEFT JOIN pointcloud pc ON s.arcref = pc.arcref
+        WHERE p.system_usage IS NOT NULL
+          AND COALESCE((p.system_usage->>'Flow_Hrs')::real, 0) > 0
+          AND (COALESCE((p.system_usage->>'Proc_CPU')::bigint, 0) + COALESCE((p.system_usage->>'Proc_GPU')::bigint, 0)) > 0
+      )
+      SELECT 
+        wa.processing_software,
+        wa.processing_stage,
+        CASE 
+          WHEN COUNT(*) = 0 THEN NULL
+          ELSE ROUND(AVG(wa.flow_hrs)::numeric, 1)
+        END AS avg_processing_hours,
+        CASE 
+          WHEN COUNT(*) = 0 THEN NULL
+          ELSE ROUND(AVG(wa.proc_cpu)::numeric, 1)
+        END AS avg_cpu_usage_pct,
+        CASE 
+          WHEN COUNT(*) = 0 THEN NULL
+          ELSE ROUND(AVG(wa.proc_gpu)::numeric, 1)
+        END AS avg_gpu_usage_pct,
+        CASE 
+          WHEN COUNT(*) = 0 THEN NULL
+          ELSE ROUND(AVG(wa.data_size_gb)::numeric, 1)
+        END AS avg_data_size_gb,
+        CASE 
+          WHEN COUNT(*) = 0 THEN NULL
+          ELSE ROUND(AVG(wa.per_value)::numeric, 1)
+        END AS avg_per,
+        CASE 
+          WHEN COUNT(*) = 0 THEN 'No Data'
+          WHEN AVG(wa.per_value) < 0.5 THEN 'Bottleneck Detected'
+          ELSE 'Efficient'
+        END AS efficiency_status,
+        COUNT(*) AS workflow_count
+      FROM workflow_analysis wa
+      GROUP BY wa.processing_software, wa.processing_stage
+      ORDER BY 
+        CASE 
+          WHEN COUNT(*) = 0 THEN 3
+          WHEN AVG(wa.per_value) < 0.5 THEN 1 
+          ELSE 2 
+        END,
+        avg_per ASC NULLS LAST;
+  - query: "Which sites are best for finding artifacts? Show me each location's ID along with the average ratio between total points and cloud density, and the average efficiency of feature identification. I need all sites included, even if some data might be missing. Sort the results by average feature identification efficiency in descending order."
+    normal_query: "For each archaeological site, I need its Point Cloud Density Ratio and Feature Extraction Efficiency to identify sites with high potential for feature extraction. Please include the site code, average PCDR value, and average FEE value. Ensure that all sites are included, even if some data might be missing. Sort the results by average FEE in descending order."
+    rel_kn: [2, 32]
+    sql: |-
+      WITH site_pc_sp_metrics AS (
+        SELECT sc.zoneref AS site_code, 
+          AVG(COALESCE((pc.cloud_metrics->>'Total_Pts')::bigint, 0)) AS avg_total_pts, 
+          AVG(COALESCE((pc.cloud_metrics->>'Cloud_Dense')::bigint, 0)) AS avg_cloud_dense, 
+          AVG(COALESCE((sp.spatial_dims->>'Area_M2')::real, 0)) AS avg_area_m2 
+        FROM scans sc 
+        LEFT JOIN pointcloud pc ON sc.arcref = pc.arcref 
+        LEFT JOIN spatial sp ON sc.arcref = sp.arcref 
+        WHERE sc.zoneref IS NOT NULL 
+        GROUP BY sc.zoneref
+      ), 
+      site_feature_metrics AS (
+        SELECT f.zoneref AS site_code, 
+          SUM(COALESCE((f.feature_analysis->>'Trait_Count')::bigint, 0)) AS total_trait_count, 
+          SUM(COALESCE((f.feature_analysis->>'Arti_Count')::bigint, 0)) AS total_arti_count 
+        FROM features f 
+        WHERE f.zoneref IS NOT NULL 
+        GROUP BY f.zoneref
+      ), 
+      site_calculations AS (
+        SELECT s.zoneregistry AS site_code, 
+          met.avg_cloud_dense, 
+          feat.total_trait_count, 
+          feat.total_arti_count, 
+          COALESCE(met.avg_total_pts / NULLIF(met.avg_cloud_dense * met.avg_area_m2, 0), 0) AS pcdr 
+        FROM sites s 
+        LEFT JOIN site_pc_sp_metrics met ON s.zoneregistry = met.site_code 
+        LEFT JOIN site_feature_metrics feat ON s.zoneregistry = feat.site_code
+      ) 
+      SELECT sc.site_code, 
+        ROUND(sc.pcdr::numeric, 2) AS avg_pcdr, 
+        ROUND(COALESCE((COALESCE(sc.total_trait_count, 0) + COALESCE(sc.total_arti_count, 0)) * 1000.0 / NULLIF(sc.pcdr * SQRT(NULLIF(sc.avg_cloud_dense, 0)), 0), 0)::numeric, 2) AS avg_fee 
+      FROM site_calculations sc 
+      ORDER BY avg_fee DESC;
+  - query: "Hey, can you help me figure out how efficient our archaeological scanning gear is? I need to know the equipments' IDs, their efficiency of computing resource utilization (rounded to two decimal places), the average processing time in hours, their efficiency rankings, and their workflow efficiency status. Also, please include CPU usage (named 'cpu_usage'), GPU usage (named 'gpu_usage'), and processing hours (named 'processing_hours') as JSON in the resource details. Make sure to include all equipments, even if the data's incomplete, and sort everything by PRU value from lowest to highest. Thanks!"
+    normal_query: "My purpose is to analyze the Processing Resource Utilization (PRU) of our archaeological scanning equipment and categorize workflows according to the Workflow Efficiency Classification system. Please provide the equipments' IDs, PRU values (rounded to two decimal places), average processing time in hours, efficiency rankings, workflow efficiency status, and include the CPU usage (named 'cpu_usage'), GPU usage (named 'gpu_usage'), and processing hours (named 'processing_hours') in json format as resource details. I'd like all equipment to be included in the analysis, even those with incomplete data. Please sort the results by PRU value in ascending order to help identify the most efficient setups."
+    rel_kn: [37, 51]
+    sql: |-
+      WITH site_avg_scan_size AS (
+        SELECT
+          s.zoneref,
+          AVG(COALESCE(SPLIT_PART(s.size, ' ', 1)::real, 1.0)) AS avg_file_size_gb
+        FROM scans s
+        WHERE s.zoneref IS NOT NULL AND s.size IS NOT NULL
+        GROUP BY s.zoneref
+      ),
+      processing_data AS (
+        SELECT
+          e.equipregistry,
+          p.flowregistry,
+          COALESCE((p.system_usage->>'Flow_Hrs')::real, 0) AS flow_hrs,
+          COALESCE((p.system_usage->>'Proc_CPU')::bigint, 0) AS proc_cpu,
+          COALESCE((p.system_usage->>'Proc_GPU')::bigint, 0) AS proc_gpu,
+          COALESCE(ss.avg_file_size_gb, 1.0) AS file_size_gb,
+          COALESCE((m.mesh_specs->>'Facet_Verts')::bigint, 0) AS mesh_vertices
+        FROM equipment e
+        LEFT JOIN processing p ON e.equipregistry = p.equipref
+        LEFT JOIN site_avg_scan_size ss ON p.zoneref = ss.zoneref
+        LEFT JOIN mesh m ON p.zoneref = m.zoneref AND p.equipref = m.equipref
+      ),
+      pru_calculations AS (
+        SELECT
+          d.*,
+          COALESCE(
+            (d.flow_hrs * (d.proc_cpu + d.proc_gpu) / 2.0) /
+            NULLIF(d.file_size_gb * 10 * LOG(10, d.mesh_vertices + 10000.0), 0),
+            0
+          ) AS pru
+        FROM processing_data d
+      )
+      SELECT
+        pc.equipregistry AS equipment_id,
+        ROUND(pc.pru::numeric, 2) AS processing_resource_utilization,
+        ROUND(AVG(pc.flow_hrs) OVER (PARTITION BY pc.equipregistry)::numeric, 2) AS avg_processing_hours,
+        DENSE_RANK() OVER (ORDER BY pc.pru ASC) AS efficiency_rank,
+        CASE
+          WHEN pc.pru < 5.0 THEN 'Optimized'
+          WHEN pc.pru >= 5.0 AND pc.pru < 10.0 THEN 'Acceptable'
+          ELSE 'Needs Optimization'
+        END AS workflow_status,
+        CASE
+          WHEN pc.flowregistry IS NOT NULL THEN
+            JSONB_BUILD_OBJECT(
+              'cpu_usage', pc.proc_cpu,
+              'gpu_usage', pc.proc_gpu,
+              'processing_hours', pc.flow_hrs
+            )
+          ELSE NULL
+        END AS resource_details
+      FROM pru_calculations pc
+      ORDER BY processing_resource_utilization ASC;

@@ -5,7 +5,7 @@
 - Executor 执行Agent
 
 # 工作流程
-General 接收用户输入，并读取技能元数据
+General 加载技能元数据，接收用户输入
 
 # 技能
 https://platform.claude.com/docs/zh-CN/agents-and-tools/agent-skills/overview

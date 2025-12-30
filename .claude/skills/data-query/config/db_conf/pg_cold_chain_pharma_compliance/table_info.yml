@@ -1,0 +1,561 @@
+db_code: pg_cold_chain_pharma_compliance # 数据库编号
+
+table:
+  pg_cold_chain_pharma_compliance_shipments: # 表编号
+    tb_name: shipments # 表名
+    tb_meaning: 货运记录 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - reckey
+      - log_ts
+    col_info:
+      reckey:
+        col_meaning: 货运记录的唯一标识键
+        field_meaning:
+        col_alias: ["货运记录键", "记录编号"]
+        rel_col:
+      log_ts:
+        col_meaning: 货运标记，提供人工可读的识别码
+        field_meaning:
+        col_alias: ["货运标记", "货运编号"]
+        rel_col:
+      shipment_overview:
+        col_meaning: 货运概览信息，包含路线、时间和风险性能等元数据
+        field_meaning:
+          route:
+            origin:
+              hub: "起始物流中心的代码或名称"
+              address: "起始地点的详细街道地址"
+              nation: "起始地点的ISO国家代码"
+            destination:
+              hub: "目的地物流中心的代码或名称"
+              address: "目的地详细街道地址"
+              nation: "目的地的ISO国家代码"
+            route_string: "货运路线规划字符串，描述运输路径"
+            risk_note: "运输路线的风险等级定性评估"
+          timing_performance:
+            go_time_ts: "计划出发时间"
+            planned_eta_hrs: "预估运输时间（小时）"
+            actual_duration_hrs: "实际运输用时（小时）"
+            end_time_ts: "实际到达时间"
+            distance_km: "运输总距离（公里）"
+        col_alias: ["货运概览", "货运摘要"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_products: # 表编号
+    tb_name: products # 表名
+    tb_meaning: 产品 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - prodcode
+    col_info:
+      prodcode:
+        col_meaning: 产品的唯一标识代码
+        field_meaning:
+        col_alias: ["产品代码", "产品编号"]
+        rel_col:
+      prodlabel:
+        col_meaning: 产品的商业标签或名称
+        field_meaning:
+        col_alias: ["产品标签", "产品名称"]
+        rel_col:
+      prodcat:
+        col_meaning: 产品所属类别或治疗类型
+        field_meaning:
+        col_alias: ["产品类别", "治疗类别"]
+        rel_col:
+      maker:
+        col_meaning: 产品制造商名称
+        field_meaning:
+        col_alias: ["制造商", "生产厂家"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_product_batches: # 表编号
+    tb_name: productbatches # 表名
+    tb_meaning: 产品批次 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - batchtag
+      - prodlink
+      - mfg_ts
+      - tempmin
+      - tempmax
+      - pack_cnt
+      - valusd
+      - insusd
+    col_info:
+      batchtag:
+        col_meaning: 产品批次的唯一标识标签
+        field_meaning:
+        col_alias: ["批次标签", "批次编号"]
+        rel_col:
+      prodlink:
+        col_meaning: 批次关联的产品代码
+        field_meaning:
+        col_alias: ["产品链接", "关联产品"]
+        rel_col: "products.prodcode"
+      mfg_ts:
+        col_meaning: 批次制造的时间戳
+        field_meaning:
+        col_alias: ["制造时间", "生产日期"]
+        rel_col:
+      exp_ts:
+        col_meaning: 批次到期的时间戳
+        field_meaning:
+        col_alias: ["到期时间", "有效期"]
+        rel_col:
+      store_cond:
+        col_meaning: 产品储存所需的温度条件描述
+        field_meaning:
+        col_alias: ["储存条件", "存储要求"]
+        rel_col:
+      tempmin:
+        col_meaning: 允许的最低储存温度
+        field_meaning:
+        col_alias: ["最低温度", "温度下限"]
+        rel_col:
+      tempmax:
+        col_meaning: 允许的最高储存温度
+        field_meaning:
+        col_alias: ["最高温度", "温度上限"]
+        rel_col:
+      tempsense:
+        col_meaning: 温度监控方式或设备类型
+        field_meaning:
+        col_alias: ["温度传感", "传感器类型"]
+        rel_col:
+      pack_type:
+        col_meaning: 货物包装的类型或形式
+        field_meaning:
+        col_alias: ["包装类型", "包装形式"]
+        rel_col:
+      pack_cnt:
+        col_meaning: 批次中可销售的包装总数
+        field_meaning:
+        col_alias: ["包装数量", "数量"]
+        rel_col:
+      valusd:
+        col_meaning: 货物的商业申报价值
+        field_meaning:
+        col_alias: ["商业价值", "货值"]
+        rel_col:
+      insusd:
+        col_meaning: 货物的保险覆盖价值
+        field_meaning:
+        col_alias: ["保险价值", "保额"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_carriers: # 表编号
+    tb_name: carriers # 表名
+    tb_meaning: 承运人 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+    col_info:
+      carriertag:
+        col_meaning: 承运人的唯一标识名称
+        field_meaning:
+        col_alias: ["承运人标签", "承运人名称"]
+        rel_col:
+      carriercert:
+        col_meaning: 承运人的认证凭据或资质证书
+        field_meaning:
+        col_alias: ["承运人认证", "资质证书"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_vehicles: # 表编号
+    tb_name: vehicles # 表名
+    tb_meaning: 车辆 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - vehref
+    col_info:
+      vehref:
+        col_meaning: 车辆的唯一参考标识符
+        field_meaning:
+        col_alias: ["车辆参考", "车辆编号"]
+        rel_col:
+      carrierbond:
+        col_meaning: 车辆所属的承运人标识
+        field_meaning:
+        col_alias: ["承运人绑定", "所属承运人"]
+        rel_col: "carriers.carriertag"
+      vehtype:
+        col_meaning: 车辆的类型或规格
+        field_meaning:
+        col_alias: ["车辆类型", "车型"]
+        rel_col:
+      veh_qual:
+        col_meaning: 车辆的资格认证或状态评估
+        field_meaning:
+        col_alias: ["车辆资格", "车辆状态"]
+        rel_col:
+      temp_mon_sys:
+        col_meaning: 车辆安装的温度监控系统类型
+        field_meaning:
+        col_alias: ["温度监控", "监控系统"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_monitoring_devices: # 表编号
+    tb_name: monitoringdevices # 表名
+    tb_meaning: 监控设备 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - mondevref
+      - calibts
+      - temppts
+    col_info:
+      mondevref:
+        col_meaning: 监控设备的唯一参考标识符
+        field_meaning:
+        col_alias: ["设备参考", "设备编号"]
+        rel_col:
+      calibts:
+        col_meaning: 设备最后一次校准的时间
+        field_meaning:
+        col_alias: ["校准时间", "校准日期"]
+        rel_col:
+      devacc:
+        col_meaning: 监控设备的精度规格
+        field_meaning:
+        col_alias: ["设备精度", "精度规格"]
+        rel_col:
+      recintmin:
+        col_meaning: 监控数据的记录时间间隔
+        field_meaning:
+        col_alias: ["记录间隔", "采样间隔"]
+        rel_col:
+      temppts:
+        col_meaning: 设备可存储的温度数据点数
+        field_meaning:
+        col_alias: ["温度点数", "存储容量"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_environmental_monitoring: # 表编号
+    tb_name: environmentalmonitoring # 表名
+    tb_meaning: 环境监控 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - reckeylink
+    col_info:
+      reckeylink:
+        col_meaning: 环境监控关联的货运记录标识
+        field_meaning:
+        col_alias: ["记录链接", "货运记录"]
+        rel_col: "shipments.reckey"
+      devlink:
+        col_meaning: 使用的监控设备标识
+        field_meaning:
+        col_alias: ["设备链接", "监控设备"]
+        rel_col: "monitoringdevices.mondevref"
+      env_metrics:
+        col_meaning: 环境监控数据集合，包含温度、湿度、冲击、光照和位置跟踪信息
+        field_meaning:
+          temperature:
+            avg_c: "记录的平均温度值"
+            min_c: "记录期间达到的最低温度"
+            max_c: "记录期间达到的最高温度"
+            excursion_count: "超出规定限度的温度偏差次数"
+            excursion_duration_min: "温度偏差的总持续时间"
+            alarm_count: "触发的温度报警事件数量"
+          humidity:
+            humidity_monitor: "是否进行湿度监控"
+            avg_pct: "平均相对湿度百分比"
+            excursion_count: "湿度超出正常范围的事件次数"
+          light_and_shock:
+            light_monitor_mode: "光照暴露监控的模式"
+            shock_monitor: "冲击事件监控的方式"
+            shock_event_count: "检测到的冲击事件总数"
+          tracking:
+            location_tracking_state: "位置跟踪功能的工作状态"
+            gps_completeness_pct: "GPS信号覆盖和完整性百分比"
+            route_deviation_incidents: "偏离计划路线的异常事件数量"
+            unscheduled_stops: "非计划的停车次数"
+            stop_duration_min: "所有非计划停车的总时长"
+        col_alias: ["环境指标", "环境数据"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_quality_compliance: # 表编号
+    tb_name: qualitycompliance # 表名
+    tb_meaning: 质量合规 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - reckeyqc
+    col_info:
+      reckeyqc:
+        col_meaning: 质量控制关联的货运记录标识
+        field_meaning:
+        col_alias: ["质量记录", "货运记录"]
+        rel_col: "shipments.reckey"
+      qc_checklist:
+        col_meaning: 质量合规检查清单，包含封条完整性、产品状态、文档完整性和合规性评估
+        field_meaning:
+          security:
+            seal_status: "安全封条的完整性状态"
+            security_incident: "安全事件的记录或备注"
+          product_integrity:
+            product_intact_check: "产品完整性的检查结果"
+            pack_condition: "产品包装的整体状况评估"
+            label_condition: "产品标签的可读性和清晰度"
+          documentation:
+            documentation_complete: "相关文档的完整性状态"
+            certification_status: "各类认证文件的有效性状态"
+          customs_and_regulatory:
+            custom_clearance_status: "海关清关手续的办理状态"
+            import_permit_status: "进口许可证的合规状态"
+            regulatory_compliance_status: "相关法规的遵守情况"
+          gdp_quality:
+            sop_compliance: "标准操作程序的执行合规性"
+            gdp_compliance: "良好配送规范的遵循情况"
+            quality_agreement_status: "与合作伙伴质量协议的履行状态"
+            quality_review_status: "内部质量审查的结果状态"
+            responsible_person: "负责质量管理的责任人"
+            quality_approval_ts: "质量批准的时间戳"
+          release:
+            product_release_status: "产品的最终发布或处理状态"
+            release_ts: "产品正式发布的时间"
+            quarantine_reason: "产品被隔离的具体原因"
+        col_alias: ["质量检查清单", "质量合规"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_incident_and_risk_management: # 表编号
+    tb_name: incidentandriskmanagement # 表名
+    tb_meaning: 事故风险管理 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - reckeyrisk
+    col_info:
+      reckeyrisk:
+        col_meaning: 风险和事故管理关联的货运记录标识
+        field_meaning:
+        col_alias: ["风险记录", "事故记录"]
+        rel_col: "shipments.reckey"
+      incident_risk_record:
+        col_meaning: 事故风险记录，包含稳定性审查、偏差调查、风险评估和影响分析
+        field_meaning:
+          stability_and_quality:
+            stability_data_review: "产品稳定性数据的审查结果状态"
+            stability_impact_assessment: "稳定性问题对产品的潜在影响评估"
+            product_quality_impact: "事故对产品质量造成的影响程度"
+          batch_decision:
+            batch_release_decision: "对整批产品的最终处理决定"
+          deviation_investigation:
+            investigation_status: "偏差事件的调查处理状态"
+            corrective_actions: "针对已发生问题采取的纠正措施"
+            preventive_actions: "预防类似问题再次发生的措施"
+          risk:
+            risk_assessment_status: "整体风险评估的工作进展状态"
+            risk_level: "评估得出的风险严重程度等级"
+          reporting_notification:
+            incident_report_status: "内部事故报告的编制和审核状态"
+            health_authority_notification: "向卫生监管部门的报告状态"
+            authority_response: "监管部门对报告的回应和反馈"
+            customer_notification: "向客户通报事故的完成状态"
+            customer_response: "客户对事故处理的响应态度"
+          impact:
+            patient_impact: "对最终患者安全可能造成的影响"
+            market_impact: "对产品市场表现产生的潜在影响"
+            reputation_impact: "对公司品牌声誉造成的损害程度"
+          lessons_learned: "从事故中总结经验教训的情况"
+        col_alias: ["事故风险记录", "风险管理"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_insurance_claims: # 表编号
+    tb_name: insuranceclaims # 表名
+    tb_meaning: 保险理赔 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - reckeyclaim
+      - claimusd
+      - costimpactusd
+    col_info:
+      reckeyclaim:
+        col_meaning: 保险理赔关联的货运记录标识
+        field_meaning:
+        col_alias: ["理赔记录", "保险记录"]
+        rel_col: "shipments.reckey"
+      claimneed:
+        col_meaning: 是否需要启动理赔程序的指示
+        field_meaning:
+        col_alias: ["理赔需求", "是否需要理赔"]
+        rel_col:
+      claimstat:
+        col_meaning: 理赔申请当前的处理状态
+        field_meaning:
+        col_alias: ["理赔状态", "处理状态"]
+        rel_col:
+      claimusd:
+        col_meaning: 申请的理赔金额
+        field_meaning:
+        col_alias: ["理赔金额", "赔偿金额"]
+        rel_col:
+      costimpactusd:
+        col_meaning: 事故造成的总成本损失
+        field_meaning:
+        col_alias: ["成本影响", "损失金额"]
+        rel_col:
+      respparty:
+        col_meaning: 对损失承担责任的当事方
+        field_meaning:
+        col_alias: ["责任方", "责任承担方"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_reviews_and_improvements: # 表编号
+    tb_name: reviewsandimprovements # 表名
+    tb_meaning: 审查和改进 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - reckeyrev
+    col_info:
+      reckeyrev:
+        col_meaning: 审查和改进关联的货运记录标识
+        field_meaning:
+        col_alias: ["审查记录", "改进记录"]
+        rel_col: "shipments.reckey"
+      procimprove:
+        col_meaning: 流程或过程的改进措施状态
+        field_meaning:
+        col_alias: ["过程改进", "流程优化"]
+        rel_col:
+      trainneeds:
+        col_meaning: 识别的员工培训需求
+        field_meaning:
+        col_alias: ["培训需求", "技能提升"]
+        rel_col:
+      sop_update:
+        col_meaning: 标准操作程序的更新需求
+        field_meaning:
+        col_alias: ["SOP更新", "程序修订"]
+        rel_col:
+      vendorimpact:
+        col_meaning: 对供应商绩效造成的影响评估
+        field_meaning:
+        col_alias: ["供应商影响", "合作方影响"]
+        rel_col:
+      nextshipchg:
+        col_meaning: 对下次货运计划进行的改进或变化
+        field_meaning:
+        col_alias: ["下次变化", "改进计划"]
+        rel_col:
+      monfreqchg:
+        col_meaning: 监控频率的调整或变化
+        field_meaning:
+        col_alias: ["监控频率变化", "频率调整"]
+        rel_col:
+      routeriskreassess:
+        col_meaning: 对运输路线风险进行重新评估的结果
+        field_meaning:
+        col_alias: ["路线风险重新评估", "风险评估"]
+        rel_col:
+      packspecrev:
+        col_meaning: 包装规范的修订或改进状态
+        field_meaning:
+        col_alias: ["包装规范修订", "包装改进"]
+        rel_col:
+      lanequalstat:
+        col_meaning: 运输车道或线路的质量状态
+        field_meaning:
+        col_alias: ["车道质量状态", "线路状态"]
+        rel_col:
+      techupgrade:
+        col_meaning: 计划进行的技术升级或改进
+        field_meaning:
+        col_alias: ["技术升级", "设备改进"]
+        rel_col:
+      costoptpot:
+        col_meaning: 识别的成本优化机会或潜力
+        field_meaning:
+        col_alias: ["成本优化", "节约机会"]
+        rel_col:
+      sustainimpact:
+        col_meaning: 对环境可持续性造成的影响评估
+        field_meaning:
+        col_alias: ["可持续性影响", "环境影响"]
+        rel_col:
+      carbonkg:
+        col_meaning: 运输过程产生的碳足迹估算
+        field_meaning:
+        col_alias: ["碳足迹", "碳排放量"]
+        rel_col:
+      energyscore:
+        col_meaning: 能源使用效率的评分或评级
+        field_meaning:
+        col_alias: ["能效评分", "能源效率"]
+        rel_col:
+      docformat:
+        col_meaning: 审查和评估文档的格式类型
+        field_meaning:
+        col_alias: ["文档格式", "记录形式"]
+        rel_col:
+      dataintegrity:
+        col_meaning: 数据完整性和准确性的验证状态
+        field_meaning:
+        col_alias: ["数据完整性", "数据质量"]
+        rel_col:
+      audittrailcomplete:
+        col_meaning: 审计跟踪和记录完整性状态
+        field_meaning:
+        col_alias: ["审计跟踪", "记录完整性"]
+        rel_col:
+      e_sigstat:
+        col_meaning: 电子签名合规性和有效性状态
+        field_meaning:
+        col_alias: ["电子签名", "数字签名"]
+        rel_col:
+      sysaccessctrl:
+        col_meaning: 系统访问控制的安全性状态
+        field_meaning:
+        col_alias: ["访问控制", "系统安全"]
+        rel_col:
+      databackupstat:
+        col_meaning: 数据备份和恢复的完整性状态
+        field_meaning:
+        col_alias: ["数据备份", "备份状态"]
+        rel_col:
+      reportgenstat:
+        col_meaning: 报告和报表的生成进度状态
+        field_meaning:
+        col_alias: ["报告生成", "报表状态"]
+        rel_col:
+      distlist:
+        col_meaning: 审查报告的分发范围和对象
+        field_meaning:
+        col_alias: ["分发列表", "报告分发"]
+        rel_col:
+      archivestat:
+        col_meaning: 审查记录和文档的归档状态
+        field_meaning:
+        col_alias: ["归档状态", "存档管理"]
+        rel_col:
+      reviewnotes:
+        col_meaning: 审查过程中的备注和说明信息
+        field_meaning:
+        col_alias: ["审查注释", "备注说明"]
+        rel_col:
+      nextrevts:
+        col_meaning: 下次审查或评估的预定时间
+        field_meaning:
+        col_alias: ["下次审查", "计划时间"]
+        rel_col:
+      closestat:
+        col_meaning: 审查流程的当前关闭或完成状态
+        field_meaning:
+        col_alias: ["关闭状态", "审查状态"]
+        rel_col:
+
+  pg_cold_chain_pharma_compliance_ship_sensor_link: # 表编号
+    tb_name: shipsensorlink # 表名
+    tb_meaning: 货运传感器链接 # 表含义
+    sync_col: # 同步字段
+    no_sync_col: # 不同步字段
+      - shpnode
+    col_info:
+      shpnode:
+        col_meaning: 传感器链接中的货运记录节点标识
+        field_meaning:
+        col_alias: ["货运节点", "货运记录"]
+        rel_col: "shipments.reckey"
+      devnode:
+        col_meaning: 传感器链接中的监控设备节点标识
+        field_meaning:
+        col_alias: ["设备节点", "监控设备"]
+        rel_col: "monitoringdevices.mondevref"

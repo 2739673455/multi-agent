@@ -1,0 +1,663 @@
+db_code: pg_cold_chain_pharma_compliance # 数据库编号
+
+knowledge: # 知识
+  0:
+    kn_name: "Temperature Excursion Duration (TED)"
+    kn_desc: "The total time a shipment spends outside its required temperature range during transit."
+    kn_def: "TED = \\sum_{i=1}^{n} t_i, \\text{where } t_i \\text{ is the duration in minutes of each individual temperature excursion event.}"
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 温度偏移持续时间
+      - TED
+      - 温度异常时长
+      - 运输温度偏离时长
+  1:
+    kn_name: "Temperature Excursion Severity Index (TESI)"
+    kn_desc: "Measures the severity of temperature excursions relative to product temperature requirements."
+    kn_def: "TESI = TED \\times \\frac{|T_{max} - T_{allowed}| + |T_{min} - T_{allowed}|}{2}, \\text{where } T_{max} \\text{ and } T_{min} \\text{ are the maximum and minimum temperatures recorded during excursions, and } T_{allowed} \\text{ is the allowed temperature range midpoint.}"
+    rel_kn: [0]
+    rel_col:
+    kn_alias:
+      - 温度偏移严重程度指数
+      - TESI
+      - 温度异常严重指数
+      - 温度偏离严重度指标
+  2:
+    kn_name: "Critical Temperature Exposure"
+    kn_desc: "Indicates when a product has been exposed to temperatures that may significantly impact product quality."
+    kn_def: "An exposure event where the product temperature deviates more than 5°C from its specified temperature range for more than 60 consecutive minutes."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 临界温度暴露
+      - 严重温度暴露
+      - 关键温度影响
+      - 温度严重偏离事件
+  3:
+    kn_name: "Route Risk Classification"
+    kn_desc: "Categorizes shipping routes based on their risk level for temperature excursions."
+    kn_def: "Routes are classified as: 'Low Risk' (0-1 historical excursion events per 10 shipments), 'Medium Risk' (2-4 historical excursion events per 10 shipments), 'High Risk' (5+ historical excursion events per 10 shipments)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 运输路线风险分类
+      - 路线风险等级
+      - 运输风险分级
+      - 路径风险分类
+  4:
+    kn_name: "GDP Certification Status"
+    kn_desc: "Illustrates the certification levels for carriers in Good Distribution Practice."
+    kn_def: "Carriers can have one of the following certification statuses: 'None' (no certification), 'GDP' (Good Distribution Practice certified), 'CEIV Pharma' (IATA Center of Excellence for Independent Validators certification), or 'Both' (having both GDP and CEIV Pharma certifications). Null values indicate pending certification status verification."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - GDP认证状态
+      - 药品配送规范认证
+      - 运输商认证等级
+      - 分销规范认证
+  5:
+    kn_name: "Cold Chain Compliance Rate (CCCR)"
+    kn_desc: "Measures the percentage of shipments that maintained required temperature conditions throughout transit."
+    kn_def: "CCCR = \\frac{N_{compliant}}{N_{total}} \\times 100\\%, \\text{where } N_{compliant} \\text{ is the number of shipments with zero temperature excursions, and } N_{total} \\text{ is the total number of shipments.}"
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 冷链合规率
+      - CCCR
+      - 冷链合规度
+      - 温度合规率
+  6:
+    kn_name: "Temperature Sensitivity Tiers"
+    kn_desc: "Classifies pharmaceutical products based on their sensitivity to temperature variations."
+    kn_def: "Products are classified into three sensitivity tiers: 'Low' (can tolerate up to 24 hours of minor temperature deviations), 'Medium' (can tolerate up to 8 hours of minor temperature deviations), 'High' (cannot tolerate temperature deviations beyond 2 hours)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 温度敏感度等级
+      - 温度敏感性分类
+      - 药品温度敏感度
+      - 温度敏感性分级
+  7:
+    kn_name: "Tier 1 Cold Chain Products"
+    kn_desc: "Identifies the highest value and most temperature-sensitive pharmaceutical products."
+    kn_def: "Products with both a 'High' temperature sensitivity and a value exceeding $100,000 USD."
+    rel_kn: [6]
+    rel_col:
+    kn_alias:
+      - 一级冷链产品
+      - 高价值冷链产品
+      - 顶级冷链药品
+      - 关键冷链产品
+  8:
+    kn_name: "Temperature Monitoring Gap"
+    kn_desc: "Indicates periods where temperature data is missing during transit."
+    kn_def: "A period of over 15 minutes where no temperature data points were recorded in a shipment that should have continuous monitoring."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 温度监测空白
+      - 温度监控缺口
+      - 温度数据缺失
+      - 温度监测间隙
+  9:
+    kn_name: "Product Storage Classifications"
+    kn_desc: "Standardized temperature ranges for pharmaceutical product storage."
+    kn_def: "Four standard storage classifications: '2-8°C' (refrigerated), '-20°C' (frozen), '-70°C' (ultra-low temperature), and '15-25°C' (controlled room temperature)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 产品储存分类
+      - 药品储存分类
+      - 储存温度分类
+      - 产品存储类别
+  10:
+    kn_name: "Cold Chain Monitoring Compliance Score (CCMCS)"
+    kn_desc: "Evaluates the completeness and quality of monitoring data for a shipment."
+    kn_def: "CCMCS = 0.4 \\times GPS\\% + 0.4 \\times Temp\\% + 0.2 \\times (100 - ER), \\text{where GPS\\% is the GPS completeness percentage, Temp\\% is the percentage of expected temperature readings received, and ER is the error rate of readings.}"
+    rel_kn: [8]
+    rel_col:
+    kn_alias:
+      - 冷链监测合规分数
+      - CCMCS
+      - 冷链监控合规度
+      - 监测合规评分
+  11:
+    kn_name: "Critical Monitoring Failure"
+    kn_desc: "Indicates when monitoring systems fail to provide sufficient data to assess product quality."
+    kn_def: "Occurs when either GPS completeness falls below 80% or when temperature monitoring has gaps exceeding 30 minutes during transit."
+    rel_kn: [8, 10]
+    rel_col:
+    kn_alias:
+      - 关键监测失败
+      - 严重监控失效
+      - 关键监控故障
+      - 监测系统失效
+  12:
+    kn_name: "On-Time Delivery Performance (OTDP)"
+    kn_desc: "Measures how accurately shipments meet their planned delivery times."
+    kn_def: "OTDP = \\frac{actual\\_duration}{planned\\_duration} \\times 100\\%, \\text{where a value of 100\\% indicates exact on-time delivery, <100\\% is early, and >100\\% is late delivery.}"
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 准时交付表现
+      - OTDP
+      - 准时配送性能
+      - 按时交付率
+  13:
+    kn_name: "Delivery Performance Classification"
+    kn_desc: "Categorizes delivery performance based on variance from expected delivery time."
+    kn_def: "Shipments are classified as: 'Early' (>2 hours before scheduled time), 'On-Time' (within ±2 hours of scheduled time), 'Delayed' (2-24 hours after scheduled time), 'Severely Delayed' (>24 hours after scheduled time)."
+    rel_kn: [12]
+    rel_col:
+    kn_alias:
+      - 配送性能分类
+      - 交付表现分类
+      - 配送时效分级
+      - 交付状态分类
+  14:
+    kn_name: "Quality Agreement Status"
+    kn_desc: "Illustrates the current state of quality agreements between parties in the cold chain."
+    kn_def: "Quality agreements can have the following statuses: 'Active' (current agreement in force), 'Expired' (agreement has lapsed), 'Pending' (agreement under review), or null (no formal agreement exists)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 质量协议状态
+      - 质量协议状况
+      - 质量协议阶段
+      - 协议执行状态
+  15:
+    kn_name: "Carrier Performance Index (CPI)"
+    kn_desc: "Measures the overall performance of a carrier across multiple shipments."
+    kn_def: "CPI = 0.4 \\times CCCR + 0.3 \\times (100 - ATNR) + 0.2 \\times (100 - ASDI) + 0.1 \\times DPR, \\text{where CCCR is Cold Chain Compliance Rate, ATNR is Average Temperature Non-conformance Rate, ASDI is Average Shock and Damage Incidents, and DPR is Documentation Problem Rate.}"
+    rel_kn: [5]
+    rel_col:
+    kn_alias:
+      - 承运商性能指数
+      - CPI
+      - 运输商绩效指数
+      - 承运商表现指标
+  16:
+    kn_name: "Major Pharmaceutical Markets"
+    kn_desc: "Identifies the primary global pharmaceutical markets for cold chain distribution."
+    kn_def: "Major pharmaceutical markets include: United States, European Union (specifically Germany, France, Italy, Spain, and United Kingdom), Japan, China, Brazil, India, and Russia."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 主要医药市场
+      - 重要制药市场
+      - 医药主要市场
+      - 制药核心市场
+  17:
+    kn_name: "High-Risk Shipping Origin-Destination Pairs"
+    kn_desc: "Identifies shipping routes that historically show elevated risks for cold chain integrity."
+    kn_def: "Shipping lane combinations that either: 1) cross more than three climate zones, 2) involve more than two carrier transfers, 3) include countries with historical customs delays exceeding 48 hours, or 4) have previously documented temperature excursion rates above 15%."
+    rel_kn: [3, 16]
+    rel_col:
+    kn_alias:
+      - 高风险运输路线对
+      - 关键风险运输路径
+      - 高风险起运地-目的地
+      - 高风险运输组合
+  18:
+    kn_name: "Location Tracking States"
+    kn_desc: "Illustrates the possible states of location tracking systems during transit."
+    kn_def: "Location tracking can be in one of these states: 'Active' (providing regular updates), 'Intermittent' (occasional gaps in tracking), 'Failed' (no longer providing location data), or null (tracking was not implemented for this shipment)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 位置追踪状态
+      - 定位追踪状态
+      - 位置监控状态
+      - 位置跟踪状态
+  19:
+    kn_name: "Packing Integrity Risk Factor (PIRF)"
+    kn_desc: "Quantifies the risk of packaging failure based on product, route, and handling conditions."
+    kn_def: "PIRF = \\frac{S \\times D \\times T}{P}, \\text{where S is the shock event count, D is the distance in thousands of km, T is a temperature factor (1 for 15-25°C, 1.5 for 2-8°C, 2 for -20°C, 2.5 for -70°C), and P is the packaging robustness factor (1-10, with 10 being most robust).}"
+    rel_kn: [9]
+    rel_col:
+    kn_alias:
+      - 包装完整性风险因子
+      - PIRF
+      - 包装风险因子
+      - 包装完整性指标
+  20:
+    kn_name: "Shipment Risk Score (SRS)"
+    kn_desc: "A comprehensive risk assessment score for cold chain shipments."
+    kn_def: "SRS = 0.3 \\times TESI + 0.25 \\times PIRF + 0.25 \\times (100 - CCMCS) + 0.2 \\times RRF, \\text{where TESI is Temperature Excursion Severity Index, PIRF is Packing Integrity Risk Factor, CCMCS is Cold Chain Monitoring Compliance Score, and RRF is Route Risk Factor (1-10 based on Route Risk Classification).}"
+    rel_kn: [1, 10, 19, 3]
+    rel_col:
+    kn_alias:
+      - 运输风险分数
+      - SRS
+      - 货物风险评分
+      - 运输风险评估
+  21:
+    kn_name: "Regulatory Compliance Status Definitions"
+    kn_desc: "Explains the different compliance status classifications used in quality assessment."
+    kn_def: "Compliance statuses are defined as: 'Compliant' (meets all regulatory requirements), 'Non-compliant' (fails to meet one or more critical requirements), 'Under Review' (compliance being assessed), or null (compliance status not yet determined)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 法规合规状态定义
+      - 监管合规状态说明
+      - 合规状态分类
+      - 法规遵从性定义
+  22:
+    kn_name: "Temperature-Sensitive Product Categories"
+    kn_desc: "The main categories of pharmaceutical products requiring temperature-controlled transport."
+    kn_def: "Temperature-sensitive product categories include: Vaccines, Biologics (including monoclonal antibodies and recombinant proteins), Blood Products (including plasma and platelets), and Insulin products."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 温度敏感产品类别
+      - 温敏药品分类
+      - 温度敏感药品类别
+      - 温控运输产品分类
+  23:
+    kn_name: "Shock Event Significance Levels"
+    kn_desc: "Classifies impact events based on their potential to damage pharmaceutical products."
+    kn_def: "Shock events are classified as: 'Minor' (unlikely to cause damage), 'Moderate' (potential to damage if repeated), 'Severe' (likely to cause damage to product or packaging), with null values indicating no shock monitoring was implemented."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 冲击事件重要级别
+      - 震动事件等级
+      - 冲击影响级别
+      - 碰撞事件重要性
+  24:
+    kn_name: "Cold Chain Vehicle Qualification Status"
+    kn_desc: "Illustrates the validation levels of vehicles used in pharmaceutical transport."
+    kn_def: "Vehicles can be classified as: 'Validated' (fully validated through performance and temperature mapping studies), 'Qualified' (basic qualification but not fully validated), 'Unqualified' (not formally qualified for pharmaceutical transport)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 冷链车辆认证状态
+      - 运输车辆资质状态
+      - 冷链车辆资格
+      - 车辆温控认证
+  25:
+    kn_name: "Time In Range Percentage (TIRP)"
+    kn_desc: "Calculates the percentage of time a shipment's temperature stayed within required parameters."
+    kn_def: "TIRP = \\frac{T_{total} - TED}{T_{total}} \\times 100\\%, \\text{where } T_{total} \\text{ is the total transit time and TED is the Temperature Excursion Duration.}"
+    rel_kn: [0]
+    rel_col:
+    kn_alias:
+      - 温度范围内时间百分比
+      - TIRP
+      - 温度合规时间比
+      - 温控达标时间比
+  26:
+    kn_name: "Mean Kinetic Temperature (MKT)"
+    kn_desc: "A calculated temperature that expresses the overall effect of temperature fluctuations during storage or transit."
+    kn_def: "MKT = \\frac{-\\Delta H/R}{\\ln\\left(\\frac{\\sum_{i=1}^{n} e^{-\\Delta H/RT_i}}{n}\\right)}, \\text{where } \\Delta H \\text{ is the activation energy (usually 83.144 kJ/mol for pharmaceuticals), R is the gas constant (8.3144 J/mol/K), and } T_i \\text{ is each temperature point in Kelvin.}"
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 平均动力学温度
+      - MKT
+      - 动力学平均温度
+      - 温度动力学指标
+  27:
+    kn_name: "Quality Risk Zones"
+    kn_desc: "Identifies risk levels for temperature-sensitive products based on excursion metrics."
+    kn_def: "Quality risk zones are: 'Green Zone' (TIRP > 98% and no excursions > 30 min), 'Yellow Zone' (95% ≤ TIRP ≤ 98% or any excursion 30-60 min), 'Red Zone' (TIRP < 95% or any excursion > 60 min)."
+    rel_kn: [25, 0]
+    rel_col:
+    kn_alias:
+      - 质量风险区域
+      - 风险区域分级
+      - 质量风险等级
+      - 质量风险地带
+  28:
+    kn_name: "Humidity Sensitivity Categories"
+    kn_desc: "Classifies pharmaceutical products based on their sensitivity to humidity variations."
+    kn_def: "Humidity sensitivity categories are: 'Not Sensitive' (can tolerate wide humidity variations), 'Moderately Sensitive' (can tolerate limited humidity variations), 'Highly Sensitive' (requires strict humidity control), with null values indicating humidity sensitivity not specified."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 湿度敏感度分类
+      - 湿度敏感性等级
+      - 湿度敏感类别
+      - 湿度敏感性分级
+  29:
+    kn_name: "Premium Transport Container Types"
+    kn_desc: "Identifies specialized containers used for high-value pharmaceutical transport."
+    kn_def: "Premium transport containers include: Envirotainer RAP e2, Envirotainer RKN e1, va-Q-tainer USx, CSafe RKN, DoKaSch Opticooler, and Sonoco ThermoSafe PharmaPort 360."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 高级运输容器类型
+      - 高级容器类型
+      - 专业运输容器
+      - 高端运输箱
+  30:
+    kn_name: "Supply Chain Resilience Score (SCRS)"
+    kn_desc: "Measures a cold chain's ability to maintain integrity despite disruptions."
+    kn_def: "SCRS = 0.4 \\times ART + 0.3 \\times RRD + 0.2 \\times SBP + 0.1 \\times SMC, \\text{where ART is Alternative Route Availability (0-10), RRD is Redundant Resources Depth (0-10), SBP is Supplier Backup Presence (0-10), and SMC is Stock Management Capability (0-10).}"
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 供应链韧性分数
+      - SCRS
+      - 供应链弹性评分
+      - 供应链韧性指标
+  31:
+    kn_name: "Pharmaceutical Stability Budget"
+    kn_desc: "The total allowable time a product can spend outside of ideal conditions before quality is compromised."
+    kn_def: "The maximum cumulative duration (typically specified in hours or days) that a pharmaceutical product can experience conditions outside its labeled storage requirements without significant impact to its quality, safety, or efficacy. Null values indicate stability budget has not been determined for the product."
+    rel_kn: [6, 9]
+    rel_col:
+    kn_alias:
+      - 药品稳定性预算
+      - 稳定性预算
+      - 药品稳定期预算
+      - 稳定性时间预算
+  32:
+    kn_name: "Stability Budget Consumption Rate (SBCR)"
+    kn_desc: "Measures how quickly a shipment is consuming its allocated stability budget during transit."
+    kn_def: "SBCR = \\frac{TED}{SB_{total}} \\times 100\\%, \\text{where TED is the Temperature Excursion Duration and } SB_{total} \\text{ is the total stability budget allocated for the product.}"
+    rel_kn: [0, 31]
+    rel_col:
+    kn_alias:
+      - 稳定性预算消耗率
+      - SBCR
+      - 稳定性消耗速度
+      - 稳定性预算使用率
+  33:
+    kn_name: "Package Integrity Monitoring Systems"
+    kn_desc: "Identifies technologies used to monitor physical integrity of packages during transit."
+    kn_def: "Package integrity monitoring systems include: Shock Indicators (mechanical devices that show when a package has received an impact), Tilt Indicators (show if a package was tilted beyond acceptable angles), Electronic Impact Recorders (provide detailed shock measurements), and Pressure Indicators (monitor pressure changes in sealed containers)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 包装完整性监控系统
+      - 包装监控系统
+      - 包装监测系统
+      - 完整性监测系统
+  34:
+    kn_name: "Product Release Decision Framework"
+    kn_desc: "Structured approach for determining if temperature-sensitive products can be released for use after transport."
+    kn_def: "A decision framework considering: 1) Presence of temperature excursions, 2) Stability data for specific excursion profiles, 3) Package integrity, 4) Product appearance, and 5) Analytical testing results if required. Products can be 'Released' (meets all criteria), 'Released with CAPA' (meets essential criteria but requires corrective action), 'Quarantined' (requires further investigation), or 'Rejected' (failed critical criteria)."
+    rel_kn: [27, 31, 33]
+    rel_col:
+    kn_alias:
+      - 产品放行决策框架
+      - 产品放行决策
+      - 药品放行框架
+      - 产品放行机制
+  35:
+    kn_name: "Qualification Status of Temperature Monitoring Devices"
+    kn_desc: "Indicates the validation level of monitoring devices used in pharmaceutical transport."
+    kn_def: "Monitoring devices can be: 'Fully Qualified' (calibrated with NIST-traceable standards and validated for pharmaceutical use), 'Partially Qualified' (calibrated but not fully validated), 'Unqualified' (not formally qualified), with null values indicating qualification status is unknown."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 温度监测设备认证状态
+      - 监测设备认证
+      - 温度设备资格
+      - 监控设备资质
+  36:
+    kn_name: "Lane Risk Potential (LRP)"
+    kn_desc: "Quantifies the risk associated with a specific shipping route based on historical performance."
+    kn_def: "LRP = \\frac{TE_{total} + SD_{total} + CD_{total}}{N_{shipments}}, \\text{where } TE_{total} \\text{ is the total count of temperature excursions, } SD_{total} \\text{ is the total count of shipping delays, } CD_{total} \\text{ is the total count of customs delays, and } N_{shipments} \\text{ is the number of shipments on that lane.}"
+    rel_kn: [0, 13]
+    rel_col:
+    kn_alias:
+      - 路线风险潜力
+      - LRP
+      - 路线风险评估
+      - 运输路线风险指数
+  37:
+    kn_name: "Storage Temperature Requirements for Biologics"
+    kn_desc: "Specifies the standard temperature storage requirements for biological pharmaceutical products."
+    kn_def: "Most biologics require storage at either '2-8°C' (refrigerated) or '-20°C' (frozen), with certain specialized biologic products requiring '-70°C' (ultra-low temperature) storage. Room temperature (15-25°C) storage is rarely suitable for biologics unless specifically formulated for stability at those temperatures."
+    rel_kn: [9, 22]
+    rel_col:
+    kn_alias:
+      - 生物制品储存温度要求
+      - 生物制品储存条件
+      - 生物药储存温度
+      - 生物制品温控要求
+  38:
+    kn_name: "Last Mile Delivery Risk"
+    kn_desc: "Specific risks associated with the final stage of pharmaceutical product delivery."
+    kn_def: "Last mile delivery risks include: Lack of temperature-controlled vehicles, Multiple stops increasing door-opening frequency, Variable driver training in handling procedures, Inconsistent receiving procedures at destinations, and Limited monitoring capabilities compared to main transport segments."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 最后一公里配送风险
+      - 最后一公里风险
+      - 末端配送风险
+      - 末端物流风险
+  39:
+    kn_name: "Security Incident Severity Scale"
+    kn_desc: "Categorizes security events during pharmaceutical transport by their severity."
+    kn_def: "Security incidents are classified on a scale of 0-4: '0' (No security concerns), '1' (Minor procedural deviation), '2' (Moderate security concern without evidence of tampering), '3' (Clear evidence of attempted tampering), '4' (Confirmed breach with product access), with null values indicating security assessment was not performed."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 安全事件严重程度量表
+      - 安全事件分级
+      - 安全严重性级别
+      - 安全事件严重度
+  40:
+    kn_name: "Temperature Profile Categorization"
+    kn_desc: "Classifies the pattern of temperature readings during a shipment."
+    kn_def: "Temperature profiles are categorized as: 'Stable' (minimal variations within range), 'Cyclic' (regular patterns of variation within range), 'Trend' (gradual increase or decrease over time), 'Excursion' (periods outside acceptable range), or 'Erratic' (unpredictable variations suggesting monitoring issues)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 温度曲线分类
+      - 温度档案分类
+      - 温度模式分类
+      - 温度分布类型
+  41:
+    kn_name: "Excursion Impact Assessment (EIA)"
+    kn_desc: "Evaluates the potential quality impact of temperature excursions on product."
+    kn_def: "EIA = \\sum_{i=1}^{n} (|T_i - T_{limit}| \\times t_i), \\text{where } T_i \\text{ is the temperature during excursion } i, T_{limit} \\text{ is the nearest temperature limit (upper or lower), and } t_i \\text{ is the duration of excursion } i \\text{ in hours.}"
+    rel_kn: [0, 9]
+    rel_col:
+    kn_alias:
+      - 温度偏移影响评估
+      - EIA
+      - 温度异常影响评估
+      - 温度偏移影响分析
+  42:
+    kn_name: "Primary Cold Chain Monitoring Authorities"
+    kn_desc: "Key regulatory bodies that oversee cold chain management for pharmaceuticals."
+    kn_def: "Primary regulatory authorities for pharmaceutical cold chains include: FDA (US Food and Drug Administration), EMA (European Medicines Agency), MHRA (UK Medicines and Healthcare products Regulatory Agency), Health Canada, TGA (Australian Therapeutic Goods Administration), PMDA (Japanese Pharmaceuticals and Medical Devices Agency), and WHO (World Health Organization)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 主要冷链监测机构
+      - 冷链监管机构
+      - 主要监管机构
+      - 关键监测部门
+  43:
+    kn_name: "Package Thermal Efficiency Rating"
+    kn_desc: "Measures how effectively a packaging system maintains internal temperature despite external conditions."
+    kn_def: "Thermal efficiency rating is classified as: 'Basic' (<24 hours of protection), 'Standard' (24-48 hours of protection), 'Enhanced' (48-96 hours of protection), 'Extended' (>96 hours of protection)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 包装热效率评级
+      - 热效率评级
+      - 包装保温效率
+      - 包装隔热等级
+  44:
+    kn_name: "Risk-Based Monitoring Intensity"
+    kn_desc: "Determines appropriate monitoring frequency based on product risk profile."
+    kn_def: "High-risk products (biologics, vaccines) require continuous temperature monitoring with 5-minute intervals, medium-risk products should have 15-minute intervals, and low-risk products can use 30-minute intervals, with null values in monitoring frequency indicating unplanned or non-standardized monitoring approaches."
+    rel_kn: [6, 22]
+    rel_col:
+    kn_alias:
+      - 基于风险的监测强度
+      - 风险监测强度
+      - 监测频率分级
+      - 风险分层监测
+  45:
+    kn_name: "Cold Chain Cost Efficiency Ratio (CCER)"
+    kn_desc: "Measures the relationship between cold chain protection costs and product value."
+    kn_def: "CCER = \\frac{C_{monitoring} + C_{packaging} + C_{transport}}{V_{product}} \\times 100\\%, \\text{where } C_{monitoring}, C_{packaging}, C_{transport} \\text{ are the respective costs, and } V_{product} \\text{ is the product value.}"
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 冷链成本效率比率
+      - CCER
+      - 冷链成本效率
+      - 成本效益比
+  46:
+    kn_name: "Quality Management System Maturity Model"
+    kn_desc: "Framework for assessing the sophistication of a cold chain quality management system."
+    kn_def: "QMS maturity levels range from Level 1 (Basic: minimal documentation and reactive approaches) to Level 5 (Optimized: fully integrated systems with continuous improvement). Intermediate levels include Level 2 (Developing: standard procedures established), Level 3 (Defined: processes are well-documented and followed), and Level 4 (Managed: processes are measured and controlled)."
+    rel_kn: [14]
+    rel_col:
+    kn_alias:
+      - 质量管理体系成熟度模型
+      - QMS成熟度
+      - 质量管理成熟度
+      - 质量体系评级
+  47:
+    kn_name: "Thermodynamic Stability Class"
+    kn_desc: "Categorizes pharmaceutical products based on their thermal stability characteristics."
+    kn_def: "Products are classified as: Class A (highly stable, can tolerate brief temperature excursions with minimal degradation), Class B (moderately stable), Class C (limited stability, requires strict temperature control), and Class D (highly unstable, no temperature excursions permitted)."
+    rel_kn: [6, 31]
+    rel_col:
+    kn_alias:
+      - 热力学稳定性分类
+      - 热稳定性分类
+      - 药品稳定性等级
+      - 热稳定性类别
+  48:
+    kn_name: "Data Logger Reliability Score (DLRS)"
+    kn_desc: "Assesses the reliability of temperature monitoring devices based on historical performance."
+    kn_def: "DLRS = 100 - (10 \\times F_r + 5 \\times F_d + 3 \\times F_c + 2 \\times F_b), \\text{where } F_r \\text{ is the rate of reading failures, } F_d \\text{ is the rate of download failures, } F_c \\text{ is the calibration drift rate, and } F_b \\text{ is the battery failure rate. All rates are per 100 deployments.}"
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 数据记录器可靠性分数
+      - DLRS
+      - 数据记录器评分
+      - 监测设备可靠性
+  49:
+    kn_name: "Acceptable Temperature Deviation Limits"
+    kn_desc: "Industry standards for tolerable temperature deviations during pharmaceutical transport."
+    kn_def: "For refrigerated products (2-8°C): brief excursions (< 30 min) to 0-12°C may be acceptable; For frozen products (-20°C): brief excursions to -15°C may be acceptable; For ultra-frozen products (-70°C): brief excursions to -60°C may be acceptable; For controlled room temperature products (15-25°C): brief excursions to 10-30°C may be acceptable."
+    rel_kn: [9, 31]
+    rel_col:
+    kn_alias:
+      - 可接受温度偏差限制
+      - 温度偏差范围
+      - 温度容差限制
+      - 温度偏离标准
+  50:
+    kn_name: "Last Mile Delivery Metrics"
+    kn_desc: "Key performance indicators specific to final stage pharmaceutical delivery."
+    kn_def: "Key last mile metrics include: First Attempt Delivery Success Rate, Temperature Deviation Frequency, Receiver Wait Time, Documentation Completion Rate, and Handler Qualification Status."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 最后一公里配送指标
+      - 末端配送指标
+      - 最后一公里KPI
+      - 末端配送性能指标
+  51:
+    kn_name: "Batch Release Critical Path Elements"
+    kn_desc: "The essential components required before a temperature-sensitive product batch can be released."
+    kn_def: "Critical path elements include: Complete temperature history with no unexplained gaps, Confirmation that any excursions were within stability budgets, Intact security seals or acceptable explanation for compromised seals, Complete chain of custody documentation, and Acceptable visual inspection results."
+    rel_kn: [31, 39, 8]
+    rel_col:
+    kn_alias:
+      - 批次放行关键路径要素
+      - 批次放行要素
+      - 产品放行关键要素
+      - 批次释放关键点
+  52:
+    kn_name: "Electronic Monitoring System Tiers"
+    kn_desc: "Classification of monitoring systems based on their capabilities and features."
+    kn_def: "Electronic monitoring systems are classified as: Tier 1 (basic data loggers with manual download), Tier 2 (enhanced loggers with USB or Bluetooth download), Tier 3 (network-connected devices with real-time alerts), and Tier 4 (fully integrated IoT systems with predictive capabilities and automated interventions)."
+    rel_kn: [35, 48]
+    rel_col:
+    kn_alias:
+      - 电子监测系统等级
+      - 监测系统分级
+      - 电子监控系统
+      - 数字化监测系统
+  53:
+    kn_name: "Validation Documentation Requirements"
+    kn_desc: "The essential documentation needed to validate cold chain processes and equipment."
+    kn_def: "Required validation documents include: Validation Master Plan, Risk Assessment, User Requirements Specification, Design Qualification, Installation Qualification, Operational Qualification, Performance Qualification, Temperature Mapping Studies, and Final Validation Report."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 验证文档要求
+      - 验证文档需求
+      - 确认文件要求
+      - 验证材料要求
+  54:
+    kn_name: "Serialization Maturity Model"
+    kn_desc: "Framework for assessing pharmaceutical tracking and tracing capabilities."
+    kn_def: "Serialization maturity levels are: Level 0 (No serialization), Level 1 (Batch-level tracking only), Level 2 (Package-level serialization without systematic verification), Level 3 (Verified package-level serialization), and Level 4 (End-to-end serialized supply chain with real-time visibility)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 序列化成熟度模型
+      - 序列化成熟度
+      - 药品序列化成熟度
+      - 产品追溯成熟度
+  55:
+    kn_name: "Monitoring Device Calibration Status"
+    kn_desc: "Indicates if temperature monitoring devices are properly calibrated for accurate readings."
+    kn_def: "Calibration status includes: 'Current' (calibrated within required timeframe, typically 12 months), 'Expired' (calibration period has elapsed), 'Exempt' (single-use devices with factory calibration), with null values indicating calibration status is unknown or not documented."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 监测设备校准状态
+      - 设备校准状态
+      - 监测器校准状态
+      - 温度计校准状态
+  56:
+    kn_name: "GDP Corrective Action Categories"
+    kn_desc: "Standard categories for corrective actions in Good Distribution Practice."
+    kn_def: "GDP corrective action categories include: Training Enhancement, Documentation Update, Process Modification, Equipment Upgrade, Supplier Management, Transport Adjustment, Monitoring Improvement, and Regulatory Compliance Actions."
+    rel_kn: [4, 46]
+    rel_col:
+    kn_alias:
+      - GDP纠正措施类别
+      - 纠正措施分类
+      - GDP整改措施
+      - 分销规范纠正措施
+  57:
+    kn_name: "Temperature Accuracy Impact Factor (TAIF)"
+    kn_desc: "Quantifies the potential error in product status assessment due to monitoring device accuracy limitations."
+    kn_def: "TAIF = \\frac{|T_{max} - T_{upper}|}{A} + \\frac{|T_{min} - T_{lower}|}{A}, \\text{where } T_{max} \\text{ and } T_{min} \\text{ are the maximum and minimum recorded temperatures, } T_{upper} \\text{ and } T_{lower} \\text{ are the upper and lower temperature limits, and } A \\text{ is the stated accuracy of the monitoring device in °C.}"
+    rel_kn: [48, 55]
+    rel_col:
+    kn_alias:
+      - 温度精度影响因子
+      - TAIF
+      - 温度准确性因子
+      - 精度影响因子
+  58:
+    kn_name: "Vehicle Temperature Monitoring Types"
+    kn_desc: "Methods used to monitor temperatures in transport vehicles."
+    kn_def: "Vehicle temperature monitoring types include: 'Continuous' (uninterrupted monitoring throughout transport), 'Interval' (periodic checks at predetermined times), 'None' (no active monitoring), with null values indicating monitoring type was not specified in documentation."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 车辆温度监测类型
+      - 车载温度监控
+      - 车辆温控监测
+      - 车载监测方式
+  59:
+    kn_name: "Data Integrity Components"
+    kn_desc: "Essential elements that ensure cold chain data is reliable for decision-making."
+    kn_def: "Data integrity components include the ALCOA+ principles: Attributable (traceable to individual/system), Legible (readable and permanent), Contemporaneous (recorded at time of activity), Original (source data or certified copy), Accurate (error-free), plus Complete (all data included), Consistent (expected sequence followed), Enduring (preserved for required period), and Available (accessible when needed)."
+    rel_kn:
+    rel_col:
+    kn_alias:
+      - 数据完整性组件
+      - 数据完整性要素
+      - 数据完整性原则
+      - 数据可靠性要素

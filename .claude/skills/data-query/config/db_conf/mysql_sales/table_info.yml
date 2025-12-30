@@ -1,0 +1,24 @@
+db_code: mysql_sales # 数据库编号
+
+table: # 表信息
+  mysql_sales_sales_data: # 表编号
+    tb_name: sales_data # 表名
+    tb_meaning: 超市销售明细数据 # 表含义
+    sync_col: # 同步字段
+      - region
+      - ship_mode
+      - state_province
+      - sub_category
+      - category
+      - country
+      - customer_name
+      - product_name
+      - segment
+      - city
+    no_sync_col: # 不同步字段
+    col_info: # 字段额外信息
+      order_date:
+        col_meaning: 订单生成时刻的年-月-日 # 字段含义
+        field_meaning: # JSONB字段中每个字段的含义
+        col_alias: ["销售日期", "下单日期"] # 字段别名
+        rel_col: # 关联字段
