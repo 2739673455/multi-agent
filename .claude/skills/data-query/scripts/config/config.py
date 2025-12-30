@@ -61,7 +61,7 @@ for d in db_conf_dir.iterdir():
     conf = OmegaConf.create()
     for yml in d.glob("*.yml"):
         conf = OmegaConf.merge(conf, OmegaConf.load(yml))  # 加载并合并
-    DB_CONF[conf["db_code"]] = DBCfg.model_validate(conf)  # 转换为配置类
+    DB_CONF[dict(conf)["db_code"]] = DBCfg.model_validate(conf)  # 转换为配置类
 
 
 # ==================== base config ====================

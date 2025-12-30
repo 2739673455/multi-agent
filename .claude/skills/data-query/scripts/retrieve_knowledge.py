@@ -1,5 +1,8 @@
 import re
 
+from neo4j_driver import neo4j_session
+from util import embed
+
 
 async def retrieve_knowledge(db_code: str, query: str, keywords: list[str]):
     """混合检索知识"""
@@ -82,18 +85,17 @@ async def retrieve_knowledge(db_code: str, query: str, keywords: list[str]):
         ORDER BY kn.kn_code ASC
     """
 
-    results = await driver.execute_query(
-        cypher,
-        embeds=embeds,
-        tsquery=tsquery,
-        db_code=db_code,
-        vec_search_threshold=0.7,
-        search_num_per_vec=10,  # 每个子句向量检索的个数
-        search_num_per_ft=20,  # 全文检索的个数
-        final_num=5,  # 最终返回的个数
-    )
-    records = results.records
-    kn_map = {
-        record["kn"]["kn_code"]: Knowledge(**dict(record["kn"])) for record in records
-    }
-    return kn_map
+    async with neo4j_session() as session:
+        results = await session.run(
+            cypher,
+            embeds=embeds,
+            tsquery=tsquery,
+            db_code=db_code,
+            vec_search_threshold=0.7,
+            search_num_per_vec=10,  # 每个子句向量检索的个数
+            search_num_per_ft=20,  # 全文检索的个数
+            final_num=5,  # 最终返回的个数
+        )
+        records = results.data()
+        kn_map = {record["kn"]["kn_code"]: dict(record["kn"]) for record in records}
+        return kn_map
