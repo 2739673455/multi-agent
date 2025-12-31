@@ -4,7 +4,6 @@ from typing import LiteralString, cast
 
 import jieba.analyse
 from app.config import DB_CONF
-from app.context.neo4j_schema import Column, Knowledge, TableInfo
 from app.meta_db.neo4j.neo4j_driver import driver
 from app.util import embed
 from db_pool import get_session

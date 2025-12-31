@@ -60,7 +60,7 @@ class DBInit:
                         await self.exec_sql_file(db_name, sql_file_path)
                     finally:
                         progress.update(
-                            task_id, advance=1, description=f"{db_name[:20]}"
+                            task_id, advance=1, description=f"{db_name[:20]:<20}"
                         )
 
             # 并发执行任务

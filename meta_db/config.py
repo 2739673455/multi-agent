@@ -8,7 +8,7 @@ CONFIG_DIR = Path(__file__).parent
 
 
 # ==================== database config ====================
-class ColumnInfoCfg(BaseModel):
+class ColumnCfg(BaseModel):
     col_meaning: str
     field_meaning: dict[str, Any] | None
     col_alias: list[str] | None
@@ -20,7 +20,7 @@ class TableCfg(BaseModel):
     tb_meaning: str
     sync_col: list[str] | None
     no_sync_col: list[str] | None
-    col_info: dict[str, ColumnInfoCfg] | None
+    col_info: dict[str, ColumnCfg] | None
 
 
 class KnowledgeCfg(BaseModel):

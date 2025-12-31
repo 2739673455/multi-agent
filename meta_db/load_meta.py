@@ -1,21 +1,10 @@
 import asyncio
-from dataclasses import dataclass
 
-from db_pool import get_session
 from loguru import logger
 from sqlalchemy import inspect, text
 
-from ..config import DB_CONF, DBCfg, KnowledgeCfg, TableCfg
-
-
-@dataclass
-class ColumnInfo:
-    """字段信息"""
-
-    name: str  # 字段名
-    data_type: str  # 数据类型
-    comment: str | None  # 注释
-    relation: str | None  # 关联关系
+from config import DB_CONF, DBCfg, KnowledgeCfg, TableCfg
+from meta_db.db_pool import get_session
 
 
 async def load_meta():
@@ -43,7 +32,7 @@ async def load_meta():
                     continue
                 # 获取表的字段属性
                 try:
-                    columns = await get_column(db_conf, tb_code, tb_conf)
+                    columns = await get_column(db_conf, tb_conf)
                     logger.info(
                         f"{db_conf.db_code}.{tb_code} load column ({len(columns)})"
                     )
@@ -110,7 +99,7 @@ async def get_fewshot(db_conf: DBCfg, tb_info: TableCfg) -> dict[str, set[str]]:
     return column_value_map
 
 
-async def get_column(db_conf: DBCfg, tb_code: str, tb_info: TableCfg) -> list[dict]:
+async def get_column(db_conf: DBCfg, tb_info: TableCfg) -> list[dict]:
     """获取字段属性"""
 
     def get_info_sync(sync_session):

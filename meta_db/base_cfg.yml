@@ -52,7 +52,3 @@ llm:
       base_url: https://openrouter.ai/api/v1
       api_key: ${oc.env:OPENROUTER_API_KEY}
       model: xiaomi/mimo-v2-flash:free
-
-use_db_code: mysql_sales # 指定使用那个数据库
-max_tb_num: 20 # 最多召回的表数量
-max_col_per_tb: 100 # 每张表最多召回的字段数量
