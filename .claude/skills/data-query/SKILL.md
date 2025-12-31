@@ -21,13 +21,15 @@ description: 这个技能用于根据用户的查询问题，从元数据存储�
     - LLM过滤掉不需要的知识
 - step9: 获取知识相关字段，并与检索出的字段进行整合
 ## step1: 从用户查询中提取关键词
-执行 python 脚本[scripts/extract_keyword.py](scripts/extract_keyword.py)提取关键词
+执行 python 脚本 [scripts/extract_keyword.py](scripts/extract_keyword.py) 提取关键词
 ```bash
 python scripts/extract_keyword.py "查询文本"
 ```
 ## step2: 使用查询和关键词检索相关知识
-跳过
-
+执行 python 脚本 [scripts/retrieve_knowledge.py](scripts/retrieve_knowledge.py) 检索相关知识
+```bash
+python scripts/retrieve_knowledge.py --query "查询文本" --keywords [关键词列表]
+```
 ## step3: 补全上下文信息
 跳过
 

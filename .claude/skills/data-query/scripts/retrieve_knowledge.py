@@ -108,7 +108,7 @@ async def main():
     parser = argparse.ArgumentParser(description="检索知识", usage=usage)
 
     parser.add_argument("--query", type=str, help="查询文本")
-    parser.add_argument("--keywords", type=list[str], help="关键词")
+    parser.add_argument("--keywords", type=list[str], help="关键词列表")
 
     try:
         args = parser.parse_args()
