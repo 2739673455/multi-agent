@@ -13,4 +13,5 @@ dependencies = [
     "openai>=2.14.0",
     "pydantic>=2.12.5",
     "rich>=14.2.0",
+    "sqlalchemy>=2.0.45",
 ]

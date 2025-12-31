@@ -53,6 +53,17 @@ class DBCfg(BaseModel):
     skeleton: list[SkeletonCfg] | None = None
 
 
+DB_CONF: dict[str, DBCfg] = {}
+db_conf_dir = CONFIG_DIR / "db_conf"
+for d in db_conf_dir.iterdir():
+    if not d.is_dir() or not (d / "db_info.yml").exists():
+        continue
+    conf = OmegaConf.create()
+    for yml in d.glob("*.yml"):
+        conf = OmegaConf.merge(conf, OmegaConf.load(yml))  # 加载并合并
+    DB_CONF[dict(conf)["db_code"]] = DBCfg.model_validate(conf)  # 转换为配置类
+
+
 # ==================== base config ====================
 class MetaDBCfg(BaseModel):
     neo4j: DBCfg
