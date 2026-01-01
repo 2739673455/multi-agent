@@ -1,26 +1,15 @@
 import asyncio
 import functools
-from contextlib import asynccontextmanager
+import sys
+from pathlib import Path
 from typing import Any, Callable, Coroutine, ParamSpec, Tuple, Type, TypeVar
 
-from config.config import CONF
-from neo4j import AsyncGraphDatabase
+from config import CONF
+from loguru import logger
 from openai import AsyncOpenAI
 
 P = ParamSpec("P")
 R = TypeVar("R")
-
-
-@asynccontextmanager
-async def neo4j_session():
-    URI = f"neo4j://{CONF.meta_db.neo4j.host}:{CONF.meta_db.neo4j.port}"
-    AUTH = (f"{CONF.meta_db.neo4j.user}", f"{CONF.meta_db.neo4j.password}")
-    driver = AsyncGraphDatabase.driver(uri=URI, auth=AUTH)
-    try:
-        async with driver.session() as session:
-            yield session
-    finally:
-        await driver.close()
 
 
 def async_retry(
@@ -115,3 +104,58 @@ async def embed(text: list[str]) -> list[list[float]]:
         embedding.extend([item.embedding for item in cur_embedding.data])
     await client.close()
     return embedding
+
+
+def setup_logger():
+    """配置 loguru 日志器"""
+    # 避免重复配置
+    if hasattr(logger, "_configured"):
+        return
+
+    # 移除默认处理器，避免重复输出
+    # loguru 默认有一个输出到 stderr 的处理器，级别为 INFO
+    logger.remove()
+
+    # 日志格式
+    def get_log_format(record):
+        return (
+            " | ".join(
+                [
+                    "<green>{time:YYYY-MM-DD HH:mm:ss}</green>",
+                    "<level>{level:^8}</level>",
+                    "<cyan>{name}</cyan>.<cyan>{function}</cyan>",
+                    "<level>{message}</level>",
+                ]
+            )
+            + "\n"
+        )
+
+    # 控制台输出处理器
+    if CONF.logging.to_console:
+        logger.add(
+            sink=sys.stdout,  # 输出到标准输出
+            format=get_log_format,  # 日志格式
+            level=CONF.logging.level,  # 从配置文件读取日志级别
+            colorize=True,  # 启用颜色输出，提升可读性
+            catch=False,  # 不捕获异常，让错误直接抛出
+        )
+
+    # 文件输出处理器
+    if CONF.logging.to_file:
+        log_dir = Path(__file__).parent / "logs"  # 指定日志目录
+        log_dir.mkdir(parents=True, exist_ok=True)  # 确保日志目录存在
+
+        logger.add(
+            sink=log_dir / "{time:YYYY-MM-DD}.log",  # 按日期命名的日志文件
+            format=get_log_format,  # 日志格式
+            level=CONF.logging.level,  # 使用配置的日志级别
+            rotation=f"{CONF.logging.max_file_size}",  # 按文件大小自动滚动
+            encoding="utf-8",  # 使用UTF-8编码，支持中文
+            catch=False,  # 不捕获异常，让错误直接抛出
+        )
+
+    # 标记为已配置
+    setattr(logger, "_configured", True)
+
+
+setup_logger()

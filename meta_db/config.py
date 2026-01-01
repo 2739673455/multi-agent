@@ -54,7 +54,7 @@ class DBCfg(BaseModel):
 
 
 DB_CONF: dict[str, DBCfg] = {}
-db_conf_dir = CONFIG_DIR / "db_conf"
+db_conf_dir = CONFIG_DIR / "db_cfg"
 for d in db_conf_dir.iterdir():
     if not d.is_dir() or not (d / "db_info.yml").exists():
         continue
@@ -73,7 +73,6 @@ class LoggingConfig(BaseModel):
     level: str
     to_console: bool
     to_file: bool
-    log_dir: str
     max_file_size: str
 
 
@@ -86,10 +85,6 @@ class ModelCfg(BaseModel):
 
 class LLMCfg(BaseModel):
     embed_model: str
-    extend_model: str
-    filter_model: str
-    nl2sql_models: list[str]
-    vote_model: str
     models: dict[str, ModelCfg]
 
 
@@ -97,11 +92,8 @@ class BaseCfg(BaseModel):
     meta_db: MetaDBCfg
     logging: LoggingConfig
     llm: LLMCfg
-    use_db_code: str
-    max_tb_num: int
-    max_col_per_tb: int
 
 
-base_cfg = OmegaConf.load(CONFIG_DIR / "base_conf.yml")  # 加载
+base_cfg = OmegaConf.load(CONFIG_DIR / "base_cfg.yml")  # 加载
 OmegaConf.resolve(base_cfg)  # 解析插值
 CONF = BaseCfg.model_validate(base_cfg)  # 转换为配置类

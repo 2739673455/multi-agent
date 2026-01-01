@@ -1,10 +1,10 @@
 import asyncio
 
+import util
+from config import DB_CONF, DBCfg, KnowledgeCfg, TableCfg
+from db_session import get_session
 from loguru import logger
 from sqlalchemy import inspect, text
-
-from config import DB_CONF, DBCfg, KnowledgeCfg, TableCfg
-from meta_db.db_pool import get_session
 
 
 async def load_meta():
@@ -78,10 +78,9 @@ async def get_fewshot(db_conf: DBCfg, tb_info: TableCfg) -> dict[str, set[str]]:
     fewshot_sql = "SELECT * FROM %s LIMIT 10000" % tb_info.tb_name
     async with get_session(db_conf) as session:
         result = await session.execute(text(fewshot_sql))  # 执行查询获取示例数据
-        column_names = result.keys()  # 获取所有列名
+        pending_cols = set(result.keys())  # 记录未收集满 5 个值的列
         # 构建列名到示例值的映射 {"column1": ("value1", "value2", ...)}
-        column_value_map = {col: set() for col in column_names}
-        pending_cols = set(column_names)  # 记录未收集满 5 个值的列
+        column_value_map = {col: set() for col in pending_cols}
         for row in result.mappings():  # 遍历每一行数据，收集各列的示例值
             for col in list(pending_cols):  # 遍历每一列
                 cell = row[col]
@@ -110,8 +109,7 @@ async def get_column(db_conf: DBCfg, tb_info: TableCfg) -> list[dict]:
 
     async with get_session(db_conf) as session:
         cols, fks = await session.run_sync(get_info_sync)
-        # 创建 col_name->column 映射
-        name_column_map = {
+        column_map = {
             c["name"]: {
                 "name": c["name"],  # 字段名
                 "data_type": c["type"],  # 数据类型
@@ -126,9 +124,9 @@ async def get_column(db_conf: DBCfg, tb_info: TableCfg) -> list[dict]:
                 fk["constrained_columns"], fk["referred_columns"]
             ):
                 rel_col = f"{fk['referred_table']}.{ref_name}"
-                name_column_map[col_name]["relation"] = rel_col
+                column_map[col_name]["relation"] = rel_col
 
-        columns = list(name_column_map.values())
+        columns = list(column_map.values())
     return columns
 
 
@@ -164,9 +162,14 @@ async def get_knowledge(db_conf: DBCfg, kn_map: dict[int, KnowledgeCfg]):
     """获取知识信息"""
     return [
         {
-            **kn.__dict__,
             "db_code": db_conf.db_code,
             "kn_code": kn_code,
+            "kn_name": kn.kn_name,
+            "kn_desc": kn.kn_desc,
+            "kn_def": kn.kn_def,
+            "kn_alias": kn.kn_alias,
+            "rel_kn": kn.rel_kn,
+            "rel_col": kn.rel_col,
         }
         for kn_code, kn in kn_map.items()
     ]
