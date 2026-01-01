@@ -1,0 +1,676 @@
+2026-01-01 19:58:15.177 |   INFO   | __main__:clear_neo4j:654 - clear neo4j
+2026-01-01 19:58:15.177 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_shipments load table info
+2026-01-01 19:58:15.244 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_shipments load fewshot
+2026-01-01 19:58:15.373 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_shipments load column (4)
+2026-01-01 19:58:15.373 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_products load table info
+2026-01-01 19:58:15.399 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_products load fewshot
+2026-01-01 19:58:15.488 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_products load column (4)
+2026-01-01 19:58:15.488 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_product_batches load table info
+2026-01-01 19:58:15.517 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_product_batches load fewshot
+2026-01-01 19:58:15.595 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_product_batches load column (12)
+2026-01-01 19:58:15.595 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_carriers load table info
+2026-01-01 19:58:15.624 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_carriers load fewshot
+2026-01-01 19:58:15.705 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_carriers load column (2)
+2026-01-01 19:58:15.705 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_vehicles load table info
+2026-01-01 19:58:15.738 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_vehicles load fewshot
+2026-01-01 19:58:15.821 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_vehicles load column (5)
+2026-01-01 19:58:15.821 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_monitoring_devices load table info
+2026-01-01 19:58:15.847 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_monitoring_devices load fewshot
+2026-01-01 19:58:15.926 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_monitoring_devices load column (5)
+2026-01-01 19:58:15.926 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_environmental_monitoring load table info
+2026-01-01 19:58:15.959 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_environmental_monitoring load fewshot
+2026-01-01 19:58:16.042 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_environmental_monitoring load column (3)
+2026-01-01 19:58:16.042 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_quality_compliance load table info
+2026-01-01 19:58:16.075 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_quality_compliance load fewshot
+2026-01-01 19:58:16.159 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_quality_compliance load column (2)
+2026-01-01 19:58:16.159 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_incident_and_risk_management load table info
+2026-01-01 19:58:16.192 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_incident_and_risk_management load fewshot
+2026-01-01 19:58:16.272 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_incident_and_risk_management load column (2)
+2026-01-01 19:58:16.272 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_insurance_claims load table info
+2026-01-01 19:58:16.302 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_insurance_claims load fewshot
+2026-01-01 19:58:16.378 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_insurance_claims load column (6)
+2026-01-01 19:58:16.378 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_reviews_and_improvements load table info
+2026-01-01 19:58:16.408 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_reviews_and_improvements load fewshot
+2026-01-01 19:58:16.482 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_reviews_and_improvements load column (27)
+2026-01-01 19:58:16.482 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_ship_sensor_link load table info
+2026-01-01 19:58:16.505 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_ship_sensor_link load fewshot
+2026-01-01 19:58:16.578 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_ship_sensor_link load column (2)
+2026-01-01 19:58:16.578 |   INFO   | load_meta:load_meta:54 - pg_cold_chain_pharma_compliance load knowledge (60)
+2026-01-01 19:58:16.578 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_projects load table info
+2026-01-01 19:58:16.603 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_projects load fewshot
+2026-01-01 19:58:16.678 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_projects load column (5)
+2026-01-01 19:58:16.678 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_personnel load table info
+2026-01-01 19:58:16.701 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_personnel load fewshot
+2026-01-01 19:58:16.781 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_personnel load column (4)
+2026-01-01 19:58:16.782 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_sites load table info
+2026-01-01 19:58:16.813 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_sites load fewshot
+2026-01-01 19:58:16.889 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_sites load column (10)
+2026-01-01 19:58:16.889 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_equipment load table info
+2026-01-01 19:58:16.917 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_equipment load fewshot
+2026-01-01 19:58:16.996 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_equipment load column (14)
+2026-01-01 19:58:16.996 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_scans load table info
+2026-01-01 19:58:17.027 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_scans load fewshot
+2026-01-01 19:58:17.114 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_scans load column (12)
+2026-01-01 19:58:17.114 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_environment load table info
+2026-01-01 19:58:17.142 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_environment load fewshot
+2026-01-01 19:58:17.217 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_environment load column (6)
+2026-01-01 19:58:17.217 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_pointcloud load table info
+2026-01-01 19:58:17.246 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_pointcloud load fewshot
+2026-01-01 19:58:17.320 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_pointcloud load column (4)
+2026-01-01 19:58:17.321 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_mesh load table info
+2026-01-01 19:58:17.352 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_mesh load fewshot
+2026-01-01 19:58:17.428 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_mesh load column (4)
+2026-01-01 19:58:17.428 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_spatial load table info
+2026-01-01 19:58:17.455 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_spatial load fewshot
+2026-01-01 19:58:17.537 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_spatial load column (4)
+2026-01-01 19:58:17.537 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_features load table info
+2026-01-01 19:58:17.575 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_features load fewshot
+2026-01-01 19:58:17.663 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_features load column (5)
+2026-01-01 19:58:17.663 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_conservation load table info
+2026-01-01 19:58:17.692 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_conservation load fewshot
+2026-01-01 19:58:17.770 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_conservation load column (8)
+2026-01-01 19:58:17.770 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_registration load table info
+2026-01-01 19:58:17.800 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_registration load fewshot
+2026-01-01 19:58:17.880 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_registration load column (4)
+2026-01-01 19:58:17.881 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_processing load table info
+2026-01-01 19:58:17.913 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_processing load fewshot
+2026-01-01 19:58:17.995 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_processing load column (14)
+2026-01-01 19:58:17.996 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_qualitycontrol load table info
+2026-01-01 19:58:18.028 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_qualitycontrol load fewshot
+2026-01-01 19:58:18.115 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_qualitycontrol load column (12)
+2026-01-01 19:58:18.115 |   INFO   | load_meta:load_meta:54 - pg_archeology_scan load knowledge (54)
+2026-01-01 19:58:18.115 |   INFO   | load_meta:load_meta:22 - mysql_sales_sales_data load table info
+2026-01-01 19:58:18.298 |   INFO   | load_meta:load_meta:29 - mysql_sales_sales_data load fewshot
+2026-01-01 19:58:18.321 |   INFO   | load_meta:load_meta:36 - mysql_sales_sales_data load column (20)
+2026-01-01 19:58:18.961 |   INFO   | __main__:create_constraints:175 - create constraints
+2026-01-01 19:58:19.581 |   INFO   | __main__:create_indexes:209 - create indexes
+2026-01-01 19:58:19.999 |   INFO   | __main__:save_tb_info:247 - save database (3)
+2026-01-01 19:58:20.080 |   INFO   | __main__:save_tb_info:258 - save table (27)
+2026-01-01 19:58:20.385 |   INFO   | __main__:save_tb_info:270 - save table-belong->database (27)
+2026-01-01 19:58:20.385 |  ERROR   | __main__:save_meta:81 - save table column error: Object of type DictConfig is not JSON serializable
+Traceback (most recent call last):
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 665, in <module>
+    asyncio.run(main())
+    │       │   └ <function main at 0x7ce11b2a9940>
+    │       └ <function run at 0x7ce122afbf60>
+    └ <module 'asyncio' from '/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/__init__.py'>
+
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object main at 0x7ce11b24b300>
+           │      └ <function Runner.run at 0x7ce12299e200>
+           └ <asyncio.runners.Runner object at 0x7ce122e31160>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<main() running at /home/kodey/multi-agent/meta_db/save_meta.py:663> cb=[_run_until_complete...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7ce12299be20>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7ce122e31160>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 678, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7ce12299bd80>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 645, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7ce12299dbc0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 1999, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7ce122aeb9c0>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 663, in main
+    await save_meta(tb_info_list, tb_col_list, kn_list)
+          │         │             │            └ [{'db_code': 'pg_cold_chain_pharma_compliance', 'kn_code': 0, 'kn_name': 'Temperature Excursion Duration (TED)', 'kn_desc': '...
+          │         │             └ [{'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'reckey', 'col_type': 'TEXT', 'col_comment': None, 'few...
+          │         └ [{'db_code': 'pg_cold_chain_pharma_compliance', 'db_name': '冷链药品合规数据库', 'db_type': 'postgresql', 'database': 'cold_chain_phar...
+          └ <function save_meta at 0x7ce11bb22e80>
+
+> File "/home/kodey/multi-agent/meta_db/save_meta.py", line 79, in save_meta
+    await save_tb_column(session, tb_col_list)
+          │              │        └ [{'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'reckey', 'col_type': 'TEXT', 'col_comment': None, 'few...
+          │              └ <neo4j._async.work.session.AsyncSession object at 0x7ce11a3ac260>
+          └ <function save_tb_column at 0x7ce11b2a9d00>
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 285, in save_tb_column
+    json.dumps(col["field_meaning"], ensure_ascii=False)
+    │    │     └ {'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'shipment_overview', 'col_type': 'JSONB', 'col_comment':...
+    │    └ <function dumps at 0x7ce122a11ee0>
+    └ <module 'json' from '/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/__init__.py'>
+
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+      │          └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+      └ {}
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             │    │          └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+             │    └ <function JSONEncoder.iterencode at 0x7ce122a12a20>
+             └ <json.encoder.JSONEncoder object at 0x7ce119ff9c70>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           │           └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+           └ <_json.Encoder object at 0x7ce11a61a740>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                                      │ │         └ <member '__name__' of 'getset_descriptor' objects>
+                                      │ └ <attribute '__class__' of 'object' objects>
+                                      └ {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地物流中心的代码或名称...
+
+TypeError: Object of type DictConfig is not JSON serializable
+2026-01-01 19:58:40.617 |   INFO   | __main__:clear_neo4j:654 - clear neo4j
+2026-01-01 19:58:40.617 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_shipments load table info
+2026-01-01 19:58:40.742 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_shipments load fewshot
+2026-01-01 19:58:40.830 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_shipments load column (4)
+2026-01-01 19:58:40.831 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_products load table info
+2026-01-01 19:58:40.858 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_products load fewshot
+2026-01-01 19:58:40.940 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_products load column (4)
+2026-01-01 19:58:40.940 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_product_batches load table info
+2026-01-01 19:58:40.972 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_product_batches load fewshot
+2026-01-01 19:58:41.057 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_product_batches load column (12)
+2026-01-01 19:58:41.057 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_carriers load table info
+2026-01-01 19:58:41.085 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_carriers load fewshot
+2026-01-01 19:58:41.166 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_carriers load column (2)
+2026-01-01 19:58:41.166 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_vehicles load table info
+2026-01-01 19:58:41.194 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_vehicles load fewshot
+2026-01-01 19:58:41.266 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_vehicles load column (5)
+2026-01-01 19:58:41.266 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_monitoring_devices load table info
+2026-01-01 19:58:41.293 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_monitoring_devices load fewshot
+2026-01-01 19:58:41.366 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_monitoring_devices load column (5)
+2026-01-01 19:58:41.366 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_environmental_monitoring load table info
+2026-01-01 19:58:41.397 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_environmental_monitoring load fewshot
+2026-01-01 19:58:41.474 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_environmental_monitoring load column (3)
+2026-01-01 19:58:41.474 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_quality_compliance load table info
+2026-01-01 19:58:41.504 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_quality_compliance load fewshot
+2026-01-01 19:58:41.582 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_quality_compliance load column (2)
+2026-01-01 19:58:41.582 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_incident_and_risk_management load table info
+2026-01-01 19:58:41.614 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_incident_and_risk_management load fewshot
+2026-01-01 19:58:41.687 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_incident_and_risk_management load column (2)
+2026-01-01 19:58:41.688 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_insurance_claims load table info
+2026-01-01 19:58:41.715 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_insurance_claims load fewshot
+2026-01-01 19:58:41.788 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_insurance_claims load column (6)
+2026-01-01 19:58:41.788 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_reviews_and_improvements load table info
+2026-01-01 19:58:41.822 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_reviews_and_improvements load fewshot
+2026-01-01 19:58:41.896 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_reviews_and_improvements load column (27)
+2026-01-01 19:58:41.897 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_ship_sensor_link load table info
+2026-01-01 19:58:41.923 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_ship_sensor_link load fewshot
+2026-01-01 19:58:41.997 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_ship_sensor_link load column (2)
+2026-01-01 19:58:41.997 |   INFO   | load_meta:load_meta:54 - pg_cold_chain_pharma_compliance load knowledge (60)
+2026-01-01 19:58:41.997 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_projects load table info
+2026-01-01 19:58:42.024 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_projects load fewshot
+2026-01-01 19:58:42.102 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_projects load column (5)
+2026-01-01 19:58:42.102 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_personnel load table info
+2026-01-01 19:58:42.128 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_personnel load fewshot
+2026-01-01 19:58:42.200 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_personnel load column (4)
+2026-01-01 19:58:42.200 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_sites load table info
+2026-01-01 19:58:42.231 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_sites load fewshot
+2026-01-01 19:58:42.306 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_sites load column (10)
+2026-01-01 19:58:42.306 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_equipment load table info
+2026-01-01 19:58:42.336 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_equipment load fewshot
+2026-01-01 19:58:42.410 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_equipment load column (14)
+2026-01-01 19:58:42.410 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_scans load table info
+2026-01-01 19:58:42.438 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_scans load fewshot
+2026-01-01 19:58:42.514 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_scans load column (12)
+2026-01-01 19:58:42.514 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_environment load table info
+2026-01-01 19:58:42.544 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_environment load fewshot
+2026-01-01 19:58:42.622 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_environment load column (6)
+2026-01-01 19:58:42.622 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_pointcloud load table info
+2026-01-01 19:58:42.647 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_pointcloud load fewshot
+2026-01-01 19:58:42.726 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_pointcloud load column (4)
+2026-01-01 19:58:42.726 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_mesh load table info
+2026-01-01 19:58:42.755 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_mesh load fewshot
+2026-01-01 19:58:42.831 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_mesh load column (4)
+2026-01-01 19:58:42.832 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_spatial load table info
+2026-01-01 19:58:42.857 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_spatial load fewshot
+2026-01-01 19:58:42.940 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_spatial load column (4)
+2026-01-01 19:58:42.940 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_features load table info
+2026-01-01 19:58:42.970 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_features load fewshot
+2026-01-01 19:58:43.047 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_features load column (5)
+2026-01-01 19:58:43.047 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_conservation load table info
+2026-01-01 19:58:43.074 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_conservation load fewshot
+2026-01-01 19:58:43.152 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_conservation load column (8)
+2026-01-01 19:58:43.152 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_registration load table info
+2026-01-01 19:58:43.182 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_registration load fewshot
+2026-01-01 19:58:43.263 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_registration load column (4)
+2026-01-01 19:58:43.263 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_processing load table info
+2026-01-01 19:58:43.295 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_processing load fewshot
+2026-01-01 19:58:43.377 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_processing load column (14)
+2026-01-01 19:58:43.377 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_qualitycontrol load table info
+2026-01-01 19:58:43.405 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_qualitycontrol load fewshot
+2026-01-01 19:58:43.482 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_qualitycontrol load column (12)
+2026-01-01 19:58:43.482 |   INFO   | load_meta:load_meta:54 - pg_archeology_scan load knowledge (54)
+2026-01-01 19:58:43.482 |   INFO   | load_meta:load_meta:22 - mysql_sales_sales_data load table info
+2026-01-01 19:58:43.654 |   INFO   | load_meta:load_meta:29 - mysql_sales_sales_data load fewshot
+2026-01-01 19:58:43.675 |   INFO   | load_meta:load_meta:36 - mysql_sales_sales_data load column (20)
+2026-01-01 19:58:44.015 |   INFO   | __main__:create_constraints:175 - create constraints
+2026-01-01 19:58:44.089 |   INFO   | __main__:create_indexes:209 - create indexes
+2026-01-01 19:58:44.192 |   INFO   | __main__:save_tb_info:247 - save database (3)
+2026-01-01 19:58:44.249 |   INFO   | __main__:save_tb_info:258 - save table (27)
+2026-01-01 19:58:44.330 |   INFO   | __main__:save_tb_info:270 - save table-belong->database (27)
+2026-01-01 19:58:44.331 |  ERROR   | __main__:save_meta:81 - save table column error: Object of type DictConfig is not JSON serializable
+Traceback (most recent call last):
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 665, in <module>
+    asyncio.run(main())
+    │       │   └ <function main at 0x7d25edbf5620>
+    │       └ <function run at 0x7d25f6163f60>
+    └ <module 'asyncio' from '/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/__init__.py'>
+
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object main at 0x7d25ee4bdee0>
+           │      └ <function Runner.run at 0x7d25f6006200>
+           └ <asyncio.runners.Runner object at 0x7d25f647faa0>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<main() running at /home/kodey/multi-agent/meta_db/save_meta.py:663> cb=[_run_until_complete...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7d25f6003e20>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7d25f647faa0>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 678, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7d25f6003d80>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 645, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7d25f6005bc0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 1999, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7d25f61539c0>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 663, in main
+    await save_meta(tb_info_list, tb_col_list, kn_list)
+          │         │             │            └ [{'db_code': 'pg_cold_chain_pharma_compliance', 'kn_code': 0, 'kn_name': 'Temperature Excursion Duration (TED)', 'kn_desc': '...
+          │         │             └ [{'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'reckey', 'col_type': 'TEXT', 'col_comment': None, 'few...
+          │         └ [{'db_code': 'pg_cold_chain_pharma_compliance', 'db_name': '冷链药品合规数据库', 'db_type': 'postgresql', 'database': 'cold_chain_phar...
+          └ <function save_meta at 0x7d25ee472b60>
+
+> File "/home/kodey/multi-agent/meta_db/save_meta.py", line 79, in save_meta
+    await save_tb_column(session, tb_col_list)
+          │              │        └ [{'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'reckey', 'col_type': 'TEXT', 'col_comment': None, 'few...
+          │              └ <neo4j._async.work.session.AsyncSession object at 0x7d25ec975010>
+          └ <function save_tb_column at 0x7d25edbf59e0>
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 285, in save_tb_column
+    json.dumps(col["field_meaning"], ensure_ascii=False)
+    │    │     └ {'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'shipment_overview', 'col_type': 'JSONB', 'col_comment':...
+    │    └ <function dumps at 0x7d25f6079ee0>
+    └ <module 'json' from '/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/__init__.py'>
+
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+      │          └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+      └ {}
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             │    │          └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+             │    └ <function JSONEncoder.iterencode at 0x7d25f607aa20>
+             └ <json.encoder.JSONEncoder object at 0x7d25ecad3f50>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           │           └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+           └ <_json.Encoder object at 0x7d25ec913640>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                                      │ │         └ <member '__name__' of 'getset_descriptor' objects>
+                                      │ └ <attribute '__class__' of 'object' objects>
+                                      └ {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地物流中心的代码或名称...
+
+TypeError: Object of type DictConfig is not JSON serializable
+2026-01-01 20:00:26.066 |   INFO   | __main__:clear_neo4j:655 - clear neo4j
+2026-01-01 20:00:26.066 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_shipments load table info
+2026-01-01 20:00:26.172 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_shipments load fewshot
+2026-01-01 20:00:26.253 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_shipments load column (4)
+2026-01-01 20:00:26.254 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_products load table info
+2026-01-01 20:00:26.280 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_products load fewshot
+2026-01-01 20:00:26.355 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_products load column (4)
+2026-01-01 20:00:26.355 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_product_batches load table info
+2026-01-01 20:00:26.383 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_product_batches load fewshot
+2026-01-01 20:00:26.462 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_product_batches load column (12)
+2026-01-01 20:00:26.462 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_carriers load table info
+2026-01-01 20:00:26.487 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_carriers load fewshot
+2026-01-01 20:00:26.560 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_carriers load column (2)
+2026-01-01 20:00:26.560 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_vehicles load table info
+2026-01-01 20:00:26.584 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_vehicles load fewshot
+2026-01-01 20:00:26.658 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_vehicles load column (5)
+2026-01-01 20:00:26.659 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_monitoring_devices load table info
+2026-01-01 20:00:26.683 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_monitoring_devices load fewshot
+2026-01-01 20:00:26.758 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_monitoring_devices load column (5)
+2026-01-01 20:00:26.759 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_environmental_monitoring load table info
+2026-01-01 20:00:26.787 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_environmental_monitoring load fewshot
+2026-01-01 20:00:26.860 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_environmental_monitoring load column (3)
+2026-01-01 20:00:26.861 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_quality_compliance load table info
+2026-01-01 20:00:26.891 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_quality_compliance load fewshot
+2026-01-01 20:00:26.972 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_quality_compliance load column (2)
+2026-01-01 20:00:26.972 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_incident_and_risk_management load table info
+2026-01-01 20:00:27.011 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_incident_and_risk_management load fewshot
+2026-01-01 20:00:27.091 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_incident_and_risk_management load column (2)
+2026-01-01 20:00:27.092 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_insurance_claims load table info
+2026-01-01 20:00:27.120 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_insurance_claims load fewshot
+2026-01-01 20:00:27.194 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_insurance_claims load column (6)
+2026-01-01 20:00:27.195 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_reviews_and_improvements load table info
+2026-01-01 20:00:27.224 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_reviews_and_improvements load fewshot
+2026-01-01 20:00:27.303 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_reviews_and_improvements load column (27)
+2026-01-01 20:00:27.303 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_ship_sensor_link load table info
+2026-01-01 20:00:27.327 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_ship_sensor_link load fewshot
+2026-01-01 20:00:27.401 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_ship_sensor_link load column (2)
+2026-01-01 20:00:27.402 |   INFO   | load_meta:load_meta:54 - pg_cold_chain_pharma_compliance load knowledge (60)
+2026-01-01 20:00:27.402 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_projects load table info
+2026-01-01 20:00:27.428 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_projects load fewshot
+2026-01-01 20:00:27.503 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_projects load column (5)
+2026-01-01 20:00:27.503 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_personnel load table info
+2026-01-01 20:00:27.530 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_personnel load fewshot
+2026-01-01 20:00:27.605 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_personnel load column (4)
+2026-01-01 20:00:27.605 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_sites load table info
+2026-01-01 20:00:27.632 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_sites load fewshot
+2026-01-01 20:00:27.703 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_sites load column (10)
+2026-01-01 20:00:27.703 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_equipment load table info
+2026-01-01 20:00:27.732 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_equipment load fewshot
+2026-01-01 20:00:27.808 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_equipment load column (14)
+2026-01-01 20:00:27.808 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_scans load table info
+2026-01-01 20:00:27.836 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_scans load fewshot
+2026-01-01 20:00:27.910 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_scans load column (12)
+2026-01-01 20:00:27.911 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_environment load table info
+2026-01-01 20:00:27.937 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_environment load fewshot
+2026-01-01 20:00:28.011 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_environment load column (6)
+2026-01-01 20:00:28.011 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_pointcloud load table info
+2026-01-01 20:00:28.044 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_pointcloud load fewshot
+2026-01-01 20:00:28.118 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_pointcloud load column (4)
+2026-01-01 20:00:28.118 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_mesh load table info
+2026-01-01 20:00:28.144 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_mesh load fewshot
+2026-01-01 20:00:28.213 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_mesh load column (4)
+2026-01-01 20:00:28.213 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_spatial load table info
+2026-01-01 20:00:28.238 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_spatial load fewshot
+2026-01-01 20:00:28.313 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_spatial load column (4)
+2026-01-01 20:00:28.313 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_features load table info
+2026-01-01 20:00:28.340 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_features load fewshot
+2026-01-01 20:00:28.413 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_features load column (5)
+2026-01-01 20:00:28.413 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_conservation load table info
+2026-01-01 20:00:28.436 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_conservation load fewshot
+2026-01-01 20:00:28.512 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_conservation load column (8)
+2026-01-01 20:00:28.513 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_registration load table info
+2026-01-01 20:00:28.538 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_registration load fewshot
+2026-01-01 20:00:28.610 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_registration load column (4)
+2026-01-01 20:00:28.611 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_processing load table info
+2026-01-01 20:00:28.639 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_processing load fewshot
+2026-01-01 20:00:28.712 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_processing load column (14)
+2026-01-01 20:00:28.712 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_qualitycontrol load table info
+2026-01-01 20:00:28.737 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_qualitycontrol load fewshot
+2026-01-01 20:00:28.811 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_qualitycontrol load column (12)
+2026-01-01 20:00:28.811 |   INFO   | load_meta:load_meta:54 - pg_archeology_scan load knowledge (54)
+2026-01-01 20:00:28.811 |   INFO   | load_meta:load_meta:22 - mysql_sales_sales_data load table info
+2026-01-01 20:00:28.978 |   INFO   | load_meta:load_meta:29 - mysql_sales_sales_data load fewshot
+2026-01-01 20:00:28.999 |   INFO   | load_meta:load_meta:36 - mysql_sales_sales_data load column (20)
+2026-01-01 20:00:29.318 |   INFO   | __main__:create_constraints:175 - create constraints
+2026-01-01 20:00:29.410 |   INFO   | __main__:create_indexes:209 - create indexes
+2026-01-01 20:00:29.486 |   INFO   | __main__:save_tb_info:247 - save database (3)
+2026-01-01 20:00:29.531 |   INFO   | __main__:save_tb_info:258 - save table (27)
+2026-01-01 20:00:29.595 |   INFO   | __main__:save_tb_info:270 - save table-belong->database (27)
+2026-01-01 20:00:29.595 |  ERROR   | __main__:save_meta:81 - save table column error: Object of type DictConfig is not JSON serializable
+Traceback (most recent call last):
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 666, in <module>
+    asyncio.run(main())
+    │       │   └ <function main at 0x7d665a42d620>
+    │       └ <function run at 0x7d6662b63f60>
+    └ <module 'asyncio' from '/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/__init__.py'>
+
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object main at 0x7d665aef5ee0>
+           │      └ <function Runner.run at 0x7d6662a06200>
+           └ <asyncio.runners.Runner object at 0x7d6662e7fb30>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<main() running at /home/kodey/multi-agent/meta_db/save_meta.py:664> cb=[_run_until_complete...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7d6662a03e20>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7d6662e7fb30>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 678, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7d6662a03d80>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 645, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7d6662a05bc0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 1999, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7d6662b539c0>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 664, in main
+    await save_meta(tb_info_list, tb_col_list, kn_list)
+          │         │             │            └ [{'db_code': 'pg_cold_chain_pharma_compliance', 'kn_code': 0, 'kn_name': 'Temperature Excursion Duration (TED)', 'kn_desc': '...
+          │         │             └ [{'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'reckey', 'col_type': 'TEXT', 'col_comment': None, 'few...
+          │         └ [{'db_code': 'pg_cold_chain_pharma_compliance', 'db_name': '冷链药品合规数据库', 'db_type': 'postgresql', 'database': 'cold_chain_phar...
+          └ <function save_meta at 0x7d665aea6b60>
+
+> File "/home/kodey/multi-agent/meta_db/save_meta.py", line 79, in save_meta
+    await save_tb_column(session, tb_col_list)
+          │              │        └ [{'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'reckey', 'col_type': 'TEXT', 'col_comment': None, 'few...
+          │              └ <neo4j._async.work.session.AsyncSession object at 0x7d66597c4cb0>
+          └ <function save_tb_column at 0x7d665a42d9e0>
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 286, in save_tb_column
+    json.dumps(col["field_meaning"], ensure_ascii=False)
+    │    │     └ {'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'shipment_overview', 'col_type': 'JSONB', 'col_comment':...
+    │    └ <function dumps at 0x7d6662a79ee0>
+    └ <module 'json' from '/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/__init__.py'>
+
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+      │          └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+      └ {}
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             │    │          └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+             │    └ <function JSONEncoder.iterencode at 0x7d6662a7aa20>
+             └ <json.encoder.JSONEncoder object at 0x7d66591895e0>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           │           └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+           └ <_json.Encoder object at 0x7d66596d8d60>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                                      │ │         └ <member '__name__' of 'getset_descriptor' objects>
+                                      │ └ <attribute '__class__' of 'object' objects>
+                                      └ {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地物流中心的代码或名称...
+
+TypeError: Object of type DictConfig is not JSON serializable
+2026-01-01 20:01:18.803 |   INFO   | __main__:clear_neo4j:654 - clear neo4j
+2026-01-01 20:01:18.803 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_shipments load table info
+2026-01-01 20:01:18.912 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_shipments load fewshot
+2026-01-01 20:01:18.993 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_shipments load column (4)
+2026-01-01 20:01:18.993 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_products load table info
+2026-01-01 20:01:19.017 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_products load fewshot
+2026-01-01 20:01:19.094 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_products load column (4)
+2026-01-01 20:01:19.094 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_product_batches load table info
+2026-01-01 20:01:19.120 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_product_batches load fewshot
+2026-01-01 20:01:19.200 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_product_batches load column (12)
+2026-01-01 20:01:19.200 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_carriers load table info
+2026-01-01 20:01:19.226 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_carriers load fewshot
+2026-01-01 20:01:19.298 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_carriers load column (2)
+2026-01-01 20:01:19.299 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_vehicles load table info
+2026-01-01 20:01:19.323 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_vehicles load fewshot
+2026-01-01 20:01:19.395 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_vehicles load column (5)
+2026-01-01 20:01:19.395 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_monitoring_devices load table info
+2026-01-01 20:01:19.426 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_monitoring_devices load fewshot
+2026-01-01 20:01:19.503 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_monitoring_devices load column (5)
+2026-01-01 20:01:19.503 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_environmental_monitoring load table info
+2026-01-01 20:01:19.532 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_environmental_monitoring load fewshot
+2026-01-01 20:01:19.609 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_environmental_monitoring load column (3)
+2026-01-01 20:01:19.609 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_quality_compliance load table info
+2026-01-01 20:01:19.643 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_quality_compliance load fewshot
+2026-01-01 20:01:19.727 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_quality_compliance load column (2)
+2026-01-01 20:01:19.727 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_incident_and_risk_management load table info
+2026-01-01 20:01:19.767 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_incident_and_risk_management load fewshot
+2026-01-01 20:01:19.849 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_incident_and_risk_management load column (2)
+2026-01-01 20:01:19.849 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_insurance_claims load table info
+2026-01-01 20:01:19.879 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_insurance_claims load fewshot
+2026-01-01 20:01:19.964 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_insurance_claims load column (6)
+2026-01-01 20:01:19.964 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_reviews_and_improvements load table info
+2026-01-01 20:01:19.999 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_reviews_and_improvements load fewshot
+2026-01-01 20:01:20.081 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_reviews_and_improvements load column (27)
+2026-01-01 20:01:20.082 |   INFO   | load_meta:load_meta:22 - pg_cold_chain_pharma_compliance_ship_sensor_link load table info
+2026-01-01 20:01:20.110 |   INFO   | load_meta:load_meta:29 - pg_cold_chain_pharma_compliance_ship_sensor_link load fewshot
+2026-01-01 20:01:20.206 |   INFO   | load_meta:load_meta:36 - pg_cold_chain_pharma_compliance_ship_sensor_link load column (2)
+2026-01-01 20:01:20.206 |   INFO   | load_meta:load_meta:54 - pg_cold_chain_pharma_compliance load knowledge (60)
+2026-01-01 20:01:20.207 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_projects load table info
+2026-01-01 20:01:20.239 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_projects load fewshot
+2026-01-01 20:01:20.317 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_projects load column (5)
+2026-01-01 20:01:20.318 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_personnel load table info
+2026-01-01 20:01:20.348 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_personnel load fewshot
+2026-01-01 20:01:20.437 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_personnel load column (4)
+2026-01-01 20:01:20.437 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_sites load table info
+2026-01-01 20:01:20.472 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_sites load fewshot
+2026-01-01 20:01:20.550 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_sites load column (10)
+2026-01-01 20:01:20.550 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_equipment load table info
+2026-01-01 20:01:20.579 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_equipment load fewshot
+2026-01-01 20:01:20.665 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_equipment load column (14)
+2026-01-01 20:01:20.666 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_scans load table info
+2026-01-01 20:01:20.697 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_scans load fewshot
+2026-01-01 20:01:20.784 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_scans load column (12)
+2026-01-01 20:01:20.784 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_environment load table info
+2026-01-01 20:01:20.813 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_environment load fewshot
+2026-01-01 20:01:20.891 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_environment load column (6)
+2026-01-01 20:01:20.891 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_pointcloud load table info
+2026-01-01 20:01:20.919 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_pointcloud load fewshot
+2026-01-01 20:01:21.002 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_pointcloud load column (4)
+2026-01-01 20:01:21.002 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_mesh load table info
+2026-01-01 20:01:21.031 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_mesh load fewshot
+2026-01-01 20:01:21.106 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_mesh load column (4)
+2026-01-01 20:01:21.107 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_spatial load table info
+2026-01-01 20:01:21.133 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_spatial load fewshot
+2026-01-01 20:01:21.211 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_spatial load column (4)
+2026-01-01 20:01:21.211 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_features load table info
+2026-01-01 20:01:21.243 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_features load fewshot
+2026-01-01 20:01:21.324 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_features load column (5)
+2026-01-01 20:01:21.324 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_conservation load table info
+2026-01-01 20:01:21.351 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_conservation load fewshot
+2026-01-01 20:01:21.428 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_conservation load column (8)
+2026-01-01 20:01:21.428 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_registration load table info
+2026-01-01 20:01:21.455 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_registration load fewshot
+2026-01-01 20:01:21.540 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_registration load column (4)
+2026-01-01 20:01:21.540 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_processing load table info
+2026-01-01 20:01:21.570 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_processing load fewshot
+2026-01-01 20:01:21.646 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_processing load column (14)
+2026-01-01 20:01:21.647 |   INFO   | load_meta:load_meta:22 - pg_archeology_scan_qualitycontrol load table info
+2026-01-01 20:01:21.676 |   INFO   | load_meta:load_meta:29 - pg_archeology_scan_qualitycontrol load fewshot
+2026-01-01 20:01:21.752 |   INFO   | load_meta:load_meta:36 - pg_archeology_scan_qualitycontrol load column (12)
+2026-01-01 20:01:21.753 |   INFO   | load_meta:load_meta:54 - pg_archeology_scan load knowledge (54)
+2026-01-01 20:01:21.753 |   INFO   | load_meta:load_meta:22 - mysql_sales_sales_data load table info
+2026-01-01 20:01:21.921 |   INFO   | load_meta:load_meta:29 - mysql_sales_sales_data load fewshot
+2026-01-01 20:01:21.943 |   INFO   | load_meta:load_meta:36 - mysql_sales_sales_data load column (20)
+2026-01-01 20:01:22.259 |   INFO   | __main__:create_constraints:175 - create constraints
+2026-01-01 20:01:22.333 |   INFO   | __main__:create_indexes:209 - create indexes
+2026-01-01 20:01:22.410 |   INFO   | __main__:save_tb_info:247 - save database (3)
+2026-01-01 20:01:22.449 |   INFO   | __main__:save_tb_info:258 - save table (27)
+2026-01-01 20:01:22.511 |   INFO   | __main__:save_tb_info:270 - save table-belong->database (27)
+2026-01-01 20:01:22.511 |  ERROR   | __main__:save_meta:81 - save table column error: Object of type DictConfig is not JSON serializable
+Traceback (most recent call last):
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 665, in <module>
+    asyncio.run(main())
+    │       │   └ <function main at 0x78e28976d620>
+    │       └ <function run at 0x78e291e87f60>
+    └ <module 'asyncio' from '/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/__init__.py'>
+
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object main at 0x78e28a035ee0>
+           │      └ <function Runner.run at 0x78e291d0a200>
+           └ <asyncio.runners.Runner object at 0x78e28987d970>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<main() running at /home/kodey/multi-agent/meta_db/save_meta.py:663> cb=[_run_until_complete...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x78e291d07e20>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x78e28987d970>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 678, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x78e291d07d80>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 645, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x78e291d09bc0>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py", line 1999, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x78e291e779c0>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup(<Future finished result=None>)>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup(<Future finished result=None>)>
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 663, in main
+    await save_meta(tb_info_list, tb_col_list, kn_list)
+          │         │             │            └ [{'db_code': 'pg_cold_chain_pharma_compliance', 'kn_code': 0, 'kn_name': 'Temperature Excursion Duration (TED)', 'kn_desc': '...
+          │         │             └ [{'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'reckey', 'col_type': 'TEXT', 'col_comment': None, 'few...
+          │         └ [{'db_code': 'pg_cold_chain_pharma_compliance', 'db_name': '冷链药品合规数据库', 'db_type': 'postgresql', 'database': 'cold_chain_phar...
+          └ <function save_meta at 0x78e28a1e2b60>
+
+> File "/home/kodey/multi-agent/meta_db/save_meta.py", line 79, in save_meta
+    await save_tb_column(session, tb_col_list)
+          │              │        └ [{'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'reckey', 'col_type': 'TEXT', 'col_comment': None, 'few...
+          │              └ <neo4j._async.work.session.AsyncSession object at 0x78e288c63a40>
+          └ <function save_tb_column at 0x78e28976d9e0>
+
+  File "/home/kodey/multi-agent/meta_db/save_meta.py", line 285, in save_tb_column
+    json.dumps(dict(col["field_meaning"]), ensure_ascii=False)
+    │    │          └ {'tb_code': 'pg_cold_chain_pharma_compliance_shipments', 'col_name': 'shipment_overview', 'col_type': 'JSONB', 'col_comment':...
+    │    └ <function dumps at 0x78e291d7dee0>
+    └ <module 'json' from '/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/__init__.py'>
+
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/__init__.py", line 238, in dumps
+    **kw).encode(obj)
+      │          └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+      └ {}
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             │    │          └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+             │    └ <function JSONEncoder.iterencode at 0x78e291d7ea20>
+             └ <json.encoder.JSONEncoder object at 0x78e2885a1430>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           │           └ {'route': {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地...
+           └ <_json.Encoder object at 0x78e288ae1120>
+  File "/home/kodey/.local/share/uv/python/cpython-3.12.12-linux-x86_64-gnu/lib/python3.12/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                                      │ │         └ <member '__name__' of 'getset_descriptor' objects>
+                                      │ └ <attribute '__class__' of 'object' objects>
+                                      └ {'origin': {'hub': '起始物流中心的代码或名称', 'address': '起始地点的详细街道地址', 'nation': '起始地点的ISO国家代码'}, 'destination': {'hub': '目的地物流中心的代码或名称...
+
+TypeError: Object of type DictConfig is not JSON serializable

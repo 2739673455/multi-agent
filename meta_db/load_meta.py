@@ -19,31 +19,29 @@ async def load_meta():
                 # 获取表信息
                 try:
                     tb_info = await get_tb_info(db_conf, tb_code, tb_conf)
-                    logger.info(f"{db_conf.db_code}.{tb_code} load table info")
+                    logger.info(f"{tb_code} load table info")
                 except Exception as e:
-                    logger.exception(f"{db_code}.{tb_code} load table info error: {e}")
+                    logger.exception(f"{tb_code} load table info error: {e}")
                     continue
                 # 获取字段示例数据
                 try:
                     fewshot = await get_fewshot(db_conf, tb_conf)
-                    logger.info(f"{db_conf.db_code}.{tb_code} load fewshot")
+                    logger.info(f"{tb_code} load fewshot")
                 except Exception as e:
-                    logger.exception(f"{db_code}.{tb_code} load fewshot error: {e}")
+                    logger.exception(f"{tb_code} load fewshot error: {e}")
                     continue
                 # 获取表的字段属性
                 try:
                     columns = await get_column(db_conf, tb_conf)
-                    logger.info(
-                        f"{db_conf.db_code}.{tb_code} load column ({len(columns)})"
-                    )
+                    logger.info(f"{tb_code} load column ({len(columns)})")
                 except Exception as e:
-                    logger.exception(f"{db_code}.{tb_code} load column error: {e}")
+                    logger.exception(f"{tb_code} load column error: {e}")
                     continue
                 # 合并字段信息
                 try:
                     tb_cols = await merge_tb_col(tb_code, tb_conf, columns, fewshot)
                 except Exception as e:
-                    logger.exception(f"{db_code}.{tb_code} merge column error: {e}")
+                    logger.exception(f"{tb_code} merge column error: {e}")
                     continue
 
                 tb_info_list.append(tb_info)
@@ -53,7 +51,7 @@ async def load_meta():
             # 获取指标知识
             try:
                 knowledges = await get_knowledge(db_conf, db_conf.knowledge)
-                logger.info(f"{db_conf.db_code} load knowledge ({len(knowledges)})")
+                logger.info(f"{db_code} load knowledge ({len(knowledges)})")
                 kn_list.extend(knowledges)
             except Exception as e:
                 logger.exception(f"{db_code} load knowledge error: {e}")

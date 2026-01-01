@@ -116,26 +116,19 @@ def setup_logger():
     # loguru 默认有一个输出到 stderr 的处理器，级别为 INFO
     logger.remove()
 
-    # 日志格式
-    def get_log_format(record):
-        return (
-            " | ".join(
-                [
-                    "<green>{time:YYYY-MM-DD HH:mm:ss}</green>",
-                    "<level>{level:^8}</level>",
-                    "<cyan>{name}</cyan>.<cyan>{function}</cyan>",
-                    "<level>{message}</level>",
-                ]
-            )
-            + "\n"
-        )
+    log_format = (
+        "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
+        "<level>{level:^8}</level> | "
+        "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - "
+        "<level>{message}</level>"
+    )
 
     # 控制台输出处理器
     if CONF.logging.to_console:
         logger.add(
             sink=sys.stdout,  # 输出到标准输出
-            format=get_log_format,  # 日志格式
             level=CONF.logging.level,  # 从配置文件读取日志级别
+            format=log_format,  # 日志格式
             colorize=True,  # 启用颜色输出，提升可读性
             catch=False,  # 不捕获异常，让错误直接抛出
         )
@@ -147,8 +140,8 @@ def setup_logger():
 
         logger.add(
             sink=log_dir / "{time:YYYY-MM-DD}.log",  # 按日期命名的日志文件
-            format=get_log_format,  # 日志格式
             level=CONF.logging.level,  # 使用配置的日志级别
+            format=log_format,  # 日志格式
             rotation=f"{CONF.logging.max_file_size}",  # 按文件大小自动滚动
             encoding="utf-8",  # 使用UTF-8编码，支持中文
             catch=False,  # 不捕获异常，让错误直接抛出

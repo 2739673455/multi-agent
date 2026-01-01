@@ -90,14 +90,14 @@ async def save_meta(
 
         try:
             # 保存字段向量化信息
-            await save_col_embed(tb_col_list)
+            await save_col_embed(session, tb_col_list)
         except Exception as e:
             logger.exception(f"save column embedding error: {e}")
             raise
 
         try:
             # 保存知识向量化信息
-            await save_kn_embed(kn_list)
+            await save_kn_embed(session, kn_list)
         except Exception as e:
             logger.exception(f"save knowledge embedding error: {e}")
             raise
@@ -136,7 +136,7 @@ async def save_meta(
                 ):
                     tb_code2cols_map.setdefault(col["tb_code"], []).append(col)
             # 写入字段值信息
-            await save_cell(tb_code2tb_info_map, tb_code2cols_map)
+            await save_cell(session, tb_code2tb_info_map, tb_code2cols_map)
         except Exception as e:
             logger.exception(f"save cell error: {e}")
             raise
@@ -281,7 +281,6 @@ async def save_tb_column(session: AsyncSession, tb_col_list: list[dict]):
     )  # (tb_code, col_name, rel_tb_code, rel_col_name)
 
     for col in tb_col_list:
-        # 收集字段信息
         col["field_meaning"] = (
             json.dumps(col["field_meaning"], ensure_ascii=False)
             if col["field_meaning"]
@@ -337,39 +336,38 @@ async def save_knowledge(session: AsyncSession, kn_list: list[dict]):
     if not kn_list:
         return
 
-    knowledge_list: list[dict] = []
     kn_db_rel: set[tuple[str, int]] = set()
     kn_kn_rel: set[tuple[str, int, int]] = set()
     kn_col_rel: set[tuple[str, int, str, str]] = set()
 
     for kn in kn_list:
-        # 收集知识信息
-        knowledge_list.append(kn.model_dump())
         # 收集知识与库的关系
-        kn_db_rel.add((kn.db_code, kn.kn_code))
+        kn_db_rel.add((kn["db_code"], kn["kn_code"]))
         # 收集知识与知识的关系
-        if kn.rel_kn:
-            for rel_kn_code in kn.rel_kn:
-                kn_kn_rel.add((kn.db_code, kn.kn_code, rel_kn_code))
+        if kn["rel_kn"]:
+            for rel_kn_code in kn["rel_kn"]:
+                kn_kn_rel.add((kn["db_code"], kn["kn_code"], rel_kn_code))
         # 收集知识与字段的关系
-        if kn.rel_col:
-            for rel_col in kn.rel_col:
+        if kn["rel_col"]:
+            for rel_col in kn["rel_col"]:
                 rel_tb_name, rel_col_name = rel_col.split(".")
-                kn_col_rel.add((kn.db_code, kn.kn_code, rel_tb_name, rel_col_name))
+                kn_col_rel.add(
+                    (kn["db_code"], kn["kn_code"], rel_tb_name, rel_col_name)
+                )
 
     # 创建 KNOWLEDGE 节点
-    await driver.execute_query(
+    await session.run(
         """
         UNWIND $kns AS kn
         MERGE (n:KNOWLEDGE {db_code: kn.db_code, kn_code: kn.kn_code})
         SET n += kn
         """,
-        kns=knowledge_list,
+        kns=kn_list,
     )
     logger.info(f"save knowledge ({len(kn_list)})")
 
     # 创建 KNOWLEDGE-[:BELONG]->DATABASE 关系
-    await driver.execute_query(
+    await session.run(
         """
         UNWIND $kn_db_rel AS rel
         MATCH (db:DATABASE {db_code: rel[0]})
@@ -382,7 +380,7 @@ async def save_knowledge(session: AsyncSession, kn_list: list[dict]):
 
     # 创建 KNOWLEDGE-[:CONTAIN]->KNOWLEDGE 关系
     if kn_kn_rel:
-        await driver.execute_query(
+        await session.run(
             """
             UNWIND $kn_kn_rel AS rel
             MATCH (kn:KNOWLEDGE {db_code: rel[0], kn_code: rel[1]})
@@ -395,7 +393,7 @@ async def save_knowledge(session: AsyncSession, kn_list: list[dict]):
 
     # 创建 KNOWLEDGE-[:REL]->COLUMN 关系
     if kn_col_rel:
-        await driver.execute_query(
+        await session.run(
             """
             UNWIND $kn_col_rel AS rel
             MATCH (kn:KNOWLEDGE {db_code: rel[0], kn_code: rel[1]})-[]-(:DATABASE)-[]-(:TABLE)-[]-(rel_col:COLUMN {tb_name: rel[2], col_name: rel[3]})
@@ -406,7 +404,7 @@ async def save_knowledge(session: AsyncSession, kn_list: list[dict]):
     logger.info(f"save knowledge-rel->column ({len(kn_col_rel)})")
 
 
-async def save_col_embed(tb_col_list: list[Column]):
+async def save_col_embed(session: AsyncSession, tb_col_list: list[dict]):
     """写入表字段向量化信息"""
     if not tb_col_list:
         return
@@ -425,40 +423,43 @@ async def save_col_embed(tb_col_list: list[Column]):
 
     col_list: list[dict] = []
     for col in tb_col_list:
-        col_dict = {"tb_code": col.tb_code, "col_name": col.col_name}
+        col_dict = {"tb_code": col["tb_code"], "col_name": col["col_name"]}
         # 收集字段名
-        col_list.append({**col_dict, "content": col.col_name, "col": "col_name"})
+        col_list.append({**col_dict, "content": col["col_name"], "col": "col_name"})
         # 收集字段注释
-        if col.col_comment is not None:
+        if col["col_comment"] is not None:
             col_list.append(
-                {**col_dict, "content": col.col_comment, "col": "col_comment"}
+                {**col_dict, "content": col["col_comment"], "col": "col_comment"}
             )
         # 收集字段示例
-        if col.fewshot is not None:
+        if col["fewshot"] is not None:
             col_list.extend(
                 [
                     {**col_dict, "content": i, "col": "fewshot"}
-                    for i in col.fewshot
+                    for i in col["fewshot"]
                     if not is_numeric(i)
                 ]
             )
         # 收集字段含义
-        if col.col_meaning is not None:
+        if col["col_meaning"] is not None:
             col_list.append(
-                {**col_dict, "content": col.col_meaning, "col": "col_meaning"}
+                {**col_dict, "content": col["col_meaning"], "col": "col_meaning"}
             )
         # 收集字段JSON字段含义（展平嵌套字典的所有值）
-        if col.field_meaning is not None:
+        if col["field_meaning"] is not None:
             col_list.extend(
                 [
                     {**col_dict, "content": i, "col": "field_meaning"}
-                    for i in flatten_dict_values(col.field_meaning)
+                    for i in flatten_dict_values(col["field_meaning"])
                 ]
             )
         # 收集字段别名
-        if col.col_alias is not None:
+        if col["col_alias"] is not None:
             col_list.extend(
-                [{**col_dict, "content": i, "col": "col_alias"} for i in col.col_alias]
+                [
+                    {**col_dict, "content": i, "col": "col_alias"}
+                    for i in col["col_alias"]
+                ]
             )
 
     # 向量化
@@ -473,7 +474,7 @@ async def save_col_embed(tb_col_list: list[Column]):
     logger.info(f"embed column {len(col_list)}")
 
     # 创建 EMBED_COL 节点，创建 EMBED_COL-[:BELONG]->COLUMN 关系
-    await driver.execute_query(
+    await session.run(
         """
         UNWIND $col_list AS col_item
         MERGE (ec:EMBED_COL {content: col_item.content})
@@ -488,7 +489,7 @@ async def save_col_embed(tb_col_list: list[Column]):
     logger.info(f"save embed_col_name->belong->column ({len(col_list)})")
 
 
-async def save_kn_embed(kn_list: list[Knowledge]):
+async def save_kn_embed(session: AsyncSession, kn_list: list[dict]):
     """写入知识向量化信息"""
     if not kn_list:
         return
@@ -513,22 +514,22 @@ async def save_kn_embed(kn_list: list[Knowledge]):
     semaphore = asyncio.Semaphore(5)
     kn_dict_list: list[dict] = []
     for kn in kn_list:
-        kn_dict = {"db_code": kn.db_code, "kn_code": kn.kn_code}
+        kn_dict = {"db_code": kn["db_code"], "kn_code": kn["kn_code"]}
         # 收集知识名称
-        kn_dict_list.append({**kn_dict, "content": kn.kn_name, "col": "kn_name"})
+        kn_dict_list.append({**kn_dict, "content": kn["kn_name"], "col": "kn_name"})
         # 收集知识描述
-        kn_dict_list.append({**kn_dict, "content": kn.kn_desc, "col": "kn_desc"})
+        kn_dict_list.append({**kn_dict, "content": kn["kn_desc"], "col": "kn_desc"})
         # 收集知识别名
-        if kn.kn_alias is not None:
+        if kn["kn_alias"] is not None:
             kn_dict_list.extend(
-                [{**kn_dict, "content": i, "col": "kn_alias"} for i in kn.kn_alias]
+                [{**kn_dict, "content": i, "col": "kn_alias"} for i in kn["kn_alias"]]
             )
 
     # 嵌入与分词
     handled_batch = await handle_batch(kn_dict_list)
 
     # 创建 EMBED_KN 节点，创建 EMBED_KN-[:BELONG]->KNOWLEDGE 关系
-    await driver.execute_query(
+    await session.run(
         """
         UNWIND $kn_list AS kn_item
         MERGE (ek:EMBED_KN {content: kn_item.content})
@@ -544,8 +545,9 @@ async def save_kn_embed(kn_list: list[Knowledge]):
 
 
 async def save_cell(
-    tb_code2tb_info_map: dict[str, TableInfo],
-    tb_code2sync_cols_map: dict[str, list[Column]],
+    session: AsyncSession,
+    tb_code2tb_info_map: dict[str, dict],
+    tb_code2sync_cols_map: dict[str, list[dict]],
 ):
     """写入单元格信息"""
 
@@ -571,7 +573,7 @@ async def save_cell(
     async def save_to_neo4j(batch: list[dict]):
         """写入 neo4j"""
         # 创建 CELL 节点，创建 CELL-[:BELONG]->COLUMN 关系
-        await driver.execute_query(
+        await session.run(
             """
             UNWIND $batch AS cell
             MERGE (c:CELL {content: cell.content})
@@ -592,13 +594,13 @@ async def save_cell(
         tb_col_list = tb_code2sync_cols_map.get(tb_code)
         if not tb_col_list:
             continue
-        col_name_list = [i.col_name for i in tb_col_list]
-        async with db_pool.get_session(DB_CONF[tb_info.db_code]) as session:
+        col_name_list = [i["col_name"] for i in tb_col_list]
+        async with get_session(DB_CONF[tb_info["db_code"]]) as db_session:
             stmt = select(*[column(c) for c in col_name_list]).select_from(
-                table(tb_info.tb_name)
+                table(tb_info["tb_name"])
             )
             logger.info(f"execute sql statement: {stmt}")
-            result = await session.stream(
+            result = await db_session.stream(
                 stmt.execution_options(yield_per=SELECT_BATCH_SIZE)
             )
             async for batch in result.partitions(SELECT_BATCH_SIZE):
@@ -629,23 +631,26 @@ async def save_cell(
 
 async def clear_neo4j():
     """清空 neo4j"""
-    # 删除所有数据
-    await driver.execute_query("MATCH (n) DETACH DELETE n")
+    async with neo4j_session() as session:
+        # 删除所有数据
+        await session.run("MATCH (n) DETACH DELETE n")
 
-    # 删除所有约束
-    records, _, _ = await driver.execute_query("SHOW CONSTRAINTS")
-    for record in records:
-        query_str = f"DROP CONSTRAINT {record['name']}"
-        await driver.execute_query(cast(LiteralString, query_str))
+        # 删除所有约束
+        result = await session.run("SHOW CONSTRAINTS")
+        records = await result.data()
+        for record in records:
+            query_str = f"DROP CONSTRAINT {record['name']}"
+            await session.run(cast(LiteralString, query_str))
 
-    # 删除所有索引
-    records, _, _ = await driver.execute_query("SHOW INDEXES")
-    for record in records:
-        query_str = f"DROP INDEX {record['name']}"
-        try:
-            await driver.execute_query(cast(LiteralString, query_str))
-        except Exception:
-            ...
+        # 删除所有索引
+        result = await session.run("SHOW INDEXES")
+        records = await result.data()
+        for record in records:
+            query_str = f"DROP INDEX {record['name']}"
+            try:
+                await session.run(cast(LiteralString, query_str))
+            except Exception:
+                ...
     logger.info("clear neo4j")
 
 
