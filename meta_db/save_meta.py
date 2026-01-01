@@ -105,34 +105,20 @@ async def save_meta(
         try:
             tb_code2tb_info_map = {i["tb_code"]: i for i in tb_info_list}
             tb_code2cols_map: dict[str, list[dict]] = {}
-            tb_code2sync_col_map: dict[str, list[str]] = {
-                tb_code: tb_conf.sync_col
-                for db_conf in DB_CONF.values()
-                if db_conf.table
-                for tb_code, tb_conf in db_conf.table.items()
-                if tb_conf.sync_col
-            }
-            # 构造 tb_code->[no_sync_col] 映射
-            tb_code2no_sync_col_map: dict[str, list[str]] = {
-                tb_code: tb_conf.no_sync_col
-                for db_conf in DB_CONF.values()
-                if db_conf.table
-                for tb_code, tb_conf in db_conf.table.items()
-                if tb_conf.no_sync_col
-            }
-
             for col in tb_col_list:
                 if (
                     (any(i in col["col_type"].lower() for i in ["varchar", "text"]))
                     and (col["tb_code"] in tb_code2tb_info_map)
                     and (
-                        tb_code2sync_col_map.get(col["tb_code"]) is None
-                        or col["col_name"] in tb_code2sync_col_map[col["tb_code"]]
-                    )
+                        tb_code2tb_info_map[col["tb_code"]].get("sync_col") is None
+                        or col["col_name"]
+                        in tb_code2tb_info_map[col["tb_code"]]["sync_col"]
+                    )  # 如果同步字段为空，则所有字段都需要同步；如果字段在同步字段里则同步
                     and (
-                        col["col_name"]
-                        not in tb_code2no_sync_col_map.get(col["tb_code"], [])
-                    )
+                        tb_code2tb_info_map[col["tb_code"]].get("no_sync_col") is None
+                        or col["col_name"]
+                        not in tb_code2tb_info_map[col["tb_code"]]["no_sync_col"]
+                    )  # 如果字段在同步字段里，且不在不同步字段里，则同步
                 ):
                     tb_code2cols_map.setdefault(col["tb_code"], []).append(col)
             # 写入字段值信息
@@ -336,9 +322,11 @@ async def save_knowledge(session: AsyncSession, kn_list: list[dict]):
     if not kn_list:
         return
 
-    kn_db_rel: set[tuple[str, int]] = set()
-    kn_kn_rel: set[tuple[str, int, int]] = set()
-    kn_col_rel: set[tuple[str, int, str, str]] = set()
+    kn_db_rel: set[tuple[str, int]] = set()  # (db_code, kn_code)
+    kn_kn_rel: set[tuple[str, int, int]] = set()  # (db_code, kn_code, rel_kn_code)
+    kn_col_rel: set[tuple[str, int, str, str]] = (
+        set()
+    )  # (db_code, kn_code, tb_name, col_name)
 
     for kn in kn_list:
         # 收集知识与库的关系
@@ -450,7 +438,7 @@ async def save_col_embed(session: AsyncSession, tb_col_list: list[dict]):
             col_list.extend(
                 [
                     {**col_dict, "content": i, "col": "field_meaning"}
-                    for i in flatten_dict_values(col["field_meaning"])
+                    for i in flatten_dict_values(json.loads(col["field_meaning"]))
                 ]
             )
         # 收集字段别名
@@ -561,7 +549,6 @@ async def save_cell(
                 embed_batch, tscontent_batch = await asyncio.gather(
                     embed(cell_batch), get_keywords(cell_batch)
                 )
-                logger.info(f"process {tb_code} cell {len(batch)}")
                 for i, e, t in zip(batch, embed_batch, tscontent_batch):
                     i["embed"] = e
                     i["tscontent"] = t
@@ -624,6 +611,7 @@ async def save_cell(
                                 _batch = []
                 if _batch:
                     tasks.append(handle_batch(_batch))
+                logger.info(f"process {tb_code} cell")
                 handled_batch = await asyncio.gather(*tasks)
                 flatten_handled_batch = [i for ls in handled_batch for i in ls]
                 await save_to_neo4j(flatten_handled_batch)

@@ -68,6 +68,8 @@ async def get_tb_info(db_conf: DBCfg, tb_code: str, tb_conf: TableCfg) -> dict:
         "tb_code": tb_code,  # 表编号
         "tb_name": tb_conf.tb_name,  # 表名
         "tb_meaning": tb_conf.tb_meaning,  # 表含义
+        "sync_col": tb_conf.sync_col,  # 同步字段
+        "no_sync_col": tb_conf.no_sync_col,  # 不同步字段
     }
 
 

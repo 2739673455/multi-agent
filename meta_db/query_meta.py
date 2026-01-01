@@ -2,28 +2,28 @@ import asyncio
 import json
 import re
 
-from app.context.neo4j_schema import Column, Knowledge, TableInfo
-from app.meta_db.neo4j.neo4j_driver import driver
-from app.util import embed
+from db_session import neo4j_session
+from util import embed
 
 
 async def list_tb_info_by_dbcode(db_code: str):
     """查找数据库下的所有表信息"""
-    results = await driver.execute_query(
-        "MATCH (tb:TABLE)-[]-(db:DATABASE {db_code: $db_code}) RETURN tb, db",
-        db_code=db_code,
-    )
-    records = results.records
-    return [
-        TableInfo(
+    async with neo4j_session() as session:
+        results = await session.run(
+            "MATCH (tb:TABLE)-[]-(db:DATABASE {db_code: $db_code}) RETURN tb, db",
             db_code=db_code,
-            db_name=record["db"]["db_name"],
-            db_type=record["db"]["db_type"],
-            database=record["db"]["database"],
-            tb_code=record["tb"]["tb_code"],
-            tb_name=record["tb"]["tb_name"],
-            tb_meaning=record["tb"]["tb_meaning"],
         )
+        records = await results.data()
+    return [
+        {
+            "db_code": db_code,
+            "db_name": record["db"]["db_name"],
+            "db_type": record["db"]["db_type"],
+            "database": record["db"]["database"],
+            "tb_code": record["tb"]["tb_code"],
+            "tb_name": record["tb"]["tb_name"],
+            "tb_meaning": record["tb"]["tb_meaning"],
+        }
         for record in records
     ]
 
@@ -32,18 +32,19 @@ async def list_col_by_dbcode_tbname_colname(
     db_code: str, tb_col_tuple_list: list[tuple[str, str]]
 ):
     """根据表名列名查找列信息"""
-    results = await driver.execute_query(
-        """
+    async with neo4j_session() as session:
+        results = await session.run(
+            """
         MATCH (db:DATABASE {db_code: $db_code})
         UNWIND $ls AS tb_col
         MATCH (col:COLUMN {col_name: tb_col[1]})-[:BELONG]->(tb:TABLE {tb_name: tb_col[0]})-[:BELONG]->(db)
         RETURN col, tb
         """,
-        db_code=db_code,
-        ls=tb_col_tuple_list,
-    )
-    records = results.records
-    col_map: dict[str, dict[str, Column]] = {}  # {tb_code: {col_name: Column}
+            db_code=db_code,
+            ls=tb_col_tuple_list,
+        )
+        records = await results.data()
+    col_map: dict[str, dict[str, dict]] = {}  # {tb_code: {col_name: col}
     for record in records:
         tb_code = record["col"]["tb_code"]
         col_name = record["col"]["col_name"]
@@ -56,7 +57,7 @@ async def list_col_by_dbcode_tbname_colname(
                 if record["col"]["field_meaning"]
                 else None
             )
-            col_map[tb_code][col_name] = Column(**col_data)
+            col_map[tb_code][col_name] = col_data
     return col_map
 
 
@@ -141,20 +142,19 @@ async def retrieve_knowledge(db_code: str, query: str, keywords: list[str]):
         ORDER BY kn.kn_code ASC
     """
 
-    results = await driver.execute_query(
-        cypher,
-        embeds=embeds,
-        tsquery=tsquery,
-        db_code=db_code,
-        vec_search_threshold=0.7,
-        search_num_per_vec=10,  # 每个子句向量检索的个数
-        search_num_per_ft=20,  # 全文检索的个数
-        final_num=5,  # 最终返回的个数
-    )
-    records = results.records
-    kn_map = {
-        record["kn"]["kn_code"]: Knowledge(**dict(record["kn"])) for record in records
-    }
+    async with neo4j_session() as session:
+        results = await session.run(
+            cypher,
+            embeds=embeds,
+            tsquery=tsquery,
+            db_code=db_code,
+            vec_search_threshold=0.7,
+            search_num_per_vec=10,  # 每个子句向量检索的个数
+            search_num_per_ft=20,  # 全文检索的个数
+            final_num=5,  # 最终返回的个数
+        )
+        records = await results.data()
+        kn_map = {record["kn"]["kn_code"]: record["kn"] for record in records}
     return kn_map
 
 
@@ -181,15 +181,16 @@ async def retrieve_column(db_code: str, texts: list[str]):
         RETURN col, score
     """
 
-    results = await driver.execute_query(
-        cypher,
-        embeds=embeds,
-        db_code=db_code,
-        vec_search_threshold=0.7,
-        search_num_per_vec=10,  # 每个向量检索的个数
-    )
-    records = results.records
-    col_map: dict[str, dict[str, Column]] = {}  # {tb_code: {col_name: Column}
+    async with neo4j_session() as session:
+        results = await session.run(
+            cypher,
+            embeds=embeds,
+            db_code=db_code,
+            vec_search_threshold=0.7,
+            search_num_per_vec=10,  # 每个向量检索的个数
+        )
+        records = await results.data()
+    col_map: dict[str, dict[str, dict]] = {}  # {tb_code: {col_name: col}
     for record in records:
         tb_code = record["col"]["tb_code"]
         col_name = record["col"]["col_name"]
@@ -203,7 +204,7 @@ async def retrieve_column(db_code: str, texts: list[str]):
                 else None
             )
             col_data["score"] = record["score"]
-            col_map[tb_code][col_name] = Column(**col_data)
+            col_map[tb_code][col_name] = col_data
     return col_map
 
 
@@ -283,18 +284,19 @@ async def retrieve_cell(db_code: str, texts: list[str]):
         RETURN c_node { .*, embed: null, tscontent: null } AS cell, col, max_rrf_score*30 AS score
     """
 
-    results = await driver.execute_query(
-        cypher,
-        embeds=embeds,
-        texts=texts,
-        db_code=db_code,
-        vec_search_threshold=0.7,
-        search_num_per_vec=20,  # 每个向量检索的个数
-        search_num_per_ft=20,  # 每个全文检索的个数
-        max_num_per_cell=10,
-    )
-    records = results.records
-    cell_map: dict[str, dict[str, Column]] = {}  # {tb_code: {col_name: Column}
+    async with neo4j_session() as session:
+        results = await session.run(
+            cypher,
+            embeds=embeds,
+            texts=texts,
+            db_code=db_code,
+            vec_search_threshold=0.7,
+            search_num_per_vec=20,  # 每个向量检索的个数
+            search_num_per_ft=20,  # 每个全文检索的个数
+            max_num_per_cell=10,
+        )
+        records = await results.data()
+    cell_map: dict[str, dict[str, dict]] = {}  # {tb_code: {col_name: col}
     for record in records:
         tb_code = record["col"]["tb_code"]
         col_name = record["col"]["col_name"]
@@ -309,15 +311,16 @@ async def retrieve_cell(db_code: str, texts: list[str]):
                 else None
             )
             col_data["score"] = record["score"]
-            cell_map[tb_code][col_name] = Column(
-                **col_data, cells=[record["cell"]["content"]]
-            )
+            cell_map[tb_code][col_name] = {
+                **col_data,
+                "cells": [record["cell"]["content"]],
+            }
         else:
             # 原本有此 Column 则更新
             _col = cell_map[tb_code][col_name]
-            if _col.cells and record["cell"]["content"] not in _col.cells:
-                _col.cells.append(record["cell"]["content"])
-            _col.score = max(record["score"], _col.score)  # 取最高分
+            if _col.get("cells") and record["cell"]["content"] not in _col["cells"]:
+                _col["cells"].append(record["cell"]["content"])
+            _col["score"] = max(record["score"], _col.get("score", 0.0))  # 取最高分
     return cell_map
 
 
