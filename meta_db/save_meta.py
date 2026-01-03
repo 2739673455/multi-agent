@@ -4,7 +4,7 @@
 每个库的表信息批量存储
 每个库的知识信息批量存储
 每个库的字段信息批量存储
-每个字段的单元格信息批量存储
+每个表的单元格信息批量存储
 """
 
 import asyncio
@@ -80,12 +80,8 @@ async def _get_fewshot(
             # 如果所有列都已收集满 5 个值，结束
             if not pending_cols:
                 break
-        if logger:
-            logger.info(f"{tb_code} load fewshot")
         return fewshot
-    except Exception as e:
-        if logger:
-            logger.exception(f"{tb_code} load fewshot error: {e}")
+    except Exception:
         return None
 
 
