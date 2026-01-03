@@ -295,9 +295,10 @@ async def save_tb(session: AsyncSession, db_cfg: DBCfg, save: dict | None, logge
             UNWIND $tbs AS tb
             MERGE (n:TABLE {tb_code: tb.tb_code})
             SET n += tb
-            WITH tb
-            MATCH (db:DATABASE {db_code: tb.rel_db_code})
-            MERGE (tb)-[:BELONG]->(db)
+            WITH tb.tb_code AS tb_code, tb.rel_db_code AS rel_db_code
+            MATCH (db:DATABASE {db_code: rel_db_code})
+            MATCH (t:TABLE {tb_code: tb_code})
+            MERGE (t)-[:BELONG]->(db)
             """,
             tbs=tbs,
         )
