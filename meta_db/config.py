@@ -20,7 +20,7 @@ class TableCfg(BaseModel):
     tb_meaning: str
     sync_col: list[str] | None
     no_sync_col: list[str] | None
-    col_info: dict[str, ColumnCfg] | None
+    column: dict[str, ColumnCfg] | None
 
 
 class KnowledgeCfg(BaseModel):
