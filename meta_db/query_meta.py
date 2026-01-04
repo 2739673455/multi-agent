@@ -6,7 +6,7 @@ from db_session import neo4j_session
 from util import embed
 
 
-async def list_tb_info_by_dbcode(db_code: str):
+async def get_tb_info_by_dbcode(db_code: str):
     """查找数据库下的所有表信息"""
     async with neo4j_session() as session:
         results = await session.run(
@@ -28,7 +28,7 @@ async def list_tb_info_by_dbcode(db_code: str):
     ]
 
 
-async def list_col_by_dbcode_tbname_colname(
+async def get_col_by_dbcode_tbname_colname(
     db_code: str, tb_col_tuple_list: list[tuple[str, str]]
 ):
     """根据表名列名查找列信息"""
@@ -331,7 +331,7 @@ if __name__ == "__main__":
 
     async def main():
         # 查找数据库下的所有表信息
-        tbs = await list_tb_info_by_dbcode(db_code)
+        tbs = await get_tb_info_by_dbcode(db_code)
         for i in tbs:
             print(i)
 
@@ -357,7 +357,7 @@ if __name__ == "__main__":
                 print(cell_map[tb_code][col_name])
 
         # 根据表名列名查找列信息
-        kn_col_map = await list_col_by_dbcode_tbname_colname(
+        kn_col_map = await get_col_by_dbcode_tbname_colname(
             db_code, [("insuranceclaims", "claimstat")]
         )
         for tb_code in kn_col_map:
