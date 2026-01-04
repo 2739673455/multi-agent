@@ -80,25 +80,25 @@ async def api_retrieve_knowledge(req: RetrieveKnowledgeRequest):
 
 class RetrieveColumnRequest(BaseModel):
     db_code: str = Field(description="数据库编号")
-    texts: list[str] = Field(description="关键词列表")
+    keywords: list[str] = Field(description="关键词列表")
 
 
 @metadata_router.post("/retrieve_column")
 async def api_retrieve_column(req: RetrieveColumnRequest):
-    return await retrieve_column(req.db_code, req.texts)
+    return await retrieve_column(req.db_code, req.keywords)
 
 
 class RetrieveCellRequest(BaseModel):
     db_code: str = Field(description="数据库编号")
-    texts: list[str] = Field(description="关键词列表")
+    keywords: list[str] = Field(description="关键词列表")
 
 
 @metadata_router.post("/retrieve_cell")
 async def api_retrieve_cell(req: RetrieveCellRequest):
-    return await retrieve_cell(req.db_code, req.texts)
+    return await retrieve_cell(req.db_code, req.keywords)
 
 
-api_router = APIRouter(prefix="/api")
+api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(metadata_router, prefix="/metadata")
 
 
@@ -130,4 +130,4 @@ app.include_router(api_router)
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=12321, reload=True)

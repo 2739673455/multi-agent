@@ -3,17 +3,17 @@ import argparse
 import jieba.analyse
 
 
-def is_numeric(s) -> bool:
-    """判断字符串是否为数值"""
-    try:
-        float(s)
-        return True
-    except (ValueError, TypeError):
-        return False
-
-
 def extract_keyword(query: str):
     """从查询中提取关键词"""
+
+    def is_numeric(s) -> bool:
+        """判断字符串是否为数值"""
+        try:
+            float(s)
+            return True
+        except (ValueError, TypeError):
+            return False
+
     # 对查询进行分词，只提取指定词性的词
     allow_pos = (
         "n",  # 名词: 数据、服务器、表格
@@ -42,13 +42,9 @@ def main():
     parser = argparse.ArgumentParser(description="关键词提取", usage=usage)
     parser.add_argument("query", type=str, help="查询文本")
 
-    try:
-        args = parser.parse_args()
-        keywords = extract_keyword(args.query)
-        print(keywords)
-    except SystemExit:
-        print(usage)
-        raise
+    args = parser.parse_args()
+    keywords = extract_keyword(args.query)
+    print(keywords)
 
 
 if __name__ == "__main__":

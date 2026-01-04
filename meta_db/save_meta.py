@@ -373,8 +373,6 @@ async def save_col_embed(session: AsyncSession, cols: list[dict], logger=None):
         flatten_embeds = [vec for batch in embeds for vec in batch]
         for col_dict, vec in zip(col_contents, flatten_embeds):
             col_dict["embed"] = vec
-        if logger:
-            logger.info(f"embed column {len(col_contents)}")
 
         # 创建 EMBED_COL 节点，创建 EMBED_COL-[:BELONG]->COLUMN 关系
         await session.run(
@@ -461,6 +459,7 @@ async def save_kn(
         )
         if logger:
             logger.info(f"save knowledge ({len(kns)})")
+            logger.info(f"save knowledge-belong->database ({len(kns)})")
             logger.info(f"save knowledge-contain->knowledge ({len(kn_kn_rels)})")
             logger.info(f"save knowledge-rel->column ({len(kn_col_rels)})")
         return kns
@@ -631,7 +630,7 @@ async def save_cell(
                     table(tb_cfg.tb_name)
                 )
                 if logger:
-                    logger.info(f"execute sql statement: {stmt}")
+                    logger.info(f"execute sql statement:\n{stmt}")
                 result = await db_session.stream(
                     stmt.execution_options(yield_per=SELECT_BATCH_SIZE)
                 )
@@ -716,10 +715,7 @@ async def clear_meta():
         records = await result.data()
         for record in records:
             query_str = f"DROP INDEX {record['name']}"
-            # try:
-            #     await session.run(cast(LiteralString, query_str))
-            # except Exception:
-            #     ...
+            await session.run(cast(LiteralString, query_str))
     logger.info("clear metadata")
 
 

@@ -2,16 +2,15 @@ logging:
   level: INFO # 日志级别(DEBUG, INFO, WARNING, ERROR, CRITICAL)
   to_console: true # 是否输出到控制台
   to_file: true # 是否输出到文件
-  log_dir: logs # 日志目录
   max_file_size: 10MB # 单个日志文件最大大小
 
 llm:
   extend_model: default # 数据扩展模型
   filter_model: default # 数据过滤模型
   nl2sql_models: # NL2SQL模型
-    - siliconflow_deepseek
-    - siliconflow_minimax
-    - mimo-v2-flash
+    - deepseek
+    - minimax
+    - mino
   vote_model: default # 投票模型
   models: # 预定义模型
     default:
@@ -19,23 +18,31 @@ llm:
       api_key: ${oc.env:OPENROUTER_API_KEY}
       model: openai/gpt-4o-mini
 
-    siliconflow_deepseek:
+    deepseek:
       base_url: https://api.siliconflow.cn/v1
       api_key: ${oc.env:SILICONFLOW_API_KEY}
       model: deepseek-ai/DeepSeek-V3.2
       params:
         temperature: 0.2
 
-    siliconflow_minimax:
-      base_url: https://api.siliconflow.cn/v1
-      api_key: ${oc.env:SILICONFLOW_API_KEY}
-      model: MiniMaxAI/MiniMax-M2
+    minimax:
+      base_url: https://openrouter.ai/api/v1
+      api_key: ${oc.env:OPENROUTER_API_KEY}
+      model: minimax/minimax-m2.1
 
-    mimo-v2-flash:
+    mino:
       base_url: https://openrouter.ai/api/v1
       api_key: ${oc.env:OPENROUTER_API_KEY}
       model: xiaomi/mimo-v2-flash:free
 
-use_db_code: mysql_sales # 指定使用那个数据库
+meta_db:
+  base_url: http://127.0.0.1:12321/api/v1/metadata
+  retrieve_knowledge: /retrieve_knowledge
+  retrieve_column: /retrieve_column
+  retrieve_cell: /retrieve_cell
+
+# use_db_code: mysql_sales # 指定使用那个数据库
+use_db_code: pg_archeology_scan # 指定使用那个数据库
+# use_db_code: pg_cold_chain_pharma_compliance # 指定使用那个数据库
 max_tb_num: 20 # 最多召回的表数量
 max_col_per_tb: 100 # 每张表最多召回的字段数量

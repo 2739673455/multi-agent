@@ -1,30 +1,30 @@
 import argparse
 import asyncio
+import json
 
-from config import CONF
+import httpx
+from config import CFG
 
 
 async def retrieve_knowledge(db_code: str, query: str, keywords: list[str]):
     """混合检索知识"""
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            CFG.meta_db.retrieve_knowledge_url,
+            json={"db_code": db_code, "query": query, "keywords": keywords},
+        )
+    return response.json()
 
 
 async def main():
     usage = 'python retrieve_knowledge.py --query "查询文本" --keywords [关键词列表]'
     parser = argparse.ArgumentParser(description="检索知识", usage=usage)
     parser.add_argument("--query", type=str, help="查询文本")
-    parser.add_argument("--keywords", type=list[str], help="关键词列表")
+    parser.add_argument("--keywords", type=json.loads, help="关键词列表")
 
-    try:
-        args = parser.parse_args()
-        kns = await retrieve_knowledge(
-            CONF.use_db_code,
-            args.query,
-            args.keywords,
-        )
-        print(kns)
-    except SystemExit:
-        print(usage)
-        raise
+    args = parser.parse_args()
+    kns = await retrieve_knowledge(CFG.use_db_code, args.query, args.keywords)
+    print(kns)
 
 
 if __name__ == "__main__":
