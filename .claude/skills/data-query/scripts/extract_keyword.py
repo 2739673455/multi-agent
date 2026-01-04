@@ -34,7 +34,7 @@ def extract_keyword(query: str):
     ) + [query]
     keywords = list(set([w for w in keywords if not is_numeric(w)]))
 
-    return keywords
+    return {"keywords": keywords}
 
 
 def main():
@@ -43,8 +43,8 @@ def main():
     parser.add_argument("query", type=str, help="查询文本")
 
     args = parser.parse_args()
-    keywords = extract_keyword(args.query)
-    print(keywords)
+    res = extract_keyword(args.query)
+    print(res)
 
 
 if __name__ == "__main__":

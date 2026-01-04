@@ -31,6 +31,8 @@ class LLMCfg(BaseModel):
 
 class MetaDBCfg(BaseModel):
     base_url: str
+    get_table: str
+    get_column: str
     retrieve_knowledge: str
     retrieve_column: str
     retrieve_cell: str
@@ -49,6 +51,16 @@ class MetaDBCfg(BaseModel):
     @property
     def retrieve_cell_url(self) -> str:
         return f"{self.base_url}{self.retrieve_cell}"
+
+    @computed_field
+    @property
+    def get_table_url(self) -> str:
+        return f"{self.base_url}{self.get_table}"
+
+    @computed_field
+    @property
+    def get_column_url(self) -> str:
+        return f"{self.base_url}{self.get_column}"
 
 
 class BaseCfg(BaseModel):

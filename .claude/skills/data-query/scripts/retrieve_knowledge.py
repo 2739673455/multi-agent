@@ -13,7 +13,7 @@ async def retrieve_knowledge(db_code: str, query: str, keywords: list[str]):
             CFG.meta_db.retrieve_knowledge_url,
             json={"db_code": db_code, "query": query, "keywords": keywords},
         )
-    return response.json()
+    return {"knowledges": response.json()}
 
 
 async def main():
@@ -23,8 +23,8 @@ async def main():
     parser.add_argument("--keywords", type=json.loads, help="关键词列表")
 
     args = parser.parse_args()
-    kns = await retrieve_knowledge(CFG.use_db_code, args.query, args.keywords)
-    print(kns)
+    res = await retrieve_knowledge(CFG.use_db_code, args.query, args.keywords)
+    print(res)
 
 
 if __name__ == "__main__":

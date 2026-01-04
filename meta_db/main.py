@@ -12,13 +12,6 @@ from query_meta import (
 )
 from save_meta import clear_meta, save_meta
 
-metadata_router = APIRouter()
-
-
-@metadata_router.get("/health")
-async def health():
-    return 200
-
 
 class SaveMetaRequest(BaseModel):
     save: dict[str, dict[str, list | None] | None] | None = Field(
@@ -35,23 +28,8 @@ class SaveMetaRequest(BaseModel):
     )
 
 
-@metadata_router.post("/save_metadata")
-async def api_save_meta(req: SaveMetaRequest):
-    await save_meta(req.save)
-
-
-@metadata_router.post("/clear_metadata")
-async def api_clear_meta():
-    await clear_meta()
-
-
 class GetTableRequest(BaseModel):
     db_code: str = Field(description="数据库编号")
-
-
-@metadata_router.post("/get_table")
-async def api_get_table(req: GetTableRequest):
-    return await get_tb_info_by_dbcode(req.db_code)
 
 
 class GetColumnRequest(BaseModel):
@@ -62,20 +40,10 @@ class GetColumnRequest(BaseModel):
     )
 
 
-@metadata_router.post("/get_column")
-async def api_get_column(req: GetColumnRequest):
-    return await get_col_by_dbcode_tbname_colname(req.db_code, req.tb_col_tuple_list)
-
-
 class RetrieveKnowledgeRequest(BaseModel):
     db_code: str = Field(description="数据库编号")
     query: str = Field(description="查询")
     keywords: list[str] = Field(description="关键词列表")
-
-
-@metadata_router.post("/retrieve_knowledge")
-async def api_retrieve_knowledge(req: RetrieveKnowledgeRequest):
-    return await retrieve_knowledge(req.db_code, req.query, req.keywords)
 
 
 class RetrieveColumnRequest(BaseModel):
@@ -83,14 +51,47 @@ class RetrieveColumnRequest(BaseModel):
     keywords: list[str] = Field(description="关键词列表")
 
 
-@metadata_router.post("/retrieve_column")
-async def api_retrieve_column(req: RetrieveColumnRequest):
-    return await retrieve_column(req.db_code, req.keywords)
-
-
 class RetrieveCellRequest(BaseModel):
     db_code: str = Field(description="数据库编号")
     keywords: list[str] = Field(description="关键词列表")
+
+
+metadata_router = APIRouter()
+
+
+@metadata_router.get("/health")
+async def health():
+    return 200
+
+
+@metadata_router.post("/save_metadata")
+async def api_save_meta(req: SaveMetaRequest):
+    await save_meta(req.save)
+
+
+@metadata_router.post("/clear_metadata")
+async def api_clear_meta():
+    await clear_meta()
+
+
+@metadata_router.post("/get_table")
+async def api_get_table(req: GetTableRequest):
+    return await get_tb_info_by_dbcode(req.db_code)
+
+
+@metadata_router.post("/get_column")
+async def api_get_column(req: GetColumnRequest):
+    return await get_col_by_dbcode_tbname_colname(req.db_code, req.tb_col_tuple_list)
+
+
+@metadata_router.post("/retrieve_knowledge")
+async def api_retrieve_knowledge(req: RetrieveKnowledgeRequest):
+    return await retrieve_knowledge(req.db_code, req.query, req.keywords)
+
+
+@metadata_router.post("/retrieve_column")
+async def api_retrieve_column(req: RetrieveColumnRequest):
+    return await retrieve_column(req.db_code, req.keywords)
 
 
 @metadata_router.post("/retrieve_cell")

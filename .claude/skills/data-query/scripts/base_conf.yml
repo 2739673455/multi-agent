@@ -37,6 +37,8 @@ llm:
 
 meta_db:
   base_url: http://127.0.0.1:12321/api/v1/metadata
+  get_table: /get_table
+  get_column: /get_column
   retrieve_knowledge: /retrieve_knowledge
   retrieve_column: /retrieve_column
   retrieve_cell: /retrieve_cell
