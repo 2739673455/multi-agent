@@ -1,9 +1,16 @@
 import argparse
+import asyncio
+from typing import Callable
 
 import jieba.analyse
+from callback import read_callback, write_callback
 
 
-def extract_keyword(query: str):
+async def extract_keyword(
+    query: str,
+    r_callback: Callable | None = None,
+    w_callback: Callable | None = None,
+):
     """从查询中提取关键词"""
 
     def is_numeric(s) -> bool:
@@ -34,18 +41,18 @@ def extract_keyword(query: str):
     ) + [query]
     keywords = list(set([w for w in keywords if not is_numeric(w)]))
 
-    return {"keywords": keywords}
+    if w_callback:
+        await w_callback({"keywords": keywords})
 
 
-def main():
-    usage = 'python extract_keyword.py "查询文本"'
+async def main():
+    usage = "python extract_keyword.py 查询文本"
     parser = argparse.ArgumentParser(description="关键词提取", usage=usage)
     parser.add_argument("query", type=str, help="查询文本")
 
     args = parser.parse_args()
-    res = extract_keyword(args.query)
-    print(res)
+    await extract_keyword(args.query, read_callback, write_callback)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

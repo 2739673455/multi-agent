@@ -1,11 +1,19 @@
-llm:
-  extend_model: default # 数据扩展模型
-  filter_model: default # 数据过滤模型
+meta_db: # 元数据服务
+  base_url: http://127.0.0.1:12321/api/v1/metadata
+  get_table: /get_table
+  get_column: /get_column
+  retrieve_knowledge: /retrieve_knowledge
+  retrieve_column: /retrieve_column
+  retrieve_cell: /retrieve_cell
+
+llm: # 为不同任务指定模型，为 null 则使用主代理使用的模型
+  extend_model: null # 数据扩展模型
+  filter_model: null # 数据过滤模型
   nl2sql_models: # NL2SQL模型
     - deepseek
     - minimax
     - mino
-  vote_model: default # 投票模型
+  vote_model: null # 投票模型
   models: # 预定义模型
     default:
       base_url: https://openrouter.ai/api/v1
@@ -28,14 +36,6 @@ llm:
       base_url: https://openrouter.ai/api/v1
       api_key: ${oc.env:OPENROUTER_API_KEY}
       model: xiaomi/mimo-v2-flash:free
-
-meta_db:
-  base_url: http://127.0.0.1:12321/api/v1/metadata
-  get_table: /get_table
-  get_column: /get_column
-  retrieve_knowledge: /retrieve_knowledge
-  retrieve_column: /retrieve_column
-  retrieve_cell: /retrieve_cell
 
 # use_db_code: mysql_sales # 指定使用那个数据库
 use_db_code: pg_archeology_scan # 指定使用那个数据库

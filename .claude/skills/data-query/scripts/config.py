@@ -7,21 +7,6 @@ from pydantic import BaseModel, computed_field
 CONFIG_DIR = Path(__file__).parent
 
 
-class ModelCfg(BaseModel):
-    base_url: str
-    api_key: str
-    model: str
-    params: dict[str, Any] = {}
-
-
-class LLMCfg(BaseModel):
-    extend_model: str
-    filter_model: str
-    nl2sql_models: list[str]
-    vote_model: str
-    models: dict[str, ModelCfg]
-
-
 class MetaDBCfg(BaseModel):
     base_url: str
     get_table: str
@@ -56,6 +41,21 @@ class MetaDBCfg(BaseModel):
         return f"{self.base_url}{self.get_column}"
 
 
+class ModelCfg(BaseModel):
+    base_url: str
+    api_key: str
+    model: str
+    params: dict[str, Any] = {}
+
+
+class LLMCfg(BaseModel):
+    extend_model: str
+    filter_model: str
+    nl2sql_models: list[str]
+    vote_model: str
+    models: dict[str, ModelCfg]
+
+
 class BaseCfg(BaseModel):
     llm: LLMCfg
     meta_db: MetaDBCfg
@@ -64,6 +64,6 @@ class BaseCfg(BaseModel):
     max_col_per_tb: int
 
 
-base_cfg = OmegaConf.load(CONFIG_DIR / "base_conf.yml")  # 加载
+base_cfg = OmegaConf.load(CONFIG_DIR / "base_cfg.yml")  # 加载
 OmegaConf.resolve(base_cfg)  # 解析插值
 CFG = BaseCfg.model_validate(base_cfg)  # 转换为配置类
