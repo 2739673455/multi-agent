@@ -1,0 +1,138 @@
+{
+  "keywords": [
+    "你好",
+    "耿丹",
+    "你好，我叫耿丹"
+  ],
+  "query": "你好，我叫耿丹",
+  "cur_date_info": "当前日期信息:2026-01-05,Monday",
+  "tb_map": {
+    "pg_archeology_scan_features": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_features",
+      "tb_name": "features",
+      "tb_meaning": "特征分析"
+    },
+    "pg_archeology_scan_processing": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_processing",
+      "tb_name": "processing",
+      "tb_meaning": "数据处理"
+    },
+    "pg_archeology_scan_conservation": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_conservation",
+      "tb_name": "conservation",
+      "tb_meaning": "保护记录"
+    },
+    "pg_archeology_scan_environment": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_environment",
+      "tb_name": "environment",
+      "tb_meaning": "环境数据"
+    },
+    "pg_archeology_scan_scans": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_scans",
+      "tb_name": "scans",
+      "tb_meaning": "扫描记录"
+    },
+    "pg_archeology_scan_equipment": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_equipment",
+      "tb_name": "equipment",
+      "tb_meaning": "扫描设备"
+    },
+    "pg_archeology_scan_pointcloud": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_pointcloud",
+      "tb_name": "pointcloud",
+      "tb_meaning": "点云数据"
+    },
+    "pg_archeology_scan_registration": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_registration",
+      "tb_name": "registration",
+      "tb_meaning": "注册记录"
+    },
+    "pg_archeology_scan_mesh": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_mesh",
+      "tb_name": "mesh",
+      "tb_meaning": "3D网格数据"
+    },
+    "pg_archeology_scan_projects": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_projects",
+      "tb_name": "projects",
+      "tb_meaning": "考古项目"
+    },
+    "pg_archeology_scan_qualitycontrol": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_qualitycontrol",
+      "tb_name": "qualitycontrol",
+      "tb_meaning": "质量控制"
+    },
+    "pg_archeology_scan_sites": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_sites",
+      "tb_name": "sites",
+      "tb_meaning": "考古遗址"
+    },
+    "pg_archeology_scan_personnel": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_personnel",
+      "tb_name": "personnel",
+      "tb_meaning": "人员信息"
+    },
+    "pg_archeology_scan_spatial": {
+      "db_code": "pg_archeology_scan",
+      "db_name": "考古扫描数据库",
+      "db_type": "postgresql",
+      "database": "archeology_scan",
+      "tb_code": "pg_archeology_scan_spatial",
+      "tb_name": "spatial",
+      "tb_meaning": "空间测量"
+    }
+  },
+  "tb_caption": "数据库: 考古扫描数据库\n表名: features，表含义: 特征分析\n表名: processing，表含义: 数据处理\n表名: conservation，表含义: 保护记录\n表名: environment，表含义: 环境数据\n表名: scans，表含义: 扫描记录\n表名: equipment，表含义: 扫描设备\n表名: pointcloud，表含义: 点云数据\n表名: registration，表含义: 注册记录\n表名: mesh，表含义: 3D网格数据\n表名: projects，表含义: 考古项目\n表名: qualitycontrol，表含义: 质量控制\n表名: sites，表含义: 考古遗址\n表名: personnel，表含义: 人员信息\n表名: spatial，表含义: 空间测量\n"
+}

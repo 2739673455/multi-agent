@@ -5,50 +5,44 @@ description: 这个技能用于根据用户的查询问题，从元数据存储�
 
 # Data Query
 ## 任务清单
-- step1: 获取相关信息，
-- step2: 使用查询和关键词检索相关知识
-- step3: 补全上下文信息
-- step4:
+1. 添加上下文信息
+2. 使用查询和关键词检索相关知识
+3.
     - LLM根据上下文扩展查询时可能需要的字段
     - LLM根据上下文扩展查询时可能需要的字段值
-- step5:
+4.
     - 结合关键词和扩展后的字段，检索相关字段
     - 结合关键词和扩展后的字段值，检索相关字段值
-- step6: 整合字段和字段值
-- step7: 根据检索分数截取topk表和字段
-- step8:
+5. 整合字段和字段值
+6. 根据检索分数截取topk表和字段
+7.
     - LLM过滤掉不需要的表和字段
     - LLM过滤掉不需要的知识
-- step9: 获取知识相关字段，并与检索出的字段进行整合
-## step1: 从用户查询中提取关键词
-执行 python 脚本 [scripts/extract_keyword.py](scripts/extract_keyword.py) 提取关键词
+8. 获取知识相关字段，并与检索出的字段进行整合
+## 1. 添加上下文信息
+执行 python 脚本 [scripts/add_context.py](scripts/add_context.py) 添加相关上下文信息
 ```bash
-python scripts/extract_keyword.py "查询文本"
+python scripts/add_context.py 查询文本
 ```
-## step2: 使用查询和关键词检索相关知识
+## 2. 使用查询和关键词检索相关知识
 执行 python 脚本 [scripts/recall_knowledge.py](scripts/recall_knowledge.py) 检索相关知识
 ```bash
-python scripts/recall_knowledge.py --query "查询文本" --keywords '["关键词列表"]'
+python scripts/recall_knowledge.py --query 查询文本 --keywords '[关键词列表]'
 ```
-## step3: 补全上下文信息
-执行 python 脚本 [scripts/add_context.py](scripts/add_context.py) 补充相关信息
-```bash
-python scripts/add_context.py
-```
-## step4: LLM根据上下文扩展查询时可能需要的字段 & LLM根据上下文扩展查询时可能需要的字段值
+## 3. LLM根据上下文扩展查询时可能需要的字段 & LLM根据上下文扩展查询时可能需要的字段值
 跳过
 
-## step5: 结合关键词和扩展后的字段，检索相关字段 & 结合关键词和扩展后的字段值，检索相关字段值
+## 4. 结合关键词和扩展后的字段，检索相关字段 & 结合关键词和扩展后的字段值，检索相关字段值
 跳过
 
-## step6: 整合字段和字段值
+## 5. 整合字段和字段值
 跳过
 
-## step7: 根据检索分数截取topk表和字段
+## 6. 根据检索分数截取topk表和字段
 跳过
 
-## step8: LLM过滤掉不需要的表和字段 & LLM过滤掉不需要的知识
+## 7. LLM过滤掉不需要的表和字段 & LLM过滤掉不需要的知识
 跳过
 
-## step9: 获取知识相关字段，并与检索出的字段进行整合
+## 8. 获取知识相关字段，并与检索出的字段进行整合
 跳过

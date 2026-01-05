@@ -1,20 +1,54 @@
+import argparse
 import asyncio
 from datetime import datetime
+from typing import Callable
 
 import httpx
+import jieba.analyse
+from callback import read_callback, write_callback
 from config import CFG
 
 
-async def add_context(db_code: str):
-    """补充上下文信息：获取日期，表信息等"""
+async def add_context(
+    db_code: str,
+    query: str,
+    r_callback: Callable | None = None,
+    w_callback: Callable | None = None,
+):
+    """添加上下文信息:写入查询文本、关键词、当前日期信息、表信息等"""
 
-    # 获取当前日期对象
+    def is_numeric(s) -> bool:
+        """判断字符串是否为数值"""
+        try:
+            float(s)
+            return True
+        except (ValueError, TypeError):
+            return False
+
+    # 提取关键词
+    allow_pos = (
+        "n",  # 名词: 数据、服务器、表格
+        "nr",  # 人名: 张三、李四
+        "ns",  # 地名: 北京、上海
+        "nt",  # 机构团体名: 政府、学校、某公司
+        "nz",  # 其他专有名词: Unicode、哈希算法、诺贝尔奖
+        "v",  # 动词: 运行、开发
+        "vn",  # 名动词: 工作、研究
+        "a",  # 形容词: 美丽、快速
+        "an",  # 名形词: 难度、合法性、复杂度
+        "eng",  # 英文
+        "i",  # 成语
+        "l",  # 常用固定短语
+    )
+    keywords = jieba.analyse.extract_tags(
+        query, withWeight=False, allowPOS=allow_pos
+    ) + [query]
+    keywords = list(set([w for w in keywords if not is_numeric(w)]))
+
+    # 获取当前日期信息
     today = datetime.today()
-    # 格式化当前日期为 YYYY-MM-DD 格式
     today_date = today.strftime("%Y-%m-%d")
-    # 获取当前星期的英文名称
     today_weekday = today.strftime("%A")
-    # 构建日期信息字符串
     cur_date_info = "当前日期信息:%s,%s" % (today_date, today_weekday)
 
     # 获取所有表信息列表
@@ -24,27 +58,36 @@ async def add_context(db_code: str):
             json={"db_code": db_code},
         )
     tables = response.json()
-    # 为每个表构建格式化的说明信息，包括表名、表含义
+    # 构建所有表的说明信息
     tb_caption = "".join(
         [
             f"表名: {tb_info['tb_name']}，表含义: {tb_info['tb_meaning']}\n"
             for tb_info in tables
         ]
     )
-    # 添加数据库信息
+    # 表的说明信息开头添加数据库信息
     tb_info = tables[0]
     tb_caption = f"数据库: {tb_info['db_name']}\n" + tb_caption
 
-    return {
-        "cur_date_info": cur_date_info,  # 当前日期时间信息
-        "tb_map": {i["tb_code"]: i for i in tables},  # 表信息字典
-        "tb_caption": tb_caption,  # 所有表的格式化说明信息
-    }
+    if w_callback:
+        await w_callback(
+            {
+                "query": query,  # 查询
+                "keywords": keywords,  # 关键词
+                "cur_date_info": cur_date_info,  # 当前日期信息
+                "tb_map": {i["tb_code"]: i for i in tables},  # 表信息
+                "tb_caption": tb_caption,  # 表说明
+            }
+        )
 
 
 async def main():
-    res = await add_context(CFG.use_db_code)
-    print(res)
+    usage = "python add_context.py 查询文本"
+    parser = argparse.ArgumentParser(description="添加上下文信息", usage=usage)
+    parser.add_argument("query", type=str, help="查询文本")
+
+    args = parser.parse_args()
+    await add_context(CFG.use_db_code, args.query, read_callback, write_callback)
 
 
 if __name__ == "__main__":
