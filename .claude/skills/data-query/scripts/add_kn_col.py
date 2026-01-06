@@ -12,7 +12,7 @@ async def add_kn_col(
     r_callback: Callable | None = None,
     w_callback: Callable | None = None,
 ):
-    """获取知识的相关字段，并将其与召回的字段合并"""
+    """获取知识相关字段，并与之前检索出的字段合并"""
     state = await r_callback() if r_callback else {}
     col_map: dict[str, dict[str, dict]] = state["col_map"]
     kn_map: dict[int, dict] = state["kn_map"]
@@ -44,7 +44,7 @@ async def add_kn_col(
 async def main():
     usage = "python add_kn_col.py"
     argparse.ArgumentParser(
-        description="获取知识的相关字段，并将其与召回的字段合并", usage=usage
+        description="获取知识相关字段，并与之前检索出的字段合并", usage=usage
     )
 
     await add_kn_col(CFG.use_db_code, read_callback, write_callback)

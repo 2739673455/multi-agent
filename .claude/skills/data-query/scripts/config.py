@@ -4,7 +4,7 @@ from typing import Any
 from omegaconf import OmegaConf
 from pydantic import BaseModel, computed_field
 
-CONFIG_DIR = Path(__file__).parent
+CONFIG_DIR = Path(__file__).parent / "config"
 
 
 class MetaDBCfg(BaseModel):
