@@ -41,19 +41,16 @@ SKILL.md 文件所有内容
 ```mermaid
 graph TB
   start[开始]
-  extract_keyword[分词 <font size=2 color=gray>
-    jieba.analyze]
-  recall_knowledge[混合检索指标知识]
-  add_context[补充上下文 <font size=2 color=gray>
-    日期信息 表信息]
+  add_context[添加上下文信息 <font size=2 color=gray>
+    查询文本 关键词 日期信息 表信息 表说明]
   extend_column[LLM扩展字段 <font size=2 color=gray>
     生成候选字段名]
   extend_cell[LLM扩展字段值 <font size=2 color=gray>
     生成候选字段值]
   recall_column[向量检索字段]
   recall_cell[混合检索字段值]
-  merge_col_cell[整合表字段字段值]
-  topk_tb_col[相似度过滤字段和表 <font size=2 color=gray>
+  recall_knowledge[混合检索指标知识]
+  merge_col_cell[整合表字段字段值，并根据检索分数截取topk表和字段 <font size=2 color=gray>
     先按相似度分数过滤每个表的字段
     再将每张表字段分数之和作为表分数过滤表]
   llm_filter_tb_col[LLM过滤表和字段 <font size=2 color=gray>
@@ -61,7 +58,7 @@ graph TB
     再逐表过滤单表所有字段]
   llm_filter_knowledge[LLM过滤指标知识 <font size=2 color=gray>
     过滤相关指标知识]
-  merge_col[整合字段 <font size=2 color=gray>
+  add_kn_col[添加知识相关字段 <font size=2 color=gray>
     获取指标知识的相关字段
     将其与召回的字段整合]
   vote[投票]
@@ -84,23 +81,21 @@ graph TB
     correct_sql --> exec_sql
   end
 
-  start --> extract_keyword
-  extract_keyword --> recall_knowledge
-  recall_knowledge --> add_context
+  start --> add_context
   add_context --> extend_column
   add_context --> extend_cell
   extend_column --> recall_column
   extend_cell --> recall_cell
+  add_context --> recall_knowledge
   recall_column --> merge_col_cell
   recall_cell --> merge_col_cell
-  merge_col_cell --> topk_tb_col
-  topk_tb_col --> llm_filter_tb_col
-  topk_tb_col --> llm_filter_knowledge
-  llm_filter_tb_col --> merge_col
-  llm_filter_knowledge --> merge_col
-  merge_col --> nl2sql
-  merge_col --> nl2sql
-  merge_col --> nl2sql
+  merge_col_cell --> llm_filter_tb_col
+  recall_knowledge --> llm_filter_knowledge
+  llm_filter_tb_col --> add_kn_col
+  llm_filter_knowledge --> add_kn_col
+  add_kn_col --> nl2sql
+  add_kn_col --> nl2sql
+  add_kn_col --> nl2sql
   nl2sql --> vote
   nl2sql --> vote
   nl2sql --> vote

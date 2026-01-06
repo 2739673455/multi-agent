@@ -1,32 +1,34 @@
 import argparse
 import asyncio
-import json
+from typing import Callable
 
 import httpx
+from callback import read_callback, write_callback
 from config import CFG
 
 
-async def recall_cell(db_code: str, extracted_cells: list[str]):
+async def recall_cell(
+    db_code: str,
+    r_callback: Callable | None = None,
+    w_callback: Callable | None = None,
+):
     """检索字段信息"""
-    if not extracted_cells:
-        return {"retrieved_cell_map": {}}
-
+    state = await r_callback() if r_callback else {}
+    keywords: list[str] = state["extracted_cells"]
     async with httpx.AsyncClient() as client:
         response = await client.post(
             CFG.meta_db.retrieve_cell_url,
-            json={"db_code": db_code, "keywords": extracted_cells},
+            json={"db_code": db_code, "keywords": keywords},
         )
-    return {"retrieved_cell_map": response.json()}
+    if w_callback:
+        await w_callback({"retrieved_cell_map": response.json()})
 
 
 async def main():
-    usage = "python recall_cell.py [关键词列表]"
-    parser = argparse.ArgumentParser(description="检索单元格", usage=usage)
-    parser.add_argument("extracted_cells", type=json.loads, help="关键词列表")
+    usage = "python recall_cell.py"
+    argparse.ArgumentParser(description="检索单元格", usage=usage)
 
-    args = parser.parse_args()
-    res = await recall_cell(CFG.use_db_code, args.extracted_cells)
-    print(res)
+    await recall_cell(CFG.use_db_code, read_callback, write_callback)
 
 
 if __name__ == "__main__":

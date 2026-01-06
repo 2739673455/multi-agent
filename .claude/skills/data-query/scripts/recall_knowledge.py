@@ -1,30 +1,35 @@
 import argparse
 import asyncio
-import json
+from typing import Callable
 
 import httpx
+from callback import read_callback, write_callback
 from config import CFG
 
 
-async def recall_knowledge(db_code: str, query: str, keywords: list[str]):
+async def recall_knowledge(
+    db_code: str,
+    r_callback: Callable | None = None,
+    w_callback: Callable | None = None,
+):
     """混合检索知识"""
+    state = await r_callback() if r_callback else {}
+    query: str = state["query"]
+    keywords: list[str] = state["keywords"]
     async with httpx.AsyncClient() as client:
         response = await client.post(
             CFG.meta_db.retrieve_knowledge_url,
             json={"db_code": db_code, "query": query, "keywords": keywords},
         )
-    return {"kn_map": response.json()}
+    if w_callback:
+        await w_callback({"kn_map": response.json()})
 
 
 async def main():
-    usage = 'python recall_knowledge.py --query "查询文本" --keywords [关键词列表]'
-    parser = argparse.ArgumentParser(description="检索知识", usage=usage)
-    parser.add_argument("--query", type=str, help="查询文本")
-    parser.add_argument("--keywords", type=json.loads, help="关键词列表")
+    usage = "python recall_knowledge.py"
+    argparse.ArgumentParser(description="检索知识", usage=usage)
 
-    args = parser.parse_args()
-    res = await recall_knowledge(CFG.use_db_code, args.query, args.keywords)
-    print(res)
+    await recall_knowledge(CFG.use_db_code, read_callback, write_callback)
 
 
 if __name__ == "__main__":

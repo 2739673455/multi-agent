@@ -10,29 +10,34 @@ from util import embed
 
 async def get_tb_info_by_dbcode(db_code: str):
     """查找数据库下的所有表信息"""
-    try:
-        logger.info(f"query table by db_code: {db_code}")
-        async with neo4j_session() as session:
-            results = await session.run(
-                "MATCH (tb:TABLE)-[]-(db:DATABASE {db_code: $db_code}) RETURN tb, db",
-                db_code=db_code,
-            )
-            records = await results.data()
-        return [
-            {
-                "db_code": db_code,
-                "db_name": record["db"]["db_name"],
-                "db_type": record["db"]["db_type"],
-                "database": record["db"]["database"],
-                "tb_code": record["tb"]["tb_code"],
-                "tb_name": record["tb"]["tb_name"],
-                "tb_meaning": record["tb"]["tb_meaning"],
-            }
-            for record in records
-        ]
-    except Exception as e:
-        logger.exception(e)
-        return []
+    logger.info(f"query table by db_code: {db_code}")
+    async with neo4j_session() as session:
+        results = await session.run(
+            "MATCH (tb:TABLE)-[]-(db:DATABASE {db_code: $db_code}) RETURN tb, db",
+            db_code=db_code,
+        )
+        records = await results.data()
+
+    if records:
+        db_info = {
+            "db_code": db_code,
+            "db_name": records[0]["db"]["db_name"],
+        }
+    else:
+        db_info = {
+            "db_code": db_code,
+            "db_name": None,
+        }
+
+    tb_map = {
+        record["tb"]["tb_code"]: {
+            "tb_name": record["tb"]["tb_name"],
+            "tb_meaning": record["tb"]["tb_meaning"],
+        }
+        for record in records
+    }
+
+    return db_info, tb_map
 
 
 async def get_col_by_dbcode_tbname_colname(
@@ -361,8 +366,8 @@ if __name__ == "__main__":
 
     async def main():
         # 查找数据库下的所有表信息
-        tbs = await get_tb_info_by_dbcode(db_code)
-        for i in tbs:
+        db_info, tb_map = await get_tb_info_by_dbcode(db_code)
+        for i in tb_map.values():
             print(i)
 
         # 混合检索知识

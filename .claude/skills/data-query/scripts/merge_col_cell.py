@@ -1,40 +1,71 @@
 import argparse
 import asyncio
-import json
-from typing import Any
+from typing import Callable
+
+from callback import read_callback, write_callback
+from config import CFG
 
 
 async def merge_col_cell(
-    retrieved_col_map: dict[str, dict[str, dict[str, Any]]],
-    retrieved_cell_map: dict[str, dict[str, dict[str, Any]]],
+    max_tb_num: int,
+    max_col_per_tb: int,
+    r_callback: Callable | None = None,
+    w_callback: Callable | None = None,
 ):
-    """整合表字段字段值信息"""
-    for tb_code, col in retrieved_cell_map.items():
-        if tb_code not in retrieved_col_map:
-            retrieved_col_map[tb_code] = {}
-        for col_name, col_obj in col.items():
-            if col_name not in retrieved_col_map[tb_code]:
+    """合并字段与单元格信息，并根据检索分数截取topk表和字段"""
+    state = await r_callback() if r_callback else {}
+    retrieved_col_map: dict[str, dict[str, dict]] = state["retrieved_col_map"]
+    retrieved_cell_map: dict[str, dict[str, dict]] = state["retrieved_cell_map"]
+    # 将单元格信息与字段信息合并
+    for tb_code, cell_name_col_map in retrieved_cell_map.items():
+        name_col_map = retrieved_col_map.setdefault(tb_code, {})
+        for col_name, cell_col_dict in cell_name_col_map.items():
+            if col_name not in name_col_map:
                 # col_map 中原本没有此列则添加
-                retrieved_col_map[tb_code][col_name] = col_obj
+                name_col_map[col_name] = cell_col_dict
             else:
                 # col_map 中原本有此列则更新
-                _col = retrieved_col_map[tb_code][col_name]
-                if _col.get("cells") is None:
-                    _col["cells"] = []
-                _col["cells"] = list(set(_col["cells"] + col_obj["cells"]))
-                _col["score"] = max(col_obj["score"], _col["score"])  # 取最高分
-    return {"col_map": retrieved_col_map}
+                col_dict = name_col_map[col_name]
+                col_dict["cells"] = list(
+                    set(col_dict.get("cells", []) + cell_col_dict["cells"])
+                )
+                col_dict["score"] = max(
+                    cell_col_dict["score"], col_dict["score"]
+                )  # 取最高分
+
+    # 根据检索分数截取topk表和字段
+    tb_score_list: list[tuple] = []  # 存储表编号和对应的总分数
+    for tb_code, n_c_map in retrieved_col_map.items():
+        # 字段数量如果大于设定值，则按字段分数降序排序，截取topk个字段
+        if len(n_c_map) > max_col_per_tb:
+            n_c_map = dict(
+                sorted(n_c_map.items(), key=lambda x: x[1]["score"], reverse=True)[
+                    :max_col_per_tb
+                ]
+            )  # 按分数降序排序，截取topk个字段
+            retrieved_col_map[tb_code] = n_c_map  # 更新字段字典
+        # 此表所有字段分数之和作为表的总分数
+        tb_score_list.append((tb_code, sum(i["score"] for i in n_c_map.values())))
+    if len(tb_score_list) > max_tb_num:
+        # 按表的总分数降序排序，并从字典中删除超出数量的表
+        tb_score_list.sort(key=lambda x: x[1], reverse=True)
+        for tb_code, _ in tb_score_list[max_tb_num:]:
+            del retrieved_col_map[tb_code]
+
+    if w_callback:
+        await w_callback({"col_map": retrieved_col_map})
 
 
 async def main():
-    usage = "python merge_col_cell.py --retrieved_col_map 字段信息 --retrieved_cell_map 单元格信息"
-    parser = argparse.ArgumentParser(description="合并字段与单元格信息", usage=usage)
-    parser.add_argument("--retrieved_col_map", type=json.loads, help="字段信息")
-    parser.add_argument("--retrieved_cell_map", type=json.loads, help="单元格信息")
+    usage = "python merge_col_cell.py"
+    argparse.ArgumentParser(
+        description="合并字段与单元格信息，并根据检索分数截取topk表和字段",
+        usage=usage,
+    )
 
-    args = parser.parse_args()
-    res = await merge_col_cell(args.retrieved_col_map, args.retrieved_cell_map)
-    print(res)
+    await merge_col_cell(
+        CFG.max_tb_num, CFG.max_col_per_tb, read_callback, write_callback
+    )
 
 
 if __name__ == "__main__":
