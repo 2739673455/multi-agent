@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 
-async def write_state2json(data: dict):
+async def write_state_to_json(data: dict):
     """保存状态到JSON文件"""
     p_file = Path(__file__).parent.parent / "session" / "state.json"
     p_file.parent.mkdir(parents=True, exist_ok=True)
@@ -11,7 +11,7 @@ async def write_state2json(data: dict):
     print(f"{list(data.keys())} saved to: {p_file}")
 
 
-async def read_state2json():
+async def read_state_from_json():
     """从JSON文件读取状态"""
     p_file = Path(__file__).parent.parent / "session" / "state.json"
     state = json.loads(p_file.read_text()) if p_file.exists() else {}
@@ -19,8 +19,8 @@ async def read_state2json():
 
 
 async def write_callback(data: dict):
-    await write_state2json(data)
+    await write_state_to_json(data)
 
 
 async def read_callback():
-    return await read_state2json()
+    return await read_state_from_json()

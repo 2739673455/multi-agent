@@ -67,6 +67,7 @@ async def add_context(
     if w_callback:
         await w_callback(
             {
+                "db_code": db_code,
                 "query": query,  # 查询
                 "keywords": keywords,  # 关键词
                 "cur_date_info": cur_date_info,  # 当前日期信息

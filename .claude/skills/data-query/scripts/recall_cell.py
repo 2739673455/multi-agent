@@ -8,12 +8,12 @@ from config import CFG
 
 
 async def recall_cell(
-    db_code: str,
     r_callback: Callable | None = None,
     w_callback: Callable | None = None,
 ):
     """检索字段信息"""
     state = await r_callback() if r_callback else {}
+    db_code: str = state["db_code"]
     keywords: list[str] = state.get("extracted_cells") or state["keywords"]
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -28,7 +28,7 @@ async def main():
     usage = "python recall_cell.py"
     argparse.ArgumentParser(description="检索单元格", usage=usage)
 
-    await recall_cell(CFG.use_db_code, read_callback, write_callback)
+    await recall_cell(read_callback, write_callback)
 
 
 if __name__ == "__main__":

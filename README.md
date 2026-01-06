@@ -13,7 +13,8 @@
 不同请求间状态文件的隔离
 
 ## 子代理委托
-子代理拥有独立状态、独立上下文。在子代理执行结束后决定将哪些内容返回总状态、总上下文。
+主代理通过 Task 将任务委托给子代理
+子代理拥有独立状态、独立上下文。在子代理执行结束后决定将哪些内容返回总状态、总上下文
 
 # 技能
 https://platform.claude.com/docs/zh-CN/agents-and-tools/agent-skills/overview

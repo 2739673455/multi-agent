@@ -8,12 +8,12 @@ from config import CFG
 
 
 async def recall_knowledge(
-    db_code: str,
     r_callback: Callable | None = None,
     w_callback: Callable | None = None,
 ):
     """混合检索知识"""
     state = await r_callback() if r_callback else {}
+    db_code: str = state["db_code"]
     query: str = state["query"]
     keywords: list[str] = state["keywords"]
     async with httpx.AsyncClient() as client:
@@ -29,7 +29,7 @@ async def main():
     usage = "python recall_knowledge.py"
     argparse.ArgumentParser(description="检索知识", usage=usage)
 
-    await recall_knowledge(CFG.use_db_code, read_callback, write_callback)
+    await recall_knowledge(read_callback, write_callback)
 
 
 if __name__ == "__main__":

@@ -8,14 +8,14 @@ from config import CFG
 
 
 async def add_kn_col(
-    db_code: str,
     r_callback: Callable | None = None,
     w_callback: Callable | None = None,
 ):
     """获取知识相关字段，并与之前检索出的字段合并"""
     state = await r_callback() if r_callback else {}
+    db_code: str = state["db_code"]
     col_map: dict[str, dict[str, dict]] = state["col_map"]
-    kn_map: dict[int, dict] = state["kn_map"]
+    kn_map: dict[str, dict] = state["kn_map"]
     if not kn_map or all(not kn.get("rel_col") for kn in kn_map.values()):
         return
 
@@ -47,7 +47,7 @@ async def main():
         description="获取知识相关字段，并与之前检索出的字段合并", usage=usage
     )
 
-    await add_kn_col(CFG.use_db_code, read_callback, write_callback)
+    await add_kn_col(read_callback, write_callback)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 {
+  "db_code": "pg_archeology_scan",
   "query": "查询扫描质量分数高于60的考古项目",
   "keywords": [
     "扫描",
@@ -89,7 +90,7 @@
         "col_meaning": "项目名称或指定标签",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9468388557434082
+        "score": 0.9470300674438477
       },
       "arcregistry": {
         "col_alias": [
@@ -108,7 +109,7 @@
         "col_meaning": "考古项目注册唯一标识符",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9000239372253418
+        "score": 0.9002399444580078
       },
       "fundflux": {
         "col_alias": [
@@ -126,7 +127,7 @@
         "col_meaning": "项目资金来源或财务支持",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8741726875305176
+        "score": 0.8743295669555664
       }
     },
     "pg_archeology_scan_scans": {
@@ -147,7 +148,7 @@
         "col_meaning": "会话中单个扫描总数",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9338779449462891
+        "score": 0.9338521957397461
       },
       "crewref": {
         "col_alias": [
@@ -167,7 +168,7 @@
         "col_meaning": "执行扫描的操作员参考",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9254441261291504
+        "score": 0.9254822731018066
       },
       "chronotag": {
         "col_alias": [
@@ -186,7 +187,7 @@
         "col_meaning": "执行扫描的精确时间戳",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9225058555603027
+        "score": 0.9225239753723145
       },
       "scanning_rate": {
         "col_alias": [
@@ -205,7 +206,7 @@
         "col_meaning": "扫描期间数据采集率",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9184770584106445
+        "score": 0.9184961318969727
       },
       "questregistry": {
         "col_alias": [
@@ -224,7 +225,7 @@
         "col_meaning": "扫描会话记录唯一标识符",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.909599781036377
+        "score": 0.9094853401184082
       },
       "zoneref": {
         "col_alias": [
@@ -244,7 +245,7 @@
         "col_meaning": "进行扫描的站点参考",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9074907302856445
+        "score": 0.9073953628540039
       },
       "arcref": {
         "col_alias": [
@@ -264,7 +265,7 @@
         "col_meaning": "关联的考古项目参考",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9032998085021973
+        "score": 0.9033823013305664
       },
       "scan_cost": {
         "col_alias": [
@@ -283,7 +284,7 @@
         "col_meaning": "每GB设备成本",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8932919502258301
+        "score": 0.8931288719177246
       }
     },
     "pg_archeology_scan_registration": {
@@ -305,7 +306,7 @@
         "col_meaning": "关联的考古项目参考",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9032998085021973
+        "score": 0.9033823013305664
       }
     },
     "pg_archeology_scan_spatial": {
@@ -327,7 +328,7 @@
         "col_meaning": "关联的考古项目参考",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9032998085021973
+        "score": 0.9033823013305664
       }
     },
     "pg_archeology_scan_qualitycontrol": {
@@ -349,7 +350,7 @@
         "col_meaning": "关联的考古项目参考",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9032998085021973
+        "score": 0.9033823013305664
       },
       "valimeth": {
         "col_alias": [
@@ -366,7 +367,7 @@
         "col_meaning": "用于质量评估的验证方法",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8423376083374023
+        "score": 0.8421635627746582
       },
       "valistate": {
         "col_alias": [
@@ -383,7 +384,7 @@
         "col_meaning": "验证状态和完成状态",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8416519165039062
+        "score": 0.8415026664733887
       },
       "archstat": {
         "col_alias": [
@@ -402,7 +403,7 @@
         "col_meaning": "长期数据保存的存档状态",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8338627815246582
+        "score": 0.8338718414306641
       },
       "refmention": {
         "col_alias": [
@@ -421,7 +422,7 @@
         "col_meaning": "数据引用格式和归属要求",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8221182823181152
+        "score": 0.8219890594482422
       },
       "accucheck": {
         "col_alias": [
@@ -438,7 +439,7 @@
         "col_meaning": "准确度评估评价结果",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8201065063476562
+        "score": 0.8202395439147949
       },
       "remark": {
         "col_alias": [
@@ -457,7 +458,7 @@
         "col_meaning": "质量控制的额外说明和观察",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8035697937011719
+        "score": 0.8033638000488281
       }
     },
     "pg_archeology_scan_pointcloud": {
@@ -479,7 +480,7 @@
         "col_meaning": "关联的考古项目参考",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9032998085021973
+        "score": 0.9033823013305664
       },
       "cloud_metrics": {
         "col_alias": [
@@ -507,7 +508,7 @@
         "col_name": "cloud_metrics",
         "col_meaning": "点云质量和密度测量，包括分辨率、覆盖率、重叠和噪声分析",
         "col_type": "JSONB",
-        "score": 0.8950395584106445
+        "score": 0.8948349952697754
       }
     },
     "pg_archeology_scan_conservation": {
@@ -529,7 +530,7 @@
         "col_meaning": "关联的考古项目参考",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9032998085021973
+        "score": 0.9033823013305664
       },
       "priordocs": {
         "col_alias": [
@@ -545,7 +546,7 @@
         "col_meaning": "以前的文档和记录可用性",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.791752815246582
+        "score": 0.7915573120117188
       }
     },
     "pg_archeology_scan_equipment": {
@@ -566,7 +567,7 @@
         "col_meaning": "扫描期间区域覆盖率",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.9013180732727051
+        "score": 0.901237964630127
       },
       "accuracy_per_time": {
         "col_alias": [
@@ -585,7 +586,7 @@
         "col_meaning": "扫描时间内准确度提升",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8055605888366699
+        "score": 0.8054890632629395
       }
     },
     "pg_archeology_scan_sites": {
@@ -606,7 +607,7 @@
         "col_meaning": "考古遗址类型分类",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8487520217895508
+        "score": 0.8490524291992188
       },
       "guessdate": {
         "col_alias": [
@@ -625,7 +626,7 @@
         "col_meaning": "考古材料的估计日期或年龄",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8412728309631348
+        "score": 0.8412222862243652
       },
       "site_status": {
         "col_alias": [
@@ -652,7 +653,7 @@
         "col_name": "site_status",
         "col_meaning": "站点条件和安全评估，包括保护、访问、安全和风险评估状态",
         "col_type": "JSONB",
-        "score": 0.8402419090270996
+        "score": 0.8405032157897949
       },
       "zonelabel": {
         "col_alias": [
@@ -671,7 +672,7 @@
         "col_meaning": "考古遗址的描述性名称",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8259601593017578
+        "score": 0.8260831832885742
       }
     },
     "pg_archeology_scan_features": {
@@ -702,7 +703,7 @@
         "col_name": "feature_analysis",
         "col_meaning": "考古特征分析结果，包括计数、材料分类和分析完成状态",
         "col_type": "JSONB",
-        "score": 0.8342761993408203
+        "score": 0.8341326713562012
       }
     },
     "pg_archeology_scan_processing": {
@@ -723,7 +724,7 @@
         "col_meaning": "数据处理吞吐率",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8175277709960938
+        "score": 0.8175010681152344
       },
       "datalevel": {
         "col_alias": [
@@ -740,7 +741,7 @@
         "col_meaning": "数据访问级别和安全分类",
         "col_type": "TEXT",
         "field_meaning": null,
-        "score": 0.8090357780456543
+        "score": 0.8089747428894043
       }
     }
   },

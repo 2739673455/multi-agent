@@ -125,13 +125,13 @@ async def retrieve_knowledge(db_code: str, query: str, keywords: list[str]):
 
             // 构造有序的 v_list (向量排名列表)
             UNWIND raw_data AS row
-            WITH row, raw_data WHERE row.v > 0 
+            WITH row, raw_data WHERE row.v > 0
             ORDER BY row.v DESC
             WITH collect({node: row.n, score: row.v}) AS v_list, raw_data
 
             // 构造有序的 f_list (全文排名列表)
             UNWIND raw_data AS row
-            WITH row, v_list WHERE row.f > 0 
+            WITH row, v_list WHERE row.f > 0
             ORDER BY row.f DESC
             WITH collect({node: row.n, score: row.f}) AS f_list, v_list
 
@@ -276,13 +276,13 @@ async def retrieve_cell(db_code: str, keywords: list[str]):
 
                 // 构造有序的 v_list (向量排名列表)
                 UNWIND raw_data AS row
-                WITH row, raw_data WHERE row.v > 0 
+                WITH row, raw_data WHERE row.v > 0
                 ORDER BY row.v DESC
                 WITH collect({node: row.n, score: row.v}) AS v_list, raw_data
 
                 // 构造有序的 f_list (全文排名列表)
                 UNWIND raw_data AS row
-                WITH row, v_list WHERE row.f > 0 
+                WITH row, v_list WHERE row.f > 0
                 ORDER BY row.f DESC
                 WITH collect({node: row.n, score: row.f}) AS f_list, v_list
 
@@ -369,6 +369,7 @@ if __name__ == "__main__":
     async def main():
         # 查找数据库下的所有表信息
         db_info, tb_map = await get_tb_info_by_dbcode(db_code)
+        print(db_info)
         for i in tb_map.values():
             print(i)
 
@@ -381,24 +382,24 @@ if __name__ == "__main__":
         for kn in kns.values():
             print(kn)
 
-        # 向量检索字段
-        col_map = await retrieve_column(db_code, ["销售数量"])
-        for tb_code in col_map:
-            for col_name in col_map[tb_code]:
-                print(col_map[tb_code][col_name])
+        # # 向量检索字段
+        # col_map = await retrieve_column(db_code, ["销售数量"])
+        # for tb_code in col_map:
+        #     for col_name in col_map[tb_code]:
+        #         print(col_map[tb_code][col_name])
 
-        # 混合检索单元格
-        cell_map = await retrieve_cell(db_code, ["Validated"])
-        for tb_code in cell_map:
-            for col_name in cell_map[tb_code]:
-                print(cell_map[tb_code][col_name])
+        # # 混合检索单元格
+        # cell_map = await retrieve_cell(db_code, ["Validated"])
+        # for tb_code in cell_map:
+        #     for col_name in cell_map[tb_code]:
+        #         print(cell_map[tb_code][col_name])
 
-        # 根据表名列名查找列信息
-        kn_col_map = await get_col_by_dbcode_tbname_colname(
-            db_code, [("insuranceclaims", "claimstat")]
-        )
-        for tb_code in kn_col_map:
-            for col_name in kn_col_map[tb_code]:
-                print(kn_col_map[tb_code][col_name])
+        # # 根据表名列名查找列信息
+        # kn_col_map = await get_col_by_dbcode_tbname_colname(
+        #     db_code, [("insuranceclaims", "claimstat")]
+        # )
+        # for tb_code in kn_col_map:
+        #     for col_name in kn_col_map[tb_code]:
+        #         print(kn_col_map[tb_code][col_name])
 
     asyncio.run(main())

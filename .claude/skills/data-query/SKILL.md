@@ -26,6 +26,7 @@ uv run scripts/add_context.py 查询文本
 ## 2. LLM根据上下文扩展查询时可能需要的字段 & LLM根据上下文扩展查询时可能需要的字段值
 跳过
 ## 3. 结合查询和关键词，检索相关知识 & 结合关键词和扩展后的字段，检索相关字段 & 结合关键词和扩展后的字段值，检索相关字段值
+并行执行下列脚本
 - 执行 python 脚本 [scripts/recall_column.py](scripts/recall_column.py) 检索字段信息
 - 执行 python 脚本 [scripts/recall_cell.py](scripts/recall_cell.py) 检索单元格信息
 - 执行 python 脚本 [scripts/recall_knowledge.py](scripts/recall_knowledge.py) 检索知识信息
