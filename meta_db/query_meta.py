@@ -176,7 +176,9 @@ async def retrieve_knowledge(db_code: str, query: str, keywords: list[str]):
                 final_num=5,  # 最终返回的个数
             )
             records = await results.data()
-            kn_map = {record["kn"]["kn_code"]: record["kn"] for record in records}
+            kn_map: dict[int, dict] = {
+                record["kn"]["kn_code"]: record["kn"] for record in records
+            }
         return kn_map
     except Exception as e:
         logger.exception(e)

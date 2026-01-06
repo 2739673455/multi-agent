@@ -14,7 +14,7 @@ async def recall_column(
 ):
     """检索字段信息"""
     state = await r_callback() if r_callback else {}
-    keywords: list[str] = state["extracted_columns"]
+    keywords: list[str] = state.get("extracted_columns") or state["keywords"]
     async with httpx.AsyncClient() as client:
         response = await client.post(
             CFG.meta_db.retrieve_column_url,

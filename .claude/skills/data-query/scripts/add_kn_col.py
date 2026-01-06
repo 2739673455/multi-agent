@@ -16,7 +16,7 @@ async def add_kn_col(
     state = await r_callback() if r_callback else {}
     col_map: dict[str, dict[str, dict]] = state["col_map"]
     kn_map: dict[int, dict] = state["kn_map"]
-    if not kn_map or all(not kn["rel_col"] for kn in kn_map.values()):
+    if not kn_map or all(not kn.get("rel_col") for kn in kn_map.values()):
         return
 
     # 获取知识的相关字段
