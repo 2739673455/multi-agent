@@ -1,101 +1,42 @@
 import asyncio
-import functools
 import json
 import re
 from pathlib import Path
-from typing import Any, Callable, Coroutine, ParamSpec, Tuple, Type, TypeVar
 
 import yaml
 from config import CFG
 from jinja2 import Template
 from openai import AsyncOpenAI
-
-P = ParamSpec("P")
-R = TypeVar("R")
+from tenacity import AsyncRetrying, stop_after_attempt, wait_exponential
 
 
-def async_retry(
-    max_retries: int,
-    timeout: float | None,
-    backoff_factor: float = 1.0,
-    retryable_exceptions: Tuple[Type[Exception], ...] = (Exception,),
-):
-    """
-    异步重试装饰器
-
-    Args:
-        max_retries: 最大重试次数（默认值，可被 kwargs 中的 max_retries 覆盖）
-        timeout: 单次请求超时时间（秒），None 表示不设置超时（默认值，可被 kwargs 中的 timeout 覆盖）
-        backoff_factor: 退避因子，每次重试等待时间 = backoff_factor * (2 ** retry_count)
-        retryable_exceptions: 可重试的异常类型
-    """
-
-    def decorator(
-        func: Callable[P, Coroutine[Any, Any, R]],
-    ) -> Callable[P, Coroutine[Any, Any, R]]:
-        @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
-            # 从 kwargs 中提取超时和重试参数，优先使用传入值
-            actual_timeout = kwargs.pop("timeout", timeout)
-            actual_max_retries = kwargs.pop("max_retries", max_retries)
-            last_exception = None
-
-            for attempt in range(actual_max_retries + 1):
-                try:
-                    if actual_timeout is None:
-                        return await func(*args, **kwargs)
-                    return await asyncio.wait_for(
-                        func(*args, **kwargs), timeout=actual_timeout
-                    )
-                except retryable_exceptions as e:
-                    last_exception = e
-                    if attempt < actual_max_retries:
-                        wait_time = backoff_factor * (2**attempt)
-                        await asyncio.sleep(wait_time)
-                        continue
-                    raise
-                except asyncio.TimeoutError:
-                    if attempt < actual_max_retries:
-                        wait_time = backoff_factor * (2**attempt)
-                        await asyncio.sleep(wait_time)
-                        continue
-                    raise TimeoutError(
-                        f"Request timed out after {actual_timeout}s (retries: {actual_max_retries})"
-                    )
-
-            raise (
-                last_exception
-                if last_exception
-                else RuntimeError("Max retries exceeded")
-            )
-
-        return wrapper
-
-    return decorator
-
-
-@async_retry(max_retries=1, timeout=None)
-async def ask_llm(
-    name: str,
-    messages,
-    max_retries: int = 0,
-    timeout: float | None = None,
-) -> str:
+async def ask_llm(name: str, messages, retries: int = 0, timeout: float | None = None):
     """请求 LLM"""
-    # 从配置中获取指定模型的配置信息
+    retryer = AsyncRetrying(
+        stop=stop_after_attempt(retries + 1),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        reraise=True,
+    )
+
     model_config = CFG.llm.models[name]
-    # 创建异步 OpenAI 客户端
     client = AsyncOpenAI(
-        base_url=model_config.base_url,  # API 基础URL
-        api_key=model_config.api_key,  # API 密钥
+        base_url=model_config.base_url,
+        api_key=model_config.api_key,
     )
-    # 调用 OpenAI Chat Completions API
-    completion = await client.chat.completions.create(
-        model=model_config.model,  # 指定使用的模型
-        messages=messages,  # 对话消息列表
-        **model_config.params,  # 其他模型参数(如温度、最大token等)
-    )
-    return completion.choices[0].message.content
+    try:
+        async for attempt in retryer:
+            with attempt:
+                completion = await asyncio.wait_for(
+                    client.chat.completions.create(
+                        model=model_config.model,
+                        messages=messages,
+                        **model_config.params,
+                    ),
+                    timeout=timeout,
+                )
+                return completion.choices[0].message.content
+    finally:
+        await client.close()
 
 
 def get_prompt(prompt_file: str, prompt_name: str, **kwargs):
