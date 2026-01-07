@@ -49,10 +49,10 @@ class ModelCfg(BaseModel):
 
 
 class LLMCfg(BaseModel):
-    extend_model: str | None
-    filter_model: str | None
-    nl2sql_models: list[str] | None
-    vote_model: str | None
+    extend_model: str
+    filter_model: str
+    nl2sql_models: list[str]
+    vote_model: str
     models: dict[str, ModelCfg]
 
 

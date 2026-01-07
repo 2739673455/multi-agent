@@ -1,4 +1,3 @@
-import argparse
 import asyncio
 from typing import Callable
 
@@ -56,17 +55,12 @@ async def merge_col_cell(
         await w_callback({"col_map": retrieved_col_map})
 
 
-async def main():
-    usage = "python merge_col_cell.py"
-    argparse.ArgumentParser(
-        description="合并字段与单元格信息，并根据检索分数截取topk表和字段",
-        usage=usage,
-    )
-
-    await merge_col_cell(
-        CFG.max_tb_num, CFG.max_col_per_tb, read_callback, write_callback
-    )
-
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(
+        merge_col_cell(
+            CFG.max_tb_num,
+            CFG.max_col_per_tb,
+            read_callback,
+            write_callback,
+        )
+    )

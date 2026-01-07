@@ -1,4 +1,3 @@
-import argparse
 import asyncio
 from typing import Callable
 
@@ -21,16 +20,10 @@ async def recall_knowledge(
             CFG.meta_db.retrieve_knowledge_url,
             json={"db_code": db_code, "query": query, "keywords": keywords},
         )
+
     if w_callback:
         await w_callback({"kn_map": response.json()})
 
 
-async def main():
-    usage = "python recall_knowledge.py"
-    argparse.ArgumentParser(description="检索知识", usage=usage)
-
-    await recall_knowledge(read_callback, write_callback)
-
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(recall_knowledge(read_callback, write_callback))

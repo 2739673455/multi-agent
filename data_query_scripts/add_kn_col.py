@@ -1,4 +1,3 @@
-import argparse
 import asyncio
 from typing import Callable
 
@@ -38,17 +37,8 @@ async def add_kn_col(
         col_map.setdefault(tb_code, {}).update(n_c_map)
 
     if w_callback:
-        await w_callback(col_map)
-
-
-async def main():
-    usage = "python add_kn_col.py"
-    argparse.ArgumentParser(
-        description="获取知识相关字段，并与之前检索出的字段合并", usage=usage
-    )
-
-    await add_kn_col(read_callback, write_callback)
+        await w_callback({"col_map": col_map})
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(add_kn_col(read_callback, write_callback))

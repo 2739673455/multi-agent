@@ -79,7 +79,7 @@ async def add_context(
 
 async def main():
     usage = "python add_context.py 查询文本"
-    parser = argparse.ArgumentParser(description="添加上下文信息", usage=usage)
+    parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument("query", type=str, help="查询文本")
 
     args = parser.parse_args()
