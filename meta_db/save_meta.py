@@ -349,8 +349,6 @@ async def save_col_embed(session: AsyncSession, cols: list[dict], logger=None):
                     for i in col["col_alias"]
                 ]
             )
-
-    EMBED_BATCH_SIZE = 128
     try:
         # EMBED_COL (content) 唯一约束
         await session.run(
@@ -363,13 +361,7 @@ async def save_col_embed(session: AsyncSession, cols: list[dict], logger=None):
             OPTIONS { indexConfig: {`vector.dimensions`: 1024,`vector.similarity_function`: 'cosine'} }
             """
         )
-
-        # 向量化
-        tasks = []
-        for i in range(0, len(col_contents), EMBED_BATCH_SIZE):
-            batch = col_contents[i : i + EMBED_BATCH_SIZE]
-            tasks.append(embed([item["content"] for item in batch]))
-        embeds = await asyncio.gather(*tasks)
+        embeds = await embed([item["content"] for item in col_contents])
         flatten_embeds = [vec for batch in embeds for vec in batch]
         for col_dict, vec in zip(col_contents, flatten_embeds):
             col_dict["embed"] = vec
@@ -536,22 +528,21 @@ async def save_cell(
 
     async def handle_batch(batch: list[dict]):
         """处理批次"""
-        async with semaphore:
-            if not batch:
-                return []
-            try:
-                cell_batch = [i["content"] for i in batch]
-                embed_batch, tscontent_batch = await asyncio.gather(
-                    embed(cell_batch), get_keywords(cell_batch)
-                )
-                for i, e, t in zip(batch, embed_batch, tscontent_batch):
-                    i["embed"] = e
-                    i["tscontent"] = t
-                return batch
-            except Exception as e:
-                if logger:
-                    logger.exception(f"process {tb_code} cell error: {e}")
-                return []
+        if not batch:
+            return []
+        try:
+            cell_batch = [i["content"] for i in batch]
+            embed_batch, tscontent_batch = await asyncio.gather(
+                embed(cell_batch), get_keywords(cell_batch)
+            )
+            for i, e, t in zip(batch, embed_batch, tscontent_batch):
+                i["embed"] = e
+                i["tscontent"] = t
+            return batch
+        except Exception as e:
+            if logger:
+                logger.exception(f"process {tb_code} cell error: {e}")
+            return []
 
     async def save_to_neo4j(batch: list[dict]):
         """写入 neo4j"""
@@ -578,9 +569,7 @@ async def save_cell(
     ):
         return
 
-    semaphore = asyncio.Semaphore(20)
     SELECT_BATCH_SIZE = 5000
-    PROCESS_BATCH_SIZE = 128
 
     try:
         # CELL (content) 唯一约束
@@ -638,28 +627,19 @@ async def save_cell(
                     # 构造 col_name->[cell] 映射
                     # 解包->转置->转换为集合->关联列名->转换为字典
                     col_map = dict(zip(sync_col_names, map(set, zip(*batch))))
-                    tasks = []
                     _batch: list[dict] = []
                     for col_name, cells in col_map.items():
-                        for i in cells:
-                            if (i) and (i.strip() != "") and (not is_numeric(i)):
-                                _batch.append(
-                                    {
-                                        "tb_code": tb_code,
-                                        "col_name": col_name,
-                                        "content": i,
-                                    }
-                                )
-                                if len(_batch) >= PROCESS_BATCH_SIZE:
-                                    tasks.append(handle_batch(_batch))
-                                    _batch = []
-                    if _batch:
-                        tasks.append(handle_batch(_batch))
+                        _batch.extend(
+                            [
+                                {"tb_code": tb_code, "col_name": col_name, "content": i}
+                                for i in cells
+                                if (i) and (i.strip() != "") and (not is_numeric(i))
+                            ]
+                        )
                     if logger:
-                        logger.info(f"process {tb_code} cell")
-                    handled_batch = await asyncio.gather(*tasks)
-                    flatten_handled_batch = [i for ls in handled_batch for i in ls]
-                    await save_to_neo4j(flatten_handled_batch)
+                        logger.info(f"process {tb_code} cell ({len(_batch)})")
+                    handled_batch = await handle_batch(_batch)
+                    await save_to_neo4j(handled_batch)
     except Exception as e:
         if logger:
             logger.exception(f"save cell error: {e}")
