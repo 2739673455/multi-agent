@@ -24,10 +24,7 @@ async def get_tb_info_by_dbcode(db_code: str):
             "db_name": records[0]["db"]["db_name"],
         }
     else:
-        db_info = {
-            "db_code": db_code,
-            "db_name": None,
-        }
+        db_info = {}
 
     tb_map = {
         record["tb"]["tb_code"]: {
