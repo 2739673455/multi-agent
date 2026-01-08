@@ -5,7 +5,7 @@ import aiosqlite
 from filelock import FileLock
 
 # ==================== SQLite ====================
-SQLITE_DB = Path(__file__).parent.parent / "session.db"
+SQLITE_DB = Path(__file__).parent.parent / "session" / "session.db"
 
 
 async def init_sqlite():

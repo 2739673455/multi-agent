@@ -237,7 +237,7 @@ knowledge_filter_prompt:
         <knowledge><kn_code>1</kn_code><kn_name>Scan Coverage Effectiveness (SCE)</kn_name><kn_def>SCE = \text{Coverage (%)} \times \left(1 + \frac{\text{Overlap (%)}}{100} \times \left(1 - \frac{\text{Coverage (%)}}{100}\right)\right), \text{ where higher values indicate more effective coverage with appropriate overlap.}</kn_def><kn_desc>Measures how effectively a scan covers its target area considering both coverage percentage and overlap redundancy.</kn_desc><kn_alias>['扫描覆盖有效性', 'SCE', '覆盖效果指数', '区域覆盖度']</kn_alias></knowledge>
         <knowledge><kn_code>3</kn_code><kn_name>Scan Quality Score (SQS)</kn_name><kn_def>SQS = \left(\frac{10}{\text{SRI}}\right)^{1.5} \times \left(\frac{\text{SCE}}{100}\right) \times \left(1 - \frac{\text{Noise Level (dB)}}{30}\right)^2, \text{ where higher values indicate exponentially better overall scan quality with emphasis on resolution.}</kn_def><kn_desc>Comprehensive quality metric combining resolution, coverage, and noise factors with weighted importance.</kn_desc><rel_kn>[0, 1]</rel_kn><kn_alias>['扫描质量分数', 'SQS', '综合质量指标', '扫描品质评分']</kn_alias></knowledge>
     </knowledges>
-    用户问题：计算PR7662项目的扫描质量分数 SQS
+    用户问题：计算PR7662项目的扫描质量分数SQS
 
     ## 正确输出
     [3, 0, 1]
