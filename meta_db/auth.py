@@ -14,7 +14,7 @@ SECRET_KEY = "d6a5d730ec247d487f17419df966aec9d4c2a09d2efc9699d09757cf94c68b01"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = None
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes={})
 password_hash = PasswordHash.recommended()
 
 
@@ -27,7 +27,7 @@ async def init_all_scopes():
         rows = result.mappings().fetchall()
         for row in rows:
             all_scopes[row["name"]] = row["description"]
-    auth_logger.info(f"all scopes loaded: {all_scopes}")
+    auth_logger.info(f"all scopes loaded: {list(all_scopes.keys())}")
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes=all_scopes)
 
 
@@ -72,7 +72,7 @@ async def create_access_token(
         )
 
     # 创建访问令牌
-    payload = {"sub": username, "group": user["group"], "scope": " ".join(scopes)}
+    payload = {"sub": username, "group": user["group_name"], "scope": " ".join(scopes)}
     expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode = {**payload, "exp": expire}
     access_token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -82,10 +82,11 @@ async def create_access_token(
 
 
 async def authentication(
-    security_scopes: SecurityScopes, token: Annotated[str, Depends(oauth2_scheme)]
+    security_scopes: SecurityScopes,
+    token: Annotated[str, Depends(oauth2_scheme)],
 ):
-    # 验证 oauth2_shceme 是否加载完毕
-    if oauth2_scheme is None:
+    # 检查 scopes 是否已初始化
+    if not oauth2_scheme.model.flows.oauth2.password.scopes:
         raise HTTPException(status_code=500, detail="OAuth2 scheme not initialized yet")
 
     authenticate_value = (
