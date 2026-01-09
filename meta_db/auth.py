@@ -2,65 +2,33 @@ from datetime import datetime, timedelta
 from typing import Annotated
 
 import jwt
+from config import CFG
+from db_session import get_session
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from pwdlib._hash import PasswordHash
+from sqlalchemy import text
 from util import auth_logger
 
 SECRET_KEY = "d6a5d730ec247d487f17419df966aec9d4c2a09d2efc9699d09757cf94c68b01"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-ALL_SCOPES = {
-    "save_metadata": "写入元数据",
-    "clear_metadata": "清空元数据",
-    "get_table": "获取表信息",
-    "get_column": "获取字段信息",
-    "retrieve_knowledge": "检索知识",
-    "retrieve_column": "检索字段",
-    "retrieve_cell": "检索单元格",
-}
-
-GROUP_DB = {
-    "root": {"allowed_scopes": list(ALL_SCOPES.keys())},
-    "guest": {"allowed_scopes": []},
-    "atguigu": {
-        "allowed_scopes": [
-            "get_table",
-            "get_column",
-            "retrieve_knowledge",
-            "retrieve_column",
-            "retrieve_cell",
-        ]
-    },
-}
-
-USER_DB = {
-    "root": {
-        "group": "root",
-        "username": "root",
-        "email": "root@example.com",
-        "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$fMuhnWBkGYj3r25EZnf6OA$4MRww1o4TWdfmmrYIu6H90+uQ6pMD+V6wd4B1UYnMp0",  # 123321
-        "yn": 1,
-    },
-    "atguigu": {
-        "group": "atguigu",
-        "username": "atguigu",
-        "email": "atguigu@example.com",
-        "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$fMuhnWBkGYj3r25EZnf6OA$4MRww1o4TWdfmmrYIu6H90+uQ6pMD+V6wd4B1UYnMp0",  # 123321
-        "yn": 1,
-    },
-    "zhangsan": {
-        "group": "guest",
-        "username": "zhangsan",
-        "email": "zhangsan@example.com",
-        "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$fMuhnWBkGYj3r25EZnf6OA$4MRww1o4TWdfmmrYIu6H90+uQ6pMD+V6wd4B1UYnMp0",  # 123321
-        "yn": 1,
-    },
-}
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes=ALL_SCOPES)
+oauth2_scheme = None
 password_hash = PasswordHash.recommended()
+
+
+async def init_all_scopes():
+    global oauth2_scheme
+    """从数据库加载所有权限范围"""
+    all_scopes: dict[str, str] = {}
+    async with get_session(CFG.auth_db) as session:
+        result = await session.execute(text("SELECT name, description FROM scope"))
+        rows = result.mappings().fetchall()
+        for row in rows:
+            all_scopes[row["name"]] = row["description"]
+    auth_logger.info(f"all scopes loaded: {all_scopes}")
+    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes=all_scopes)
 
 
 async def create_access_token(
@@ -70,8 +38,19 @@ async def create_access_token(
     client_ip: str,
 ):
     # 验证用户名、密码
-    auth_logger.info(f"{client_ip} | {username} | {scopes}: request token")
-    user = USER_DB.get(username)
+    async with get_session(CFG.auth_db) as session:
+        result = await session.execute(
+            text(
+                "SELECT user.*, GROUP_CONCAT(scope.name) as scopes "
+                "FROM user "
+                "LEFT JOIN group_scope_rel ON user.group_name = group_scope_rel.group_name "
+                "LEFT JOIN scope ON group_scope_rel.scope_name = scope.name "
+                "WHERE user.name = :username "
+                "GROUP BY user.name"
+            ),
+            {"username": username},
+        )
+        user = result.mappings().fetchone()
     target_hash = (
         user["hashed_password"] if user else password_hash.hash("dummy_password")
     )  # 如果用户不存在，使用 dummy_password 进行验证，避免时间攻击
@@ -81,7 +60,9 @@ async def create_access_token(
         raise HTTPException(status_code=401, detail="Incorrect username or password")
 
     # 验证权限范围
-    if exceed_scopes := set(scopes) - set(GROUP_DB[user["group"]]["allowed_scopes"]):
+    if exceed_scopes := set(scopes) - set(
+        user["scopes"].split(",") if user["scopes"] else []
+    ):
         auth_logger.info(
             f"{client_ip} | {username} | {scopes}: validation scope failed"
         )
@@ -103,6 +84,10 @@ async def create_access_token(
 async def authentication(
     security_scopes: SecurityScopes, token: Annotated[str, Depends(oauth2_scheme)]
 ):
+    # 验证 oauth2_shceme 是否加载完毕
+    if oauth2_scheme is None:
+        raise HTTPException(status_code=500, detail="OAuth2 scheme not initialized yet")
+
     authenticate_value = (
         f'Bearer scope="{security_scopes.scope_str}"'
         if security_scopes.scopes
@@ -118,7 +103,19 @@ async def authentication(
         )
 
     # 验证用户
-    if not ((username := payload.get("sub")) and (user := USER_DB.get(username))):
+    if not (username := payload.get("sub")):
+        raise HTTPException(
+            status_code=401,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": authenticate_value},
+        )
+    async with get_session(CFG.auth_db) as session:
+        result = await session.execute(
+            text("SELECT user.yn FROM user WHERE user.name = :username"),
+            {"username": username},
+        )
+        user = result.mappings().fetchone()
+    if not user:
         raise HTTPException(
             status_code=401,
             detail="Could not validate credentials",

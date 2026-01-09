@@ -98,6 +98,7 @@ class LLMCfg(BaseModel):
 
 class BaseCfg(BaseModel):
     meta_db: MetaDBCfg
+    auth_db: DBCfg
     logging: LoggingCfg
     llm: LLMCfg
 

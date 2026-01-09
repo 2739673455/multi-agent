@@ -173,3 +173,8 @@ if __name__ == "__main__":
     sql_files = list(sql_dir.glob("*.sql"))
     db_sql_mapping = {f.stem: f for f in sql_files}  # 文件名作为数据库名称
     asyncio.run(my_init.init_db(db_sql_mapping))
+
+    sql_dir = Path(__file__).parent / "auth"
+    sql_files = list(sql_dir.glob("*.sql"))
+    db_sql_mapping = {f.stem: f for f in sql_files}  # 文件名作为数据库名称
+    asyncio.run(my_init.init_db(db_sql_mapping))
