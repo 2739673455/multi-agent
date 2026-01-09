@@ -70,6 +70,12 @@ async def create_access_token(username: str, password: str, scopes: list[str]):
     if not (user and password_hash.verify(password, user["hashed_password"])):
         raise HTTPException(status_code=401, detail="Incorrect username or password")
 
+    # 验证权限范围
+    if exceed_scopes := set(scopes) - GROUP_DB[user["group"]]["allowed_scopes"]:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Requested scopes {exceed_scopes} exceed user's permissions",
+        )
     # 创建访问令牌
     payload = {"sub": username, "scope": " ".join(scopes)}
     expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -79,7 +85,7 @@ async def create_access_token(username: str, password: str, scopes: list[str]):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-async def get_current_active_user(
+async def authenticate(
     security_scopes: SecurityScopes, token: Annotated[str, Depends(oauth2_scheme)]
 ):
     authenticate_value = (
@@ -103,7 +109,7 @@ async def get_current_active_user(
             headers={"WWW-Authenticate": authenticate_value},
         )
 
-    # 验证权限
+    # 验证权限范围
     token_scopes = set(payload.get("scope", "").split())
     if set(security_scopes.scopes) - token_scopes:
         raise HTTPException(
