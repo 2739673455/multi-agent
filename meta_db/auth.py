@@ -33,7 +33,7 @@ HASHED_DUMMY_PASSWORD = password_hash.hash("dummy_password")
 
 
 async def create_refresh_token(username: str, password: str, client_ip: str):
-    """创建刷新令牌"""
+    """创建刷新令牌和访问令牌"""
     # 验证用户名、密码
     async with get_asession(CFG.auth_db) as session:
         result = await session.execute(
@@ -60,14 +60,33 @@ async def create_refresh_token(username: str, password: str, client_ip: str):
     allowed_scopes = user["scopes"].split(",") if user["scopes"] else []
 
     # 创建刷新令牌
-    expire = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    payload = {"sub": username, "scope": " ".join(allowed_scopes), "exp": expire}
+    refresh_expire = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    refresh_payload = {
+        "sub": username,
+        "scope": " ".join(allowed_scopes),
+        "exp": refresh_expire,
+    }
     refresh_token = jwt.encode(
-        payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
+        refresh_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
     )
-    auth_logger.info(f"{client_ip} | {username}: create refresh token success")
 
-    return {"refresh_token": refresh_token, "token_type": "bearer"}
+    # 创建访问令牌
+    access_expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_payload = {
+        "sub": username,
+        "scope": " ".join(allowed_scopes),
+        "exp": access_expire,
+    }
+    access_token = jwt.encode(
+        access_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
+    )
+    auth_logger.info(f"{client_ip} | {username}: create tokens success")
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+    }
 
 
 async def create_access_token(refresh_token: str, scopes: list[str], client_ip: str):
@@ -103,6 +122,22 @@ async def create_access_token(refresh_token: str, scopes: list[str], client_ip: 
     auth_logger.info(f"{client_ip} | {username} | {scopes}: create token success")
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+async def revoke_refresh_token(refresh_token: str, client_ip: str):
+    """撤销刷新令牌"""
+    # 解码刷新令牌
+    try:
+        payload = jwt.decode(
+            refresh_token, CFG.auth.secret_key, algorithms=[CFG.auth.algorithm]
+        )
+    except (jwt.ExpiredSignatureError, jwt.exceptions.InvalidTokenError):
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+    if not (username := payload.get("sub")):
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+    auth_logger.info(f"{client_ip} | {username}: revoke refresh token success")
+    return {"message": "Logged out successfully"}
 
 
 async def authentication(
