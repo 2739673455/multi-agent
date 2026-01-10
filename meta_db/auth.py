@@ -100,7 +100,6 @@ async def _authenticate_user(username: str, password: str, client_ip: str) -> di
     # 验证密码（使用 dummy_password 避免时间攻击）
     target_hash = user["hashed_password"] if user else HASHED_DUMMY_PASSWORD
     password_correct = password_hash.verify(password, target_hash)
-
     if not (password_correct and user):
         auth_logger.info(f"{client_ip} | {username}: validation user failed")
         raise HTTPException(status_code=401, detail="Incorrect username or password")
@@ -124,32 +123,28 @@ async def create_refresh_token(username: str, password: str, client_ip: str):
     user = await _authenticate_user(username, password, client_ip)
     allowed_scopes = user["scopes"]
 
-    # 生成 JWT ID
-    jti = str(uuid.uuid4())
     # 创建刷新令牌
+    jti = str(uuid.uuid4())  # 生成 JWT ID
     refresh_expire = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    refresh_payload = {
-        "sub": username,
-        "scope": " ".join(allowed_scopes),
-        "exp": refresh_expire,
-        "jti": jti,
-    }
     refresh_token = jwt.encode(
-        refresh_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
+        {
+            "sub": username,
+            "scope": " ".join(allowed_scopes),
+            "exp": refresh_expire,
+            "jti": jti,
+        },
+        CFG.auth.secret_key,
+        algorithm=CFG.auth.algorithm,
     )
-
     # 存储刷新令牌到数据库
     await _store_refresh_token(jti, username, refresh_expire)
 
     # 创建访问令牌
     access_expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_payload = {
-        "sub": username,
-        "scope": " ".join(allowed_scopes),
-        "exp": access_expire,
-    }
     access_token = jwt.encode(
-        access_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
+        {"sub": username, "scope": " ".join(allowed_scopes), "exp": access_expire},
+        CFG.auth.secret_key,
+        algorithm=CFG.auth.algorithm,
     )
     auth_logger.info(f"{client_ip} | {username}: create tokens success")
 
@@ -172,7 +167,7 @@ async def create_access_token(refresh_token: str, scopes: list[str], client_ip: 
     if (not (username := payload.get("sub"))) or (not (jti := payload.get("jti"))):
         raise HTTPException(status_code=401, detail="Could not validate credentials")
 
-    # 验证 refresh_token 是否在数据库中且未被撤销
+    # 验证刷新令牌是否在数据库中且未被撤销
     await _validate_refresh_token_in_db(jti, username)
 
     # 验证权限范围
@@ -180,6 +175,7 @@ async def create_access_token(refresh_token: str, scopes: list[str], client_ip: 
     # 如果没有选择权限，默认使用用户拥有的所有权限
     scopes = scopes if scopes else refresh_token_scopes
     if exceed_scopes := set(scopes) - set(refresh_token_scopes):
+        # 请求的权限超出范围
         auth_logger.info(
             f"{client_ip} | {username} | {scopes}: validation scope failed"
         )
@@ -195,24 +191,23 @@ async def create_access_token(refresh_token: str, scopes: list[str], client_ip: 
         access_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
     )
 
-    # 撤销旧的 refresh_token
+    # 撤销旧的刷新令牌
     await _revoke_refresh_token_in_db(jti, username)
-
-    # 生成新的 refresh_token
-    new_jti = str(uuid.uuid4())
+    # 生成新的刷新令牌
+    jti = str(uuid.uuid4())  # 生成 JWT ID
     refresh_expire = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    refresh_payload = {
-        "sub": username,
-        "scope": " ".join(refresh_token_scopes),
-        "exp": refresh_expire,
-        "jti": new_jti,
-    }
     new_refresh_token = jwt.encode(
-        refresh_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
+        {
+            "sub": username,
+            "scope": " ".join(refresh_token_scopes),
+            "exp": refresh_expire,
+            "jti": jti,
+        },
+        CFG.auth.secret_key,
+        algorithm=CFG.auth.algorithm,
     )
-
-    # 存储新的 refresh_token 到数据库
-    await _store_refresh_token(new_jti, username, refresh_expire)
+    # 存储新的刷新令牌到数据库
+    await _store_refresh_token(jti, username, refresh_expire)
 
     auth_logger.info(
         f"{client_ip} | {username} | {scopes}: refresh token success with rotation"
