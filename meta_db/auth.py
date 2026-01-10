@@ -23,14 +23,47 @@ def init_all_scopes():
         rows = result.mappings().fetchall()
         for row in rows:
             all_scopes[row["name"]] = row["description"]
-    auth_logger.info(f"all scopes loaded: {list(all_scopes.keys())}")
     return all_scopes
 
 
 ALL_SCOPES = init_all_scopes()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token", scopes=ALL_SCOPES)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/refresh", scopes=ALL_SCOPES)
 password_hash = PasswordHash.recommended()
 HASHED_DUMMY_PASSWORD = password_hash.hash("dummy_password")
+
+
+def _create_refresh_token(username: str, scopes: list[str]):
+    """创建刷新令牌"""
+    jti = str(uuid.uuid4())  # JWT ID
+    refresh_expire = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    refresh_payload = {
+        "sub": username,
+        "scope": " ".join(scopes),
+        "exp": refresh_expire,
+        "jti": jti,
+    }
+    refresh_token = jwt.encode(
+        refresh_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
+    )
+    return {
+        "jti": jti,
+        "refresh_expire": refresh_expire,
+        "refresh_token": refresh_token,
+    }
+
+
+def _create_access_token(username: str, scopes: list[str]):
+    """创建访问令牌"""
+    access_expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_payload = {
+        "sub": username,
+        "scope": " ".join(scopes),
+        "exp": access_expire,
+    }
+    access_token = jwt.encode(
+        access_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
+    )
+    return access_token
 
 
 async def _store_refresh_token(jti: str, username: str, expires_at: datetime):
@@ -115,40 +148,6 @@ async def _authenticate_user(username: str, password: str, client_ip: str) -> di
         "yn": user["yn"],
         "scopes": scopes,
     }
-
-
-def _create_refresh_token(username: str, scopes: list[str]):
-    """创建刷新令牌"""
-    jti = str(uuid.uuid4())
-    refresh_expire = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    refresh_payload = {
-        "sub": username,
-        "scope": " ".join(scopes),
-        "exp": refresh_expire,
-        "jti": jti,
-    }
-    refresh_token = jwt.encode(
-        refresh_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
-    )
-    return {
-        "jti": jti,
-        "refresh_expire": refresh_expire,
-        "refresh_token": refresh_token,
-    }
-
-
-def _create_access_token(username: str, scopes: list[str]):
-    """创建访问令牌"""
-    access_expire = datetime.now() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_payload = {
-        "sub": username,
-        "scope": " ".join(scopes),
-        "exp": access_expire,
-    }
-    access_token = jwt.encode(
-        access_payload, CFG.auth.secret_key, algorithm=CFG.auth.algorithm
-    )
-    return access_token
 
 
 async def create_refresh_token(username: str, password: str, client_ip: str):
@@ -260,7 +259,7 @@ async def authentication(
         if security_scopes.scopes
         else "Bearer"
     )
-    # 解码刷新令牌
+    # 解码访问令牌
     try:
         payload = jwt.decode(
             access_token, CFG.auth.secret_key, algorithms=[CFG.auth.algorithm]
@@ -272,29 +271,11 @@ async def authentication(
             headers={"WWW-Authenticate": authenticate_value},
         )
 
-    # 验证用户
-    if not (username := payload.get("sub")):
+    # 验证访问令牌中是否存在 sub 字段
+    if not payload.get("sub"):
         raise HTTPException(
             status_code=401,
             detail="Could not validate credentials",
-            headers={"WWW-Authenticate": authenticate_value},
-        )
-    async with get_asession(CFG.auth_db) as session:
-        result = await session.execute(
-            text("SELECT user.yn FROM user WHERE user.name = :username"),
-            {"username": username},
-        )
-        user = result.mappings().fetchone()
-    if not user:
-        raise HTTPException(
-            status_code=401,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": authenticate_value},
-        )
-    if not user["yn"]:
-        raise HTTPException(
-            status_code=401,
-            detail="Inactive user",
             headers={"WWW-Authenticate": authenticate_value},
         )
 
