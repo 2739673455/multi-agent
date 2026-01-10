@@ -27,7 +27,7 @@ def init_all_scopes():
 
 
 ALL_SCOPES = init_all_scopes()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/refresh", scopes=ALL_SCOPES)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", scopes=ALL_SCOPES)
 password_hash = PasswordHash.recommended()
 HASHED_DUMMY_PASSWORD = password_hash.hash("dummy_password")
 
@@ -186,6 +186,7 @@ async def create_access_token(refresh_token: str, scopes: list[str], client_ip: 
     except (jwt.ExpiredSignatureError, jwt.exceptions.InvalidTokenError):
         raise HTTPException(status_code=401, detail="Could not validate credentials")
     if (not (username := payload.get("sub"))) or (not (jti := payload.get("jti"))):
+        print(payload)
         raise HTTPException(status_code=401, detail="Could not validate credentials")
 
     # 验证刷新令牌是否在数据库中且未被撤销
