@@ -2,16 +2,16 @@ import asyncio
 from typing import Callable
 
 from config import CFG
-from state_manage import read_callback, write_callback
+from state_manage import read_state, write_state
 from util import ask_llm, get_prompt, kn_info_xml_str, parse_json
 
 
 async def filter_knowledge(
-    r_callback: Callable | None = None,
-    w_callback: Callable | None = None,
+    r_state: Callable | None = None,
+    w_state: Callable | None = None,
 ):
     """LLM筛选指标知识"""
-    state = await r_callback() if r_callback else {}
+    state = await r_state() if r_state else {}
     query: str = state["query"]
     retrieved_knowledge: dict[int, dict] = {
         int(k): v for k, v in state["retrieved_knowledge"].items()
@@ -52,9 +52,9 @@ async def filter_knowledge(
         needed_kn_codes = needed_kn_codes | add_kn_codes
     kn_map = {k: retrieved_knowledge[k] for k in needed_kn_codes}
 
-    if w_callback:
-        await w_callback({"kn_map": kn_map})
+    if w_state:
+        await w_state({"kn_map": kn_map})
 
 
 if __name__ == "__main__":
-    asyncio.run(filter_knowledge(read_callback, write_callback))
+    asyncio.run(filter_knowledge(read_state, write_state))

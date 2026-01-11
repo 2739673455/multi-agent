@@ -11,7 +11,7 @@ from pwdlib._hash import PasswordHash
 from sqlalchemy import text
 from util import auth_logger
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 1
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 # 北京时间时区（UTC+8）

@@ -3,15 +3,15 @@ from typing import Callable
 
 import httpx
 from config import CFG
-from state_manage import read_callback, write_callback
+from state_manage import read_state, write_state
 
 
 async def add_kn_col(
-    r_callback: Callable | None = None,
-    w_callback: Callable | None = None,
+    r_state: Callable | None = None,
+    w_state: Callable | None = None,
 ):
     """获取知识相关字段，并与之前检索出的字段合并"""
-    state = await r_callback() if r_callback else {}
+    state = await r_state() if r_state else {}
     db_code: str = state["db_code"]
     col_map: dict[str, dict[str, dict]] = state["col_map"]
     kn_map: dict[int, dict] = {int(k): v for k, v in state["kn_map"].items()}
@@ -36,9 +36,9 @@ async def add_kn_col(
     for tb_code, n_c_map in kn_rel_col_map.items():
         col_map.setdefault(tb_code, {}).update(n_c_map)
 
-    if w_callback:
-        await w_callback({"col_map": col_map})
+    if w_state:
+        await w_state({"col_map": col_map})
 
 
 if __name__ == "__main__":
-    asyncio.run(add_kn_col(read_callback, write_callback))
+    asyncio.run(add_kn_col(read_state, write_state))

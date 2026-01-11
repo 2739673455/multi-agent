@@ -6,13 +6,13 @@ from typing import Callable
 import httpx
 import jieba.analyse
 from config import CFG
-from state_manage import read_callback, write_callback
+from state_manage import read_state, write_state
 
 
 async def add_context(
     query: str,
-    r_callback: Callable | None = None,
-    w_callback: Callable | None = None,
+    r_state: Callable | None = None,
+    w_state: Callable | None = None,
 ):
     """添加上下文信息:写入查询文本、关键词、当前日期信息、表信息等"""
 
@@ -63,8 +63,8 @@ async def add_context(
         [f"表名: {i['tb_name']}，表含义: {i['tb_meaning']}\n" for i in tb_map.values()]
     )
 
-    if w_callback:
-        await w_callback(
+    if w_state:
+        await w_state(
             {
                 "db_code": db_code,
                 "query": query,  # 查询
@@ -82,7 +82,7 @@ async def main():
     parser.add_argument("query", type=str, help="查询文本")
 
     args = parser.parse_args()
-    await add_context(args.query, read_callback, write_callback)
+    await add_context(args.query, read_state, write_state)
 
 
 if __name__ == "__main__":

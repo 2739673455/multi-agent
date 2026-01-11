@@ -3,15 +3,15 @@ from typing import Callable
 
 import httpx
 from config import CFG
-from state_manage import read_callback, write_callback
+from state_manage import read_state, write_state
 
 
 async def recall_knowledge(
-    r_callback: Callable | None = None,
-    w_callback: Callable | None = None,
+    r_state: Callable | None = None,
+    w_state: Callable | None = None,
 ):
     """混合检索知识"""
-    state = await r_callback() if r_callback else {}
+    state = await r_state() if r_state else {}
     db_code: str = state["db_code"]
     query: str = state["query"]
     keywords: list[str] = state["keywords"]
@@ -23,9 +23,9 @@ async def recall_knowledge(
             json={"db_code": db_code, "query": query, "keywords": keywords},
         )
 
-    if w_callback:
-        await w_callback({"retrieved_knowledge": response.json()})
+    if w_state:
+        await w_state({"retrieved_knowledge": response.json()})
 
 
 if __name__ == "__main__":
-    asyncio.run(recall_knowledge(read_callback, write_callback))
+    asyncio.run(recall_knowledge(read_state, write_state))

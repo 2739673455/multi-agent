@@ -2,15 +2,15 @@ import asyncio
 from typing import Callable
 
 from config import CFG
-from state_manage import read_callback, write_callback
+from state_manage import read_state, write_state
 
 
 async def merge_col_cell(
-    r_callback: Callable | None = None,
-    w_callback: Callable | None = None,
+    r_state: Callable | None = None,
+    w_state: Callable | None = None,
 ):
     """合并字段与单元格信息，并根据检索分数截取topk表和字段"""
-    state = await r_callback() if r_callback else {}
+    state = await r_state() if r_state else {}
     retrieved_col_map: dict[str, dict[str, dict]] = state["retrieved_col_map"]
     retrieved_cell_map: dict[str, dict[str, dict]] = state["retrieved_cell_map"]
     max_tb_num = CFG.max_tb_num
@@ -52,9 +52,9 @@ async def merge_col_cell(
         for tb_code, _ in tb_score_list[max_tb_num:]:
             del retrieved_col_map[tb_code]
 
-    if w_callback:
-        await w_callback({"col_map": retrieved_col_map})
+    if w_state:
+        await w_state({"col_map": retrieved_col_map})
 
 
 if __name__ == "__main__":
-    asyncio.run(merge_col_cell(read_callback, write_callback))
+    asyncio.run(merge_col_cell(read_state, write_state))

@@ -2,13 +2,13 @@ import asyncio
 from typing import Callable
 
 from config import CFG
-from state_manage import read_callback, write_callback
+from state_manage import read_state, write_state
 from util import ask_llm, get_prompt, parse_json, tb_col_xml_str
 
 
 async def filter_tb_col(
-    r_callback: Callable | None = None,
-    w_callback: Callable | None = None,
+    r_state: Callable | None = None,
+    w_state: Callable | None = None,
 ):
     """LLM筛选与查询相关的表和字段，进一步精简上下文信息"""
 
@@ -85,7 +85,7 @@ async def filter_tb_col(
             }
             return tb_code, filtered_col_dict
 
-    state = await r_callback() if r_callback else {}
+    state = await r_state() if r_state else {}
     query: str = state["query"]
     tb_map: dict[str, dict] = state["tb_map"]
     col_map: dict[str, dict[str, dict]] = state["col_map"]
@@ -118,9 +118,9 @@ async def filter_tb_col(
     res: list[tuple | None] = await asyncio.gather(*column_filter_tasks)
     filtered_col_map: dict[str, dict[str, dict]] = dict(filter(None, res))
 
-    if w_callback:
-        await w_callback({"col_map": filtered_col_map})
+    if w_state:
+        await w_state({"col_map": filtered_col_map})
 
 
 if __name__ == "__main__":
-    asyncio.run(filter_tb_col(read_callback, write_callback))
+    asyncio.run(filter_tb_col(read_state, write_state))

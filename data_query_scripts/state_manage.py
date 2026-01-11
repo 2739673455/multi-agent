@@ -97,9 +97,9 @@ async def read_state_from_json(session_id: str):
     return state
 
 
-async def write_callback(data: dict, session_id: str = "default"):
+async def write_state(data: dict, session_id: str = "default"):
     await write_state_to_json(data, session_id)
 
 
-async def read_callback(session_id: str = "default"):
+async def read_state(session_id: str = "default"):
     return await read_state_from_json(session_id)
