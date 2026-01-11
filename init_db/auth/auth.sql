@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS `group_scope_rel`;
 
+DROP TABLE IF EXISTS `refresh_token`;
+
 DROP TABLE IF EXISTS `user`;
 
 DROP TABLE IF EXISTS `group`;
@@ -38,8 +40,8 @@ CREATE TABLE `user` (
 CREATE TABLE `refresh_token` (
     `jti` VARCHAR(255) UNIQUE NOT NULL COMMENT 'JWT唯一标识',
     `username` VARCHAR(100) NOT NULL COMMENT '用户名',
-    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `expires_at` TIMESTAMP NOT NULL COMMENT '过期时间',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `expires_at` DATETIME NOT NULL COMMENT '过期时间',
     `yn` TINYINT NOT NULL DEFAULT 1,
     PRIMARY KEY (`jti`, `username`),
     FOREIGN KEY (`username`) REFERENCES `user` (`name`) ON DELETE CASCADE

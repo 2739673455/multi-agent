@@ -7,7 +7,7 @@ from auth import (
     oauth2_scheme,
     revoke_refresh_token,
 )
-from fastapi import APIRouter, Body, Depends, Request, Security
+from fastapi import APIRouter, Depends, Request, Security
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel, Field
 from query_meta import (

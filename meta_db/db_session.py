@@ -25,7 +25,7 @@ async def get_asession(db_cfg):
     db_url = {
         "mysql": "mysql+asyncmy",
         "postgresql": "postgresql+asyncpg",
-    }[db_cfg.db_type] + "://%s:%s@%s:%s/%s" % (
+    }[db_cfg.db_type] + "://%s:%s@%s:%s/%s?charset=utf8mb4" % (
         db_cfg.user,
         db_cfg.password,
         db_cfg.host,
@@ -50,7 +50,7 @@ def get_session(db_cfg):
     db_url = {
         "mysql": "mysql+pymysql",
         "postgresql": "postgresql+psycopg2",
-    }[db_cfg.db_type] + "://%s:%s@%s:%s/%s" % (
+    }[db_cfg.db_type] + "://%s:%s@%s:%s/%s?charset=utf8mb4" % (
         db_cfg.user,
         db_cfg.password,
         db_cfg.host,
