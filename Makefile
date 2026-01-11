@@ -1,5 +1,7 @@
-run-init_db:
+.PHONY: init_db meta_db
+
+init_db:
 	uv run init_db/init_db.py
 
-run-meta_db:
+meta_db:
 	uv run meta_db/main.py

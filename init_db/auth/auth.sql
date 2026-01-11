@@ -1,3 +1,7 @@
+SET GLOBAL time_zone = '+08:00';
+
+SET SESSION time_zone = '+08:00';
+
 DROP TABLE IF EXISTS `group_scope_rel`;
 
 DROP TABLE IF EXISTS `refresh_token`;
@@ -62,7 +66,7 @@ VALUES ('save_metadata', '写入元数据'),
     ('retrieve_cell', '检索单元格');
 
 INSERT INTO
-    group_scope_rel (`group_name`, `scope_name`)
+    `group_scope_rel` (`group_name`, `scope_name`)
 VALUES ('root', 'save_metadata'),
     ('root', 'clear_metadata'),
     ('root', 'get_table'),
